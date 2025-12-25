@@ -9,7 +9,6 @@
 
 @theme {
   --shadow-layer: 0 35px 60px -15px rgba(0, 0, 0, 0.3);
-
   --color-framework: #000;
   --color-black: #0b0b0b;
   --color-white: #fff;
@@ -28,8 +27,8 @@
   --color-gray-900: #1b1d27;
   --color-gray-950: #13141b;
 
-  --font-display: "Inter", "sans-serif";
-  --font-sans: "Inter", "sans-serif";
+  --font-display: "Outfit", "sans-serif";
+  --font-sans: "Outfit", "sans-serif";
 
   --default-transition-duration: 250ms;
 }

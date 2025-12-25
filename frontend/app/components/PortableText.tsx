@@ -1,97 +1,69 @@
-/**
- * This component uses Portable Text to render a post body.
- *
- * You can learn more about Portable Text on:
- * https://www.sanity.io/docs/block-content
- * https://github.com/portabletext/react-portabletext
- * https://portabletext.org/
- *
- */
+"use client";
 
 import {
-  PortableText,
+  PortableText as PortableTextReact,
   type PortableTextComponents,
-  type PortableTextBlock,
-} from "next-sanity";
+  type PortableTextProps as PortableTextReactProps,
+} from "@portabletext/react";
 
-import ResolvedLink from "@/app/components/ResolvedLink";
-
-export default function CustomPortableText({
-  className,
-  value,
-}: {
-  className?: string;
-  value: PortableTextBlock[];
-}) {
-  const components: PortableTextComponents = {
-    block: {
-      h1: ({ children, value }) => (
-        // Add an anchor to the h1
-        <h1 className="group relative">
+const components: PortableTextComponents = {
+  block: {
+    normal: ({ children }) => <p className="mb-4 last:mb-0">{children}</p>,
+    h2: ({ children }) => (
+      <h2 className="text-2xl font-medium mb-4">{children}</h2>
+    ),
+    h3: ({ children }) => (
+      <h3 className="text-xl font-medium mb-3">{children}</h3>
+    ),
+    blockquote: ({ children }) => (
+      <blockquote className="border-l-2 border-current pl-4 italic my-4">
+        {children}
+      </blockquote>
+    ),
+  },
+  list: {
+    bullet: ({ children }) => (
+      <ul className="list-disc list-inside mb-4 space-y-1">{children}</ul>
+    ),
+    number: ({ children }) => (
+      <ol className="list-decimal list-inside mb-4 space-y-1">{children}</ol>
+    ),
+  },
+  listItem: {
+    bullet: ({ children }) => <li>{children}</li>,
+    number: ({ children }) => <li>{children}</li>,
+  },
+  marks: {
+    strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
+    em: ({ children }) => <em>{children}</em>,
+    link: ({ children, value }) => {
+      const target = value?.openInNewTab ? "_blank" : undefined;
+      const rel = value?.openInNewTab ? "noopener noreferrer" : undefined;
+      return (
+        <a
+          href={value?.href}
+          target={target}
+          rel={rel}
+          className="underline hover:opacity-60 transition-opacity"
+        >
           {children}
-          <a
-            href={`#${value?._key}`}
-            className="absolute left-0 top-0 bottom-0 -ml-6 flex items-center opacity-0 group-hover:opacity-100 transition-opacity"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-4 w-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
-              />
-            </svg>
-          </a>
-        </h1>
-      ),
-      h2: ({ children, value }) => {
-        // Add an anchor to the h2
-        return (
-          <h2 className="group relative">
-            {children}
-            <a
-              href={`#${value?._key}`}
-              className="absolute left-0 top-0 bottom-0 -ml-6 flex items-center opacity-0 group-hover:opacity-100 transition-opacity"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-4 w-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
-                />
-              </svg>
-            </a>
-          </h2>
-        );
-      },
+        </a>
+      );
     },
-    marks: {
-      link: ({ children, value: link }) => {
-        return <ResolvedLink link={link}>{children}</ResolvedLink>;
-      },
-    },
-  };
+  },
+};
+
+type PortableTextProps = {
+  value: PortableTextReactProps["value"] | null | undefined;
+  className?: string;
+};
+
+export function PortableText({ value, className }: PortableTextProps) {
+  if (!value) return null;
 
   return (
-    <div
-      className={["prose prose-a:text-brand", className]
-        .filter(Boolean)
-        .join(" ")}
-    >
-      <PortableText components={components} value={value} />
+    <div className={className}>
+      <PortableTextReact value={value} components={components} />
     </div>
   );
 }

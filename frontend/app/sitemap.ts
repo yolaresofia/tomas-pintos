@@ -1,59 +1,69 @@
 import { MetadataRoute } from "next";
 import { sanityFetch } from "@/sanity/lib/live";
-import { sitemapData } from "@/sanity/lib/queries";
+import { sitemapQuery } from "@/sanity/lib/queries";
 import { headers } from "next/headers";
 
 /**
- * This file creates a sitemap (sitemap.xml) for the application. Learn more about sitemaps in Next.js here: https://nextjs.org/docs/app/api-reference/file-conventions/metadata/sitemap
- * Be sure to update the `changeFrequency` and `priority` values to match your application's content.
+ * Helper to get URL path based on project category
  */
+function getCategoryPath(category: string): string {
+  switch (category) {
+    case "foto-selected-works":
+      return "foto/selected-works";
+    case "foto-editorial":
+      return "foto/editorial";
+    case "movement-direction":
+      return "movement-direction";
+    case "performance":
+      return "performance";
+    default:
+      return "";
+  }
+}
 
+/**
+ * Generates a sitemap for the application.
+ * Learn more: https://nextjs.org/docs/app/api-reference/file-conventions/metadata/sitemap
+ */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const allPostsAndPages = await sanityFetch({
-    query: sitemapData,
-  });
   const headersList = await headers();
+  const domain = headersList.get("host") as string;
+
   const sitemap: MetadataRoute.Sitemap = [];
-  const domain: String = headersList.get("host") as string;
+
+  // Homepage
   sitemap.push({
-    url: domain as string,
+    url: `https://${domain}`,
     lastModified: new Date(),
     priority: 1,
     changeFrequency: "monthly",
   });
 
-  if (allPostsAndPages != null && allPostsAndPages.data.length != 0) {
-    let priority: number;
-    let changeFrequency:
-      | "monthly"
-      | "always"
-      | "hourly"
-      | "daily"
-      | "weekly"
-      | "yearly"
-      | "never"
-      | undefined;
-    let url: string;
+  // About page
+  sitemap.push({
+    url: `https://${domain}/about`,
+    lastModified: new Date(),
+    priority: 0.8,
+    changeFrequency: "monthly",
+  });
 
-    for (const p of allPostsAndPages.data) {
-      switch (p._type) {
-        case "page":
-          priority = 0.8;
-          changeFrequency = "monthly";
-          url = `${domain}/${p.slug}`;
-          break;
-        case "post":
-          priority = 0.5;
-          changeFrequency = "never";
-          url = `${domain}/posts/${p.slug}`;
-          break;
+  // Fetch all projects
+  const { data: projects } = await sanityFetch({
+    query: sitemapQuery,
+    stega: false,
+  });
+
+  if (projects && projects.length > 0) {
+    for (const project of projects) {
+      const categoryPath = getCategoryPath(project.category || "");
+      if (categoryPath && project.slug) {
+        sitemap.push({
+          url: `https://${domain}/${categoryPath}/${project.slug}`,
+          lastModified: project._updatedAt ? new Date(project._updatedAt) : new Date(),
+          priority: 0.6,
+          changeFrequency: "monthly",
+        });
       }
-      sitemap.push({
-        lastModified: p._updatedAt || new Date(),
-        priority,
-        changeFrequency,
-        url,
-      });
     }
   }
 

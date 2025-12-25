@@ -1,97 +1,140 @@
 import { defineQuery } from "next-sanity";
 
-export const settingsQuery = defineQuery(`*[_type == "settings"][0]`);
-
-const postFields = /* groq */ `
-  _id,
-  "status": select(_originalId in path("drafts.**") => "draft", "published"),
-  "title": coalesce(title, "Untitled"),
-  "slug": slug.current,
-  excerpt,
-  coverImage,
-  "date": coalesce(date, _updatedAt),
-  "author": author->{firstName, lastName, picture},
-`;
-
-const linkReference = /* groq */ `
-  _type == "link" => {
-    "page": page->slug.current,
-    "post": post->slug.current
+// ============ SETTINGS ============
+export const settingsQuery = defineQuery(`
+  *[_type == "settings" && _id == "siteSettings"][0]{
+    title,
+    description,
+    footerLeftText,
+    footerRightText,
+    footerCenterText,
+    ogImage
   }
-`;
+`);
 
-const linkFields = /* groq */ `
-  link {
-      ...,
-      ${linkReference}
-      }
-`;
-
-export const getPageQuery = defineQuery(`
-  *[_type == 'page' && slug.current == $slug][0]{
+// ============ HOMEPAGE ============
+export const homepageQuery = defineQuery(`
+  *[_type == "homepage" && _id == "homepage"][0]{
     _id,
-    _type,
-    name,
-    slug,
-    heading,
-    subheading,
-    "pageBuilder": pageBuilder[]{
-      ...,
-      _type == "callToAction" => {
-        ${linkFields},
-      },
-      _type == "infoSection" => {
-        content[]{
-          ...,
-          markDefs[]{
-            ...,
-            ${linkReference}
-          }
-        }
-      },
+    title,
+    fotoImage,
+    movementDirectionImage,
+    performanceImage,
+    seoTitle,
+    seoDescription
+  }
+`);
+
+// ============ ABOUT ============
+export const aboutQuery = defineQuery(`
+  *[_type == "about" && _id == "about"][0]{
+    _id,
+    mainText,
+    selectedClients,
+    selectedClientsDescription,
+    specialties,
+    contact[]{
+      _key,
+      label,
+      linkType,
+      url,
+      email
     },
+    backgroundColor,
+    seoTitle,
+    seoDescription
   }
 `);
 
-export const sitemapData = defineQuery(`
-  *[_type == "page" || _type == "post" && defined(slug.current)] | order(_type asc) {
-    "slug": slug.current,
-    _type,
-    _updatedAt,
-  }
-`);
+// ============ PROJECTS ============
 
-export const allPostsQuery = defineQuery(`
-  *[_type == "post" && defined(slug.current)] | order(date desc, _updatedAt desc) {
-    ${postFields}
-  }
-`);
-
-export const morePostsQuery = defineQuery(`
-  *[_type == "post" && _id != $skip && defined(slug.current)] | order(date desc, _updatedAt desc) [0...$limit] {
-    ${postFields}
-  }
-`);
-
-export const postQuery = defineQuery(`
-  *[_type == "post" && slug.current == $slug] [0] {
-    content[]{
-    ...,
-    markDefs[]{
-      ...,
-      ${linkReference}
+// Get all projects for navigation (grouped by category)
+export const allProjectsForNavQuery = defineQuery(`
+  {
+    "fotoSelectedWorks": *[_type == "project" && category == "foto-selected-works"] | order(title asc) {
+      _id,
+      title,
+      "slug": slug.current
+    },
+    "fotoEditorial": *[_type == "project" && category == "foto-editorial"] | order(title asc) {
+      _id,
+      title,
+      "slug": slug.current
+    },
+    "movementDirection": *[_type == "project" && category == "movement-direction"] | order(title asc) {
+      _id,
+      title,
+      "slug": slug.current
+    },
+    "performance": *[_type == "project" && category == "performance"] | order(title asc) {
+      _id,
+      title,
+      "slug": slug.current
     }
-  },
-    ${postFields}
   }
 `);
 
-export const postPagesSlugs = defineQuery(`
-  *[_type == "post" && defined(slug.current)]
-  {"slug": slug.current}
+// Get a single project by slug and category
+export const projectBySlugQuery = defineQuery(`
+  *[_type == "project" && slug.current == $slug][0]{
+    _id,
+    title,
+    "slug": slug.current,
+    category,
+    description,
+    relevantLinks[]{
+      _key,
+      label,
+      linkType,
+      url,
+      email
+    },
+    featuredImage,
+    leftColumn{
+      photos[]{
+        _key,
+        image,
+        alt,
+        displayMode
+      }
+    },
+    rightColumn{
+      photos[]{
+        _key,
+        image,
+        alt,
+        displayMode
+      }
+    },
+    seoTitle,
+    seoDescription
+  }
 `);
 
-export const pagesSlugs = defineQuery(`
-  *[_type == "page" && defined(slug.current)]
-  {"slug": slug.current}
+// Get all project slugs for static generation
+export const allProjectSlugsQuery = defineQuery(`
+  *[_type == "project" && defined(slug.current)]{
+    "slug": slug.current,
+    category
+  }
+`);
+
+// Get projects by category
+export const projectsByCategoryQuery = defineQuery(`
+  *[_type == "project" && category == $category] | order(title asc) {
+    _id,
+    title,
+    "slug": slug.current,
+    featuredImage,
+    description
+  }
+`);
+
+// ============ SITEMAP ============
+export const sitemapQuery = defineQuery(`
+  *[_type == "project" && defined(slug.current)] | order(_updatedAt desc) {
+    "slug": slug.current,
+    category,
+    _updatedAt
+  }
 `);

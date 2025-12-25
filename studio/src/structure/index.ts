@@ -1,29 +1,124 @@
-import {CogIcon} from '@sanity/icons'
+import {CogIcon, HomeIcon, UserIcon, ImageIcon, PlayIcon, StarIcon, DocumentsIcon} from '@sanity/icons'
 import type {StructureBuilder, StructureResolver} from 'sanity/structure'
-import pluralize from 'pluralize-esm'
 
 /**
- * Structure builder is useful whenever you want to control how documents are grouped and
- * listed in the studio or for adding additional in-studio previews or content to documents.
+ * Custom Studio structure for Tomás Pintos portfolio.
+ *
+ * Organization:
+ * - Singletons at the top (Homepage, About, Settings)
+ * - Projects organized by category (Foto, Movement Direction, Performance)
+ *
  * Learn more: https://www.sanity.io/docs/structure-builder-introduction
  */
 
-const DISABLED_TYPES = ['settings', 'assist.instruction.context']
+// Singleton types that should not appear in generic document lists
+const SINGLETONS = ['settings', 'homepage', 'about', 'assist.instruction.context']
+
+// Hidden types that should not appear anywhere
+const HIDDEN_TYPES = ['assist.instruction.context']
 
 export const structure: StructureResolver = (S: StructureBuilder) =>
   S.list()
-    .title('Website Content')
+    .title('Content')
     .items([
-      ...S.documentTypeListItems()
-        // Remove the "assist.instruction.context" and "settings" content  from the list of content types
-        .filter((listItem: any) => !DISABLED_TYPES.includes(listItem.getId()))
-        // Pluralize the title of each document type.  This is not required but just an option to consider.
-        .map((listItem) => {
-          return listItem.title(pluralize(listItem.getTitle() as string))
-        }),
-      // Settings Singleton in order to view/edit the one particular document for Settings.  Learn more about Singletons: https://www.sanity.io/docs/create-a-link-to-a-single-edit-page-in-your-main-document-type-list
+      // ============ SINGLETONS ============
+      S.listItem()
+        .title('Homepage')
+        .icon(HomeIcon)
+        .child(S.document().schemaType('homepage').documentId('homepage')),
+
+      S.listItem()
+        .title('About')
+        .icon(UserIcon)
+        .child(S.document().schemaType('about').documentId('about')),
+
       S.listItem()
         .title('Site Settings')
-        .child(S.document().schemaType('settings').documentId('siteSettings'))
-        .icon(CogIcon),
+        .icon(CogIcon)
+        .child(S.document().schemaType('settings').documentId('siteSettings')),
+
+      S.divider(),
+
+      // ============ PROJECTS BY CATEGORY ============
+      S.listItem()
+        .title('Foto')
+        .icon(ImageIcon)
+        .child(
+          S.list()
+            .title('Foto')
+            .items([
+              S.listItem()
+                .title('Selected Works')
+                .icon(ImageIcon)
+                .child(
+                  S.documentList()
+                    .title('Selected Works')
+                    .filter('_type == "project" && category == "foto-selected-works"')
+                    .defaultOrdering([{field: 'title', direction: 'asc'}])
+                ),
+              S.listItem()
+                .title('Editorial')
+                .icon(ImageIcon)
+                .child(
+                  S.documentList()
+                    .title('Editorial')
+                    .filter('_type == "project" && category == "foto-editorial"')
+                    .defaultOrdering([{field: 'title', direction: 'asc'}])
+                ),
+              S.divider(),
+              S.listItem()
+                .title('All Foto Projects')
+                .icon(DocumentsIcon)
+                .child(
+                  S.documentList()
+                    .title('All Foto Projects')
+                    .filter(
+                      '_type == "project" && (category == "foto-selected-works" || category == "foto-editorial")'
+                    )
+                    .defaultOrdering([{field: 'title', direction: 'asc'}])
+                ),
+            ])
+        ),
+
+      S.listItem()
+        .title('Movement Direction')
+        .icon(PlayIcon)
+        .child(
+          S.documentList()
+            .title('Movement Direction')
+            .filter('_type == "project" && category == "movement-direction"')
+            .defaultOrdering([{field: 'title', direction: 'asc'}])
+        ),
+
+      S.listItem()
+        .title('Performance')
+        .icon(StarIcon)
+        .child(
+          S.documentList()
+            .title('Performance')
+            .filter('_type == "project" && category == "performance"')
+            .defaultOrdering([{field: 'title', direction: 'asc'}])
+        ),
+
+      S.divider(),
+
+      // ============ ALL PROJECTS ============
+      S.listItem()
+        .title('All Projects')
+        .icon(DocumentsIcon)
+        .child(
+          S.documentList()
+            .title('All Projects')
+            .filter('_type == "project"')
+            .defaultOrdering([{field: 'category', direction: 'asc'}, {field: 'title', direction: 'asc'}])
+        ),
+
+      S.divider(),
+
+      // ============ REMAINING DOCUMENT TYPES ============
+      // Filter out singletons and hidden types
+      ...S.documentTypeListItems().filter((listItem) => {
+        const id = listItem.getId()
+        return !SINGLETONS.includes(id as string) && !HIDDEN_TYPES.includes(id as string) && id !== 'project'
+      }),
     ])

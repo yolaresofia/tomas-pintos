@@ -16,6 +16,7 @@ import {
   type DocumentLocation,
 } from 'sanity/presentation'
 import {assist} from '@sanity/assist'
+import {colorInput} from '@sanity/color-input'
 
 // Environment variables for project configuration
 const projectId = process.env.SANITY_STUDIO_PROJECT_ID || 'your-projectID'
@@ -30,24 +31,26 @@ const homeLocation = {
   href: '/',
 } satisfies DocumentLocation
 
-// resolveHref() is a convenience function that resolves the URL
-// path for different document types and used in the presentation tool.
-function resolveHref(documentType?: string, slug?: string): string | undefined {
-  switch (documentType) {
-    case 'post':
-      return slug ? `/posts/${slug}` : undefined
-    case 'page':
-      return slug ? `/${slug}` : undefined
+// Helper to get the URL path based on project category
+function getCategoryPath(category: string): string {
+  switch (category) {
+    case 'foto-selected-works':
+      return 'foto/selected-works'
+    case 'foto-editorial':
+      return 'foto/editorial'
+    case 'movement-direction':
+      return 'movement-direction'
+    case 'performance':
+      return 'performance'
     default:
-      console.warn('Invalid document type:', documentType)
-      return undefined
+      return ''
   }
 }
 
 // Main Sanity configuration
 export default defineConfig({
   name: 'default',
-  title: 'Sanity + Next.js Starter Template',
+  title: 'Tomás Pintos',
 
   projectId,
   dataset,
@@ -62,73 +65,82 @@ export default defineConfig({
         },
       },
       resolve: {
-        // The Main Document Resolver API provides a method of resolving a main document from a given route or route pattern. https://www.sanity.io/docs/presentation-resolver-api#57720a5678d9
+        // Main Document Resolver API
         mainDocuments: defineDocuments([
           {
             route: '/',
-            filter: `_type == "settings" && _id == "siteSettings"`,
+            filter: `_type == "homepage" && _id == "homepage"`,
           },
           {
-            route: '/:slug',
-            filter: `_type == "page" && slug.current == $slug || _id == $slug`,
+            route: '/about',
+            filter: `_type == "about" && _id == "about"`,
           },
           {
-            route: '/posts/:slug',
-            filter: `_type == "post" && slug.current == $slug || _id == $slug`,
+            route: '/foto/selected-works/:slug',
+            filter: `_type == "project" && category == "foto-selected-works" && slug.current == $slug`,
+          },
+          {
+            route: '/foto/editorial/:slug',
+            filter: `_type == "project" && category == "foto-editorial" && slug.current == $slug`,
+          },
+          {
+            route: '/movement-direction/:slug',
+            filter: `_type == "project" && category == "movement-direction" && slug.current == $slug`,
+          },
+          {
+            route: '/performance/:slug',
+            filter: `_type == "project" && category == "performance" && slug.current == $slug`,
           },
         ]),
-        // Locations Resolver API allows you to define where data is being used in your application. https://www.sanity.io/docs/presentation-resolver-api#8d8bca7bfcd7
+        // Locations Resolver API
         locations: {
           settings: defineLocations({
             locations: [homeLocation],
             message: 'This document is used on all pages',
             tone: 'positive',
           }),
-          page: defineLocations({
-            select: {
-              name: 'name',
-              slug: 'slug.current',
-            },
-            resolve: (doc) => ({
-              locations: [
-                {
-                  title: doc?.name || 'Untitled',
-                  href: resolveHref('page', doc?.slug)!,
-                },
-              ],
-            }),
+          homepage: defineLocations({
+            locations: [homeLocation],
+            message: 'Homepage configuration',
+            tone: 'positive',
           }),
-          post: defineLocations({
+          about: defineLocations({
+            locations: [
+              {
+                title: 'About',
+                href: '/about',
+              },
+            ],
+          }),
+          project: defineLocations({
             select: {
               title: 'title',
               slug: 'slug.current',
+              category: 'category',
             },
             resolve: (doc) => ({
               locations: [
                 {
                   title: doc?.title || 'Untitled',
-                  href: resolveHref('post', doc?.slug)!,
+                  href: `/${getCategoryPath(doc?.category || '')}/${doc?.slug}`,
                 },
-                {
-                  title: 'Home',
-                  href: '/',
-                } satisfies DocumentLocation,
-              ].filter(Boolean) as DocumentLocation[],
+                homeLocation,
+              ].filter((loc) => loc.href) as DocumentLocation[],
             }),
           }),
         },
       },
     }),
     structureTool({
-      structure, // Custom studio structure configuration, imported from ./src/structure.ts
+      structure,
     }),
-    // Additional plugins for enhanced functionality
+    // Additional plugins
     unsplashImageAsset(),
+    colorInput(),
     assist(),
     visionTool(),
   ],
 
-  // Schema configuration, imported from ./src/schemaTypes/index.ts
   schema: {
     types: schemaTypes,
   },

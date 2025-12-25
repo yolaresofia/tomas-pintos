@@ -13,69 +13,12 @@
  */
 
 // Source: schema.json
-export type CallToAction = {
-  _type: "callToAction";
-  heading: string;
-  text?: string;
-  buttonText?: string;
-  link?: Link;
-};
-
-export type Link = {
-  _type: "link";
-  linkType?: "href" | "page" | "post";
-  href?: string;
-  page?: {
-    _ref: string;
-    _type: "reference";
-    _weak?: boolean;
-    [internalGroqTypeReferenceTo]?: "page";
-  };
-  post?: {
-    _ref: string;
-    _type: "reference";
-    _weak?: boolean;
-    [internalGroqTypeReferenceTo]?: "post";
-  };
-  openInNewTab?: boolean;
-};
-
-export type InfoSection = {
-  _type: "infoSection";
-  heading?: string;
-  subheading?: string;
-  content?: Array<{
-    children?: Array<{
-      marks?: Array<string>;
-      text?: string;
-      _type: "span";
-      _key: string;
-    }>;
-    style?: "normal" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "blockquote";
-    listItem?: "bullet" | "number";
-    markDefs?: Array<{
-      linkType?: "href" | "page" | "post";
-      href?: string;
-      page?: {
-        _ref: string;
-        _type: "reference";
-        _weak?: boolean;
-        [internalGroqTypeReferenceTo]?: "page";
-      };
-      post?: {
-        _ref: string;
-        _type: "reference";
-        _weak?: boolean;
-        [internalGroqTypeReferenceTo]?: "post";
-      };
-      openInNewTab?: boolean;
-      _type: "link";
-      _key: string;
-    }>;
-    level?: number;
-    _type: "block";
-    _key: string;
-  }>;
+export type ExternalLink = {
+  _type: "externalLink";
+  label: string;
+  linkType?: "external" | "email";
+  url?: string;
+  email?: string;
 };
 
 export type BlockContent = Array<{
@@ -85,23 +28,10 @@ export type BlockContent = Array<{
     _type: "span";
     _key: string;
   }>;
-  style?: "normal" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "blockquote";
+  style?: "normal" | "h2" | "h3" | "blockquote";
   listItem?: "bullet" | "number";
   markDefs?: Array<{
-    linkType?: "href" | "page" | "post";
     href?: string;
-    page?: {
-      _ref: string;
-      _type: "reference";
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: "page";
-    };
-    post?: {
-      _ref: string;
-      _type: "reference";
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: "post";
-    };
     openInNewTab?: boolean;
     _type: "link";
     _key: string;
@@ -111,45 +41,70 @@ export type BlockContent = Array<{
   _key: string;
 }>;
 
+export type Project = {
+  _id: string;
+  _type: "project";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  title: string;
+  slug: Slug;
+  category: "foto-selected-works" | "foto-editorial" | "movement-direction" | "performance";
+  description?: string;
+  relevantLinks?: Array<{
+    _key: string;
+  } & ExternalLink>;
+  featuredImage?: {
+    asset?: {
+      _ref: string;
+      _type: "reference";
+      _weak?: boolean;
+      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+    };
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: "image";
+  };
+  leftColumn?: PhotoColumn;
+  rightColumn?: PhotoColumn;
+  seoTitle?: string;
+  seoDescription?: string;
+};
+
+export type PhotoColumn = {
+  _type: "photoColumn";
+  photos?: Array<{
+    image: {
+      asset?: {
+        _ref: string;
+        _type: "reference";
+        _weak?: boolean;
+        [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+      };
+      media?: unknown;
+      hotspot?: SanityImageHotspot;
+      crop?: SanityImageCrop;
+      _type: "image";
+    };
+    alt?: string;
+    displayMode?: "stacked" | "fullscreen";
+    _type: "photoItem";
+    _key: string;
+  }>;
+};
+
 export type Settings = {
   _id: string;
   _type: "settings";
   _createdAt: string;
   _updatedAt: string;
   _rev: string;
-  title: string;
-  description?: Array<{
-    children?: Array<{
-      marks?: Array<string>;
-      text?: string;
-      _type: "span";
-      _key: string;
-    }>;
-    style?: "normal";
-    listItem?: never;
-    markDefs?: Array<{
-      linkType?: "href" | "page" | "post";
-      href?: string;
-      page?: {
-        _ref: string;
-        _type: "reference";
-        _weak?: boolean;
-        [internalGroqTypeReferenceTo]?: "page";
-      };
-      post?: {
-        _ref: string;
-        _type: "reference";
-        _weak?: boolean;
-        [internalGroqTypeReferenceTo]?: "post";
-      };
-      openInNewTab?: boolean;
-      _type: "link";
-      _key: string;
-    }>;
-    level?: number;
-    _type: "block";
-    _key: string;
-  }>;
+  title?: string;
+  description?: string;
+  footerLeftText?: string;
+  footerRightText?: string;
+  footerCenterText?: string;
   ogImage?: {
     asset?: {
       _ref: string;
@@ -160,40 +115,37 @@ export type Settings = {
     media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
-    alt?: string;
     metadataBase?: string;
     _type: "image";
   };
 };
 
-export type Page = {
+export type About = {
   _id: string;
-  _type: "page";
+  _type: "about";
   _createdAt: string;
   _updatedAt: string;
   _rev: string;
-  name: string;
-  slug: Slug;
-  heading: string;
-  subheading?: string;
-  pageBuilder?: Array<{
+  mainText: BlockContent;
+  selectedClients?: string;
+  selectedClientsDescription?: string;
+  specialties?: Array<string>;
+  contact?: Array<{
     _key: string;
-  } & CallToAction | {
-    _key: string;
-  } & InfoSection>;
+  } & ExternalLink>;
+  backgroundColor?: Color;
+  seoTitle?: string;
+  seoDescription?: string;
 };
 
-export type Post = {
+export type Homepage = {
   _id: string;
-  _type: "post";
+  _type: "homepage";
   _createdAt: string;
   _updatedAt: string;
   _rev: string;
   title: string;
-  slug: Slug;
-  content?: BlockContent;
-  excerpt?: string;
-  coverImage: {
+  fotoImage?: {
     asset?: {
       _ref: string;
       _type: "reference";
@@ -203,27 +155,9 @@ export type Post = {
     media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
-    alt?: string;
     _type: "image";
   };
-  date?: string;
-  author?: {
-    _ref: string;
-    _type: "reference";
-    _weak?: boolean;
-    [internalGroqTypeReferenceTo]?: "person";
-  };
-};
-
-export type Person = {
-  _id: string;
-  _type: "person";
-  _createdAt: string;
-  _updatedAt: string;
-  _rev: string;
-  firstName: string;
-  lastName: string;
-  picture: {
+  movementDirectionImage?: {
     asset?: {
       _ref: string;
       _type: "reference";
@@ -233,9 +167,22 @@ export type Person = {
     media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
-    alt?: string;
     _type: "image";
   };
+  performanceImage?: {
+    asset?: {
+      _ref: string;
+      _type: "reference";
+      _weak?: boolean;
+      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+    };
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: "image";
+  };
+  seoTitle?: string;
+  seoDescription?: string;
 };
 
 export type SanityAssistInstructionTask = {
@@ -359,6 +306,39 @@ export type SanityAssistSchemaTypeField = {
   } & SanityAssistInstruction>;
 };
 
+export type Color = {
+  _type: "color";
+  hex?: string;
+  alpha?: number;
+  hsl?: HslaColor;
+  hsv?: HsvaColor;
+  rgb?: RgbaColor;
+};
+
+export type RgbaColor = {
+  _type: "rgbaColor";
+  r?: number;
+  g?: number;
+  b?: number;
+  a?: number;
+};
+
+export type HsvaColor = {
+  _type: "hsvaColor";
+  h?: number;
+  s?: number;
+  v?: number;
+  a?: number;
+};
+
+export type HslaColor = {
+  _type: "hslaColor";
+  h?: number;
+  s?: number;
+  l?: number;
+  a?: number;
+};
+
 export type SanityImagePaletteSwatch = {
   _type: "sanity.imagePaletteSwatch";
   background?: string;
@@ -477,51 +457,18 @@ export type SanityAssetSourceData = {
   url?: string;
 };
 
-export type AllSanitySchemaTypes = CallToAction | Link | InfoSection | BlockContent | Settings | Page | Post | Person | SanityAssistInstructionTask | SanityAssistTaskStatus | SanityAssistSchemaTypeAnnotations | SanityAssistOutputType | SanityAssistOutputField | SanityAssistInstructionContext | AssistInstructionContext | SanityAssistInstructionUserInput | SanityAssistInstructionPrompt | SanityAssistInstructionFieldRef | SanityAssistInstruction | SanityAssistSchemaTypeField | SanityImagePaletteSwatch | SanityImagePalette | SanityImageDimensions | SanityImageHotspot | SanityImageCrop | SanityFileAsset | SanityImageAsset | SanityImageMetadata | Geopoint | Slug | SanityAssetSourceData;
+export type AllSanitySchemaTypes = ExternalLink | BlockContent | Project | PhotoColumn | Settings | About | Homepage | SanityAssistInstructionTask | SanityAssistTaskStatus | SanityAssistSchemaTypeAnnotations | SanityAssistOutputType | SanityAssistOutputField | SanityAssistInstructionContext | AssistInstructionContext | SanityAssistInstructionUserInput | SanityAssistInstructionPrompt | SanityAssistInstructionFieldRef | SanityAssistInstruction | SanityAssistSchemaTypeField | Color | RgbaColor | HsvaColor | HslaColor | SanityImagePaletteSwatch | SanityImagePalette | SanityImageDimensions | SanityImageHotspot | SanityImageCrop | SanityFileAsset | SanityImageAsset | SanityImageMetadata | Geopoint | Slug | SanityAssetSourceData;
 export declare const internalGroqTypeReferenceTo: unique symbol;
 // Source: ./sanity/lib/queries.ts
 // Variable: settingsQuery
-// Query: *[_type == "settings"][0]
+// Query: *[_type == "settings" && _id == "siteSettings"][0]{    title,    description,    footerLeftText,    footerRightText,    footerCenterText,    ogImage  }
 export type SettingsQueryResult = {
-  _id: string;
-  _type: "settings";
-  _createdAt: string;
-  _updatedAt: string;
-  _rev: string;
-  title: string;
-  description?: Array<{
-    children?: Array<{
-      marks?: Array<string>;
-      text?: string;
-      _type: "span";
-      _key: string;
-    }>;
-    style?: "normal";
-    listItem?: never;
-    markDefs?: Array<{
-      linkType?: "href" | "page" | "post";
-      href?: string;
-      page?: {
-        _ref: string;
-        _type: "reference";
-        _weak?: boolean;
-        [internalGroqTypeReferenceTo]?: "page";
-      };
-      post?: {
-        _ref: string;
-        _type: "reference";
-        _weak?: boolean;
-        [internalGroqTypeReferenceTo]?: "post";
-      };
-      openInNewTab?: boolean;
-      _type: "link";
-      _key: string;
-    }>;
-    level?: number;
-    _type: "block";
-    _key: string;
-  }>;
-  ogImage?: {
+  title: string | null;
+  description: string | null;
+  footerLeftText: string | null;
+  footerRightText: string | null;
+  footerCenterText: string | null;
+  ogImage: {
     asset?: {
       _ref: string;
       _type: "reference";
@@ -531,185 +478,113 @@ export type SettingsQueryResult = {
     media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
-    alt?: string;
     metadataBase?: string;
     _type: "image";
-  };
+  } | null;
 } | null;
-// Variable: getPageQuery
-// Query: *[_type == 'page' && slug.current == $slug][0]{    _id,    _type,    name,    slug,    heading,    subheading,    "pageBuilder": pageBuilder[]{      ...,      _type == "callToAction" => {          link {      ...,        _type == "link" => {    "page": page->slug.current,    "post": post->slug.current  }      },      },      _type == "infoSection" => {        content[]{          ...,          markDefs[]{            ...,              _type == "link" => {    "page": page->slug.current,    "post": post->slug.current  }          }        }      },    },  }
-export type GetPageQueryResult = {
+// Variable: homepageQuery
+// Query: *[_type == "homepage" && _id == "homepage"][0]{    _id,    title,    fotoImage,    movementDirectionImage,    performanceImage,    seoTitle,    seoDescription  }
+export type HomepageQueryResult = {
   _id: string;
-  _type: "page";
-  name: string;
-  slug: Slug;
-  heading: string;
-  subheading: string | null;
-  pageBuilder: Array<{
+  title: string;
+  fotoImage: {
+    asset?: {
+      _ref: string;
+      _type: "reference";
+      _weak?: boolean;
+      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+    };
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: "image";
+  } | null;
+  movementDirectionImage: {
+    asset?: {
+      _ref: string;
+      _type: "reference";
+      _weak?: boolean;
+      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+    };
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: "image";
+  } | null;
+  performanceImage: {
+    asset?: {
+      _ref: string;
+      _type: "reference";
+      _weak?: boolean;
+      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+    };
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: "image";
+  } | null;
+  seoTitle: string | null;
+  seoDescription: string | null;
+} | null;
+// Variable: aboutQuery
+// Query: *[_type == "about" && _id == "about"][0]{    _id,    mainText,    selectedClients,    selectedClientsDescription,    specialties,    contact[]{      _key,      label,      linkType,      url,      email    },    backgroundColor,    seoTitle,    seoDescription  }
+export type AboutQueryResult = {
+  _id: string;
+  mainText: BlockContent;
+  selectedClients: string | null;
+  selectedClientsDescription: string | null;
+  specialties: Array<string> | null;
+  contact: Array<{
     _key: string;
-    _type: "callToAction";
-    heading: string;
-    text?: string;
-    buttonText?: string;
-    link: {
-      _type: "link";
-      linkType?: "href" | "page" | "post";
-      href?: string;
-      page: string | null;
-      post: string | null;
-      openInNewTab?: boolean;
-    } | null;
-  } | {
-    _key: string;
-    _type: "infoSection";
-    heading?: string;
-    subheading?: string;
-    content: Array<{
-      children?: Array<{
-        marks?: Array<string>;
-        text?: string;
-        _type: "span";
-        _key: string;
-      }>;
-      style?: "blockquote" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "normal";
-      listItem?: "bullet" | "number";
-      markDefs: Array<{
-        linkType?: "href" | "page" | "post";
-        href?: string;
-        page: string | null;
-        post: string | null;
-        openInNewTab?: boolean;
-        _type: "link";
-        _key: string;
-      }> | null;
-      level?: number;
-      _type: "block";
-      _key: string;
-    }> | null;
+    label: string;
+    linkType: "email" | "external" | null;
+    url: string | null;
+    email: string | null;
   }> | null;
+  backgroundColor: Color | null;
+  seoTitle: string | null;
+  seoDescription: string | null;
 } | null;
-// Variable: sitemapData
-// Query: *[_type == "page" || _type == "post" && defined(slug.current)] | order(_type asc) {    "slug": slug.current,    _type,    _updatedAt,  }
-export type SitemapDataResult = Array<{
-  slug: string;
-  _type: "page";
-  _updatedAt: string;
-} | {
-  slug: string;
-  _type: "post";
-  _updatedAt: string;
-}>;
-// Variable: allPostsQuery
-// Query: *[_type == "post" && defined(slug.current)] | order(date desc, _updatedAt desc) {      _id,  "status": select(_originalId in path("drafts.**") => "draft", "published"),  "title": coalesce(title, "Untitled"),  "slug": slug.current,  excerpt,  coverImage,  "date": coalesce(date, _updatedAt),  "author": author->{firstName, lastName, picture},  }
-export type AllPostsQueryResult = Array<{
+// Variable: allProjectsForNavQuery
+// Query: {    "fotoSelectedWorks": *[_type == "project" && category == "foto-selected-works"] | order(title asc) {      _id,      title,      "slug": slug.current    },    "fotoEditorial": *[_type == "project" && category == "foto-editorial"] | order(title asc) {      _id,      title,      "slug": slug.current    },    "movementDirection": *[_type == "project" && category == "movement-direction"] | order(title asc) {      _id,      title,      "slug": slug.current    },    "performance": *[_type == "project" && category == "performance"] | order(title asc) {      _id,      title,      "slug": slug.current    }  }
+export type AllProjectsForNavQueryResult = {
+  fotoSelectedWorks: Array<{
+    _id: string;
+    title: string;
+    slug: string;
+  }>;
+  fotoEditorial: Array<{
+    _id: string;
+    title: string;
+    slug: string;
+  }>;
+  movementDirection: Array<{
+    _id: string;
+    title: string;
+    slug: string;
+  }>;
+  performance: Array<{
+    _id: string;
+    title: string;
+    slug: string;
+  }>;
+};
+// Variable: projectBySlugQuery
+// Query: *[_type == "project" && slug.current == $slug][0]{    _id,    title,    "slug": slug.current,    category,    description,    relevantLinks[]{      _key,      label,      linkType,      url,      email    },    featuredImage,    leftColumn{      photos[]{        _key,        image,        alt,        displayMode      }    },    rightColumn{      photos[]{        _key,        image,        alt,        displayMode      }    },    seoTitle,    seoDescription  }
+export type ProjectBySlugQueryResult = {
   _id: string;
-  status: "draft" | "published";
   title: string;
   slug: string;
-  excerpt: string | null;
-  coverImage: {
-    asset?: {
-      _ref: string;
-      _type: "reference";
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-    };
-    media?: unknown;
-    hotspot?: SanityImageHotspot;
-    crop?: SanityImageCrop;
-    alt?: string;
-    _type: "image";
-  };
-  date: string;
-  author: {
-    firstName: string;
-    lastName: string;
-    picture: {
-      asset?: {
-        _ref: string;
-        _type: "reference";
-        _weak?: boolean;
-        [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-      };
-      media?: unknown;
-      hotspot?: SanityImageHotspot;
-      crop?: SanityImageCrop;
-      alt?: string;
-      _type: "image";
-    };
-  } | null;
-}>;
-// Variable: morePostsQuery
-// Query: *[_type == "post" && _id != $skip && defined(slug.current)] | order(date desc, _updatedAt desc) [0...$limit] {      _id,  "status": select(_originalId in path("drafts.**") => "draft", "published"),  "title": coalesce(title, "Untitled"),  "slug": slug.current,  excerpt,  coverImage,  "date": coalesce(date, _updatedAt),  "author": author->{firstName, lastName, picture},  }
-export type MorePostsQueryResult = Array<{
-  _id: string;
-  status: "draft" | "published";
-  title: string;
-  slug: string;
-  excerpt: string | null;
-  coverImage: {
-    asset?: {
-      _ref: string;
-      _type: "reference";
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-    };
-    media?: unknown;
-    hotspot?: SanityImageHotspot;
-    crop?: SanityImageCrop;
-    alt?: string;
-    _type: "image";
-  };
-  date: string;
-  author: {
-    firstName: string;
-    lastName: string;
-    picture: {
-      asset?: {
-        _ref: string;
-        _type: "reference";
-        _weak?: boolean;
-        [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-      };
-      media?: unknown;
-      hotspot?: SanityImageHotspot;
-      crop?: SanityImageCrop;
-      alt?: string;
-      _type: "image";
-    };
-  } | null;
-}>;
-// Variable: postQuery
-// Query: *[_type == "post" && slug.current == $slug] [0] {    content[]{    ...,    markDefs[]{      ...,        _type == "link" => {    "page": page->slug.current,    "post": post->slug.current  }    }  },      _id,  "status": select(_originalId in path("drafts.**") => "draft", "published"),  "title": coalesce(title, "Untitled"),  "slug": slug.current,  excerpt,  coverImage,  "date": coalesce(date, _updatedAt),  "author": author->{firstName, lastName, picture},  }
-export type PostQueryResult = {
-  content: Array<{
-    children?: Array<{
-      marks?: Array<string>;
-      text?: string;
-      _type: "span";
-      _key: string;
-    }>;
-    style?: "blockquote" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "normal";
-    listItem?: "bullet" | "number";
-    markDefs: Array<{
-      linkType?: "href" | "page" | "post";
-      href?: string;
-      page: string | null;
-      post: string | null;
-      openInNewTab?: boolean;
-      _type: "link";
-      _key: string;
-    }> | null;
-    level?: number;
-    _type: "block";
+  category: "foto-editorial" | "foto-selected-works" | "movement-direction" | "performance";
+  description: string | null;
+  relevantLinks: Array<{
     _key: string;
+    label: string;
+    linkType: "email" | "external" | null;
+    url: string | null;
+    email: string | null;
   }> | null;
-  _id: string;
-  status: "draft" | "published";
-  title: string;
-  slug: string;
-  excerpt: string | null;
-  coverImage: {
+  featuredImage: {
     asset?: {
       _ref: string;
       _type: "reference";
@@ -719,50 +594,94 @@ export type PostQueryResult = {
     media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
-    alt?: string;
     _type: "image";
-  };
-  date: string;
-  author: {
-    firstName: string;
-    lastName: string;
-    picture: {
-      asset?: {
-        _ref: string;
-        _type: "reference";
-        _weak?: boolean;
-        [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-      };
-      media?: unknown;
-      hotspot?: SanityImageHotspot;
-      crop?: SanityImageCrop;
-      alt?: string;
-      _type: "image";
-    };
   } | null;
+  leftColumn: {
+    photos: Array<{
+      _key: string;
+      image: {
+        asset?: {
+          _ref: string;
+          _type: "reference";
+          _weak?: boolean;
+          [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+        };
+        media?: unknown;
+        hotspot?: SanityImageHotspot;
+        crop?: SanityImageCrop;
+        _type: "image";
+      };
+      alt: string | null;
+      displayMode: "fullscreen" | "stacked" | null;
+    }> | null;
+  } | null;
+  rightColumn: {
+    photos: Array<{
+      _key: string;
+      image: {
+        asset?: {
+          _ref: string;
+          _type: "reference";
+          _weak?: boolean;
+          [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+        };
+        media?: unknown;
+        hotspot?: SanityImageHotspot;
+        crop?: SanityImageCrop;
+        _type: "image";
+      };
+      alt: string | null;
+      displayMode: "fullscreen" | "stacked" | null;
+    }> | null;
+  } | null;
+  seoTitle: string | null;
+  seoDescription: string | null;
 } | null;
-// Variable: postPagesSlugs
-// Query: *[_type == "post" && defined(slug.current)]  {"slug": slug.current}
-export type PostPagesSlugsResult = Array<{
+// Variable: allProjectSlugsQuery
+// Query: *[_type == "project" && defined(slug.current)]{    "slug": slug.current,    category  }
+export type AllProjectSlugsQueryResult = Array<{
   slug: string;
+  category: "foto-editorial" | "foto-selected-works" | "movement-direction" | "performance";
 }>;
-// Variable: pagesSlugs
-// Query: *[_type == "page" && defined(slug.current)]  {"slug": slug.current}
-export type PagesSlugsResult = Array<{
+// Variable: projectsByCategoryQuery
+// Query: *[_type == "project" && category == $category] | order(title asc) {    _id,    title,    "slug": slug.current,    featuredImage,    description  }
+export type ProjectsByCategoryQueryResult = Array<{
+  _id: string;
+  title: string;
   slug: string;
+  featuredImage: {
+    asset?: {
+      _ref: string;
+      _type: "reference";
+      _weak?: boolean;
+      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+    };
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: "image";
+  } | null;
+  description: string | null;
+}>;
+// Variable: sitemapQuery
+// Query: *[_type == "project" && defined(slug.current)] | order(_updatedAt desc) {    "slug": slug.current,    category,    _updatedAt  }
+export type SitemapQueryResult = Array<{
+  slug: string;
+  category: "foto-editorial" | "foto-selected-works" | "movement-direction" | "performance";
+  _updatedAt: string;
 }>;
 
 // Query TypeMap
 import "@sanity/client";
 declare module "@sanity/client" {
   interface SanityQueries {
-    "*[_type == \"settings\"][0]": SettingsQueryResult;
-    "\n  *[_type == 'page' && slug.current == $slug][0]{\n    _id,\n    _type,\n    name,\n    slug,\n    heading,\n    subheading,\n    \"pageBuilder\": pageBuilder[]{\n      ...,\n      _type == \"callToAction\" => {\n        \n  link {\n      ...,\n      \n  _type == \"link\" => {\n    \"page\": page->slug.current,\n    \"post\": post->slug.current\n  }\n\n      }\n,\n      },\n      _type == \"infoSection\" => {\n        content[]{\n          ...,\n          markDefs[]{\n            ...,\n            \n  _type == \"link\" => {\n    \"page\": page->slug.current,\n    \"post\": post->slug.current\n  }\n\n          }\n        }\n      },\n    },\n  }\n": GetPageQueryResult;
-    "\n  *[_type == \"page\" || _type == \"post\" && defined(slug.current)] | order(_type asc) {\n    \"slug\": slug.current,\n    _type,\n    _updatedAt,\n  }\n": SitemapDataResult;
-    "\n  *[_type == \"post\" && defined(slug.current)] | order(date desc, _updatedAt desc) {\n    \n  _id,\n  \"status\": select(_originalId in path(\"drafts.**\") => \"draft\", \"published\"),\n  \"title\": coalesce(title, \"Untitled\"),\n  \"slug\": slug.current,\n  excerpt,\n  coverImage,\n  \"date\": coalesce(date, _updatedAt),\n  \"author\": author->{firstName, lastName, picture},\n\n  }\n": AllPostsQueryResult;
-    "\n  *[_type == \"post\" && _id != $skip && defined(slug.current)] | order(date desc, _updatedAt desc) [0...$limit] {\n    \n  _id,\n  \"status\": select(_originalId in path(\"drafts.**\") => \"draft\", \"published\"),\n  \"title\": coalesce(title, \"Untitled\"),\n  \"slug\": slug.current,\n  excerpt,\n  coverImage,\n  \"date\": coalesce(date, _updatedAt),\n  \"author\": author->{firstName, lastName, picture},\n\n  }\n": MorePostsQueryResult;
-    "\n  *[_type == \"post\" && slug.current == $slug] [0] {\n    content[]{\n    ...,\n    markDefs[]{\n      ...,\n      \n  _type == \"link\" => {\n    \"page\": page->slug.current,\n    \"post\": post->slug.current\n  }\n\n    }\n  },\n    \n  _id,\n  \"status\": select(_originalId in path(\"drafts.**\") => \"draft\", \"published\"),\n  \"title\": coalesce(title, \"Untitled\"),\n  \"slug\": slug.current,\n  excerpt,\n  coverImage,\n  \"date\": coalesce(date, _updatedAt),\n  \"author\": author->{firstName, lastName, picture},\n\n  }\n": PostQueryResult;
-    "\n  *[_type == \"post\" && defined(slug.current)]\n  {\"slug\": slug.current}\n": PostPagesSlugsResult;
-    "\n  *[_type == \"page\" && defined(slug.current)]\n  {\"slug\": slug.current}\n": PagesSlugsResult;
+    "\n  *[_type == \"settings\" && _id == \"siteSettings\"][0]{\n    title,\n    description,\n    footerLeftText,\n    footerRightText,\n    footerCenterText,\n    ogImage\n  }\n": SettingsQueryResult;
+    "\n  *[_type == \"homepage\" && _id == \"homepage\"][0]{\n    _id,\n    title,\n    fotoImage,\n    movementDirectionImage,\n    performanceImage,\n    seoTitle,\n    seoDescription\n  }\n": HomepageQueryResult;
+    "\n  *[_type == \"about\" && _id == \"about\"][0]{\n    _id,\n    mainText,\n    selectedClients,\n    selectedClientsDescription,\n    specialties,\n    contact[]{\n      _key,\n      label,\n      linkType,\n      url,\n      email\n    },\n    backgroundColor,\n    seoTitle,\n    seoDescription\n  }\n": AboutQueryResult;
+    "\n  {\n    \"fotoSelectedWorks\": *[_type == \"project\" && category == \"foto-selected-works\"] | order(title asc) {\n      _id,\n      title,\n      \"slug\": slug.current\n    },\n    \"fotoEditorial\": *[_type == \"project\" && category == \"foto-editorial\"] | order(title asc) {\n      _id,\n      title,\n      \"slug\": slug.current\n    },\n    \"movementDirection\": *[_type == \"project\" && category == \"movement-direction\"] | order(title asc) {\n      _id,\n      title,\n      \"slug\": slug.current\n    },\n    \"performance\": *[_type == \"project\" && category == \"performance\"] | order(title asc) {\n      _id,\n      title,\n      \"slug\": slug.current\n    }\n  }\n": AllProjectsForNavQueryResult;
+    "\n  *[_type == \"project\" && slug.current == $slug][0]{\n    _id,\n    title,\n    \"slug\": slug.current,\n    category,\n    description,\n    relevantLinks[]{\n      _key,\n      label,\n      linkType,\n      url,\n      email\n    },\n    featuredImage,\n    leftColumn{\n      photos[]{\n        _key,\n        image,\n        alt,\n        displayMode\n      }\n    },\n    rightColumn{\n      photos[]{\n        _key,\n        image,\n        alt,\n        displayMode\n      }\n    },\n    seoTitle,\n    seoDescription\n  }\n": ProjectBySlugQueryResult;
+    "\n  *[_type == \"project\" && defined(slug.current)]{\n    \"slug\": slug.current,\n    category\n  }\n": AllProjectSlugsQueryResult;
+    "\n  *[_type == \"project\" && category == $category] | order(title asc) {\n    _id,\n    title,\n    \"slug\": slug.current,\n    featuredImage,\n    description\n  }\n": ProjectsByCategoryQueryResult;
+    "\n  *[_type == \"project\" && defined(slug.current)] | order(_updatedAt desc) {\n    \"slug\": slug.current,\n    category,\n    _updatedAt\n  }\n": SitemapQueryResult;
   }
 }

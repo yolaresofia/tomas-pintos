@@ -1,5 +1,4 @@
 import createImageUrlBuilder from "@sanity/image-url";
-import { Link } from "@/sanity.types";
 import { dataset, projectId, studioUrl } from "@/sanity/lib/api";
 import { createDataAttribute, CreateDataAttributeProps } from "next-sanity";
 import { getImageDimensions } from "@sanity/asset-utils";
@@ -48,29 +47,40 @@ export function resolveOpenGraphImage(image: any, width = 1200, height = 627) {
   return { url, alt: image?.alt as string, width, height };
 }
 
-// Depending on the type of link, we need to fetch the corresponding page, post, or URL.  Otherwise return null.
-export function linkResolver(link: Link | undefined) {
+/**
+ * Get the URL path for a project based on its category
+ */
+export function getProjectPath(category: string, slug: string): string {
+  const categoryPaths: Record<string, string> = {
+    "foto-selected-works": "foto/selected-works",
+    "foto-editorial": "foto/editorial",
+    "movement-direction": "movement-direction",
+    "performance": "performance",
+  };
+
+  const basePath = categoryPaths[category] || "";
+  return basePath ? `/${basePath}/${slug}` : `/${slug}`;
+}
+
+/**
+ * Resolve external link to URL
+ */
+export function resolveExternalLink(link: {
+  linkType?: string | null;
+  url?: string | null;
+  email?: string | null;
+} | null): string | null {
   if (!link) return null;
 
-  // If linkType is not set but href is, lets set linkType to "href".  This comes into play when pasting links into the portable text editor because a link type is not assumed.
-  if (!link.linkType && link.href) {
-    link.linkType = "href";
+  if (link.linkType === "email" && link.email) {
+    return `mailto:${link.email}`;
   }
 
-  switch (link.linkType) {
-    case "href":
-      return link.href || null;
-    case "page":
-      if (link?.page && typeof link.page === "string") {
-        return `/${link.page}`;
-      }
-    case "post":
-      if (link?.post && typeof link.post === "string") {
-        return `/posts/${link.post}`;
-      }
-    default:
-      return null;
+  if (link.linkType === "external" && link.url) {
+    return link.url;
   }
+
+  return null;
 }
 
 type DataAttributeConfig = CreateDataAttributeProps &
