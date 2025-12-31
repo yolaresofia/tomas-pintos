@@ -13,9 +13,36 @@
  */
 
 // Source: schema.json
+export type SanityImageAssetReference = {
+  _ref: string;
+  _type: "reference";
+  _weak?: boolean;
+  [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+};
+
+export type PhotoItemImage = {
+  asset?: SanityImageAssetReference;
+  media?: unknown // Unable to locate the referenced type "media" in schema
+  ;
+  hotspot?: SanityImageHotspot;
+  crop?: SanityImageCrop;
+  _type: "image";
+};
+
+export type PhotoColumn = {
+  _type: "photoColumn";
+  photos?: Array<{
+    image?: PhotoItemImage;
+    alt?: string;
+    displayMode?: "stacked" | "fullscreen";
+    _type: "photoItem";
+    _key: string;
+  }>;
+};
+
 export type ExternalLink = {
   _type: "externalLink";
-  label: string;
+  label?: string;
   linkType?: "external" | "email";
   url?: string;
   email?: string;
@@ -47,20 +74,15 @@ export type Project = {
   _createdAt: string;
   _updatedAt: string;
   _rev: string;
-  title: string;
-  slug: Slug;
-  category: "foto-selected-works" | "foto-editorial" | "movement-direction" | "performance";
-  description?: string;
+  title?: string;
+  slug?: Slug;
+  category?: "foto" | "movement-direction" | "performance";
+  description?: BlockContent;
   relevantLinks?: Array<{
     _key: string;
   } & ExternalLink>;
   featuredImage?: {
-    asset?: {
-      _ref: string;
-      _type: "reference";
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-    };
+    asset?: SanityImageAssetReference;
     media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
@@ -72,26 +94,26 @@ export type Project = {
   seoDescription?: string;
 };
 
-export type PhotoColumn = {
-  _type: "photoColumn";
-  photos?: Array<{
-    image: {
-      asset?: {
-        _ref: string;
-        _type: "reference";
-        _weak?: boolean;
-        [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-      };
-      media?: unknown;
-      hotspot?: SanityImageHotspot;
-      crop?: SanityImageCrop;
-      _type: "image";
-    };
-    alt?: string;
-    displayMode?: "stacked" | "fullscreen";
-    _type: "photoItem";
-    _key: string;
-  }>;
+export type SanityImageCrop = {
+  _type: "sanity.imageCrop";
+  top?: number;
+  bottom?: number;
+  left?: number;
+  right?: number;
+};
+
+export type SanityImageHotspot = {
+  _type: "sanity.imageHotspot";
+  x?: number;
+  y?: number;
+  height?: number;
+  width?: number;
+};
+
+export type Slug = {
+  _type: "slug";
+  current?: string;
+  source?: string;
 };
 
 export type Settings = {
@@ -106,12 +128,7 @@ export type Settings = {
   footerRightText?: string;
   footerCenterText?: string;
   ogImage?: {
-    asset?: {
-      _ref: string;
-      _type: "reference";
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-    };
+    asset?: SanityImageAssetReference;
     media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
@@ -126,7 +143,7 @@ export type About = {
   _createdAt: string;
   _updatedAt: string;
   _rev: string;
-  mainText: BlockContent;
+  mainText?: BlockContent;
   selectedClients?: string;
   selectedClientsDescription?: string;
   specialties?: Array<string>;
@@ -138,48 +155,54 @@ export type About = {
   seoDescription?: string;
 };
 
+export type Color = {
+  _type: "color";
+  hex?: string;
+  alpha?: number;
+  hsl?: HslaColor;
+  hsv?: HsvaColor;
+  rgb?: RgbaColor;
+};
+
+export type SanityFileAssetReference = {
+  _ref: string;
+  _type: "reference";
+  _weak?: boolean;
+  [internalGroqTypeReferenceTo]?: "sanity.fileAsset";
+};
+
 export type Homepage = {
   _id: string;
   _type: "homepage";
   _createdAt: string;
   _updatedAt: string;
   _rev: string;
-  title: string;
+  title?: string;
   fotoImage?: {
-    asset?: {
-      _ref: string;
-      _type: "reference";
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-    };
+    asset?: SanityImageAssetReference;
     media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
     _type: "image";
   };
   movementDirectionImage?: {
-    asset?: {
-      _ref: string;
-      _type: "reference";
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-    };
+    asset?: SanityImageAssetReference;
     media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
     _type: "image";
   };
   performanceImage?: {
-    asset?: {
-      _ref: string;
-      _type: "reference";
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-    };
+    asset?: SanityImageAssetReference;
     media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
     _type: "image";
+  };
+  previewVideo?: {
+    asset?: SanityFileAssetReference;
+    media?: unknown;
+    _type: "file";
   };
   seoTitle?: string;
   seoDescription?: string;
@@ -219,14 +242,16 @@ export type SanityAssistOutputField = {
   path?: string;
 };
 
+export type AssistInstructionContextReference = {
+  _ref: string;
+  _type: "reference";
+  _weak?: boolean;
+  [internalGroqTypeReferenceTo]?: "assist.instruction.context";
+};
+
 export type SanityAssistInstructionContext = {
   _type: "sanity.assist.instruction.context";
-  reference: {
-    _ref: string;
-    _type: "reference";
-    _weak?: boolean;
-    [internalGroqTypeReferenceTo]?: "assist.instruction.context";
-  };
+  reference?: AssistInstructionContextReference;
 };
 
 export type AssistInstructionContext = {
@@ -254,7 +279,7 @@ export type AssistInstructionContext = {
 
 export type SanityAssistInstructionUserInput = {
   _type: "sanity.assist.instruction.userInput";
-  message: string;
+  message?: string;
   description?: string;
 };
 
@@ -304,15 +329,6 @@ export type SanityAssistSchemaTypeField = {
   instructions?: Array<{
     _key: string;
   } & SanityAssistInstruction>;
-};
-
-export type Color = {
-  _type: "color";
-  hex?: string;
-  alpha?: number;
-  hsl?: HslaColor;
-  hsv?: HsvaColor;
-  rgb?: RgbaColor;
 };
 
 export type RgbaColor = {
@@ -365,20 +381,15 @@ export type SanityImageDimensions = {
   aspectRatio?: number;
 };
 
-export type SanityImageHotspot = {
-  _type: "sanity.imageHotspot";
-  x?: number;
-  y?: number;
-  height?: number;
-  width?: number;
-};
-
-export type SanityImageCrop = {
-  _type: "sanity.imageCrop";
-  top?: number;
-  bottom?: number;
-  left?: number;
-  right?: number;
+export type SanityImageMetadata = {
+  _type: "sanity.imageMetadata";
+  location?: Geopoint;
+  dimensions?: SanityImageDimensions;
+  palette?: SanityImagePalette;
+  lqip?: string;
+  blurHash?: string;
+  hasAlpha?: boolean;
+  isOpaque?: boolean;
 };
 
 export type SanityFileAsset = {
@@ -401,6 +412,13 @@ export type SanityFileAsset = {
   path?: string;
   url?: string;
   source?: SanityAssetSourceData;
+};
+
+export type SanityAssetSourceData = {
+  _type: "sanity.assetSourceData";
+  name?: string;
+  id?: string;
+  url?: string;
 };
 
 export type SanityImageAsset = {
@@ -426,17 +444,6 @@ export type SanityImageAsset = {
   source?: SanityAssetSourceData;
 };
 
-export type SanityImageMetadata = {
-  _type: "sanity.imageMetadata";
-  location?: Geopoint;
-  dimensions?: SanityImageDimensions;
-  palette?: SanityImagePalette;
-  lqip?: string;
-  blurHash?: string;
-  hasAlpha?: boolean;
-  isOpaque?: boolean;
-};
-
 export type Geopoint = {
   _type: "geopoint";
   lat?: number;
@@ -444,20 +451,7 @@ export type Geopoint = {
   alt?: number;
 };
 
-export type Slug = {
-  _type: "slug";
-  current: string;
-  source?: string;
-};
-
-export type SanityAssetSourceData = {
-  _type: "sanity.assetSourceData";
-  name?: string;
-  id?: string;
-  url?: string;
-};
-
-export type AllSanitySchemaTypes = ExternalLink | BlockContent | Project | PhotoColumn | Settings | About | Homepage | SanityAssistInstructionTask | SanityAssistTaskStatus | SanityAssistSchemaTypeAnnotations | SanityAssistOutputType | SanityAssistOutputField | SanityAssistInstructionContext | AssistInstructionContext | SanityAssistInstructionUserInput | SanityAssistInstructionPrompt | SanityAssistInstructionFieldRef | SanityAssistInstruction | SanityAssistSchemaTypeField | Color | RgbaColor | HsvaColor | HslaColor | SanityImagePaletteSwatch | SanityImagePalette | SanityImageDimensions | SanityImageHotspot | SanityImageCrop | SanityFileAsset | SanityImageAsset | SanityImageMetadata | Geopoint | Slug | SanityAssetSourceData;
+export type AllSanitySchemaTypes = SanityImageAssetReference | PhotoItemImage | PhotoColumn | ExternalLink | BlockContent | Project | SanityImageCrop | SanityImageHotspot | Slug | Settings | About | Color | SanityFileAssetReference | Homepage | SanityAssistInstructionTask | SanityAssistTaskStatus | SanityAssistSchemaTypeAnnotations | SanityAssistOutputType | SanityAssistOutputField | AssistInstructionContextReference | SanityAssistInstructionContext | AssistInstructionContext | SanityAssistInstructionUserInput | SanityAssistInstructionPrompt | SanityAssistInstructionFieldRef | SanityAssistInstruction | SanityAssistSchemaTypeField | RgbaColor | HsvaColor | HslaColor | SanityImagePaletteSwatch | SanityImagePalette | SanityImageDimensions | SanityImageMetadata | SanityFileAsset | SanityAssetSourceData | SanityImageAsset | Geopoint;
 export declare const internalGroqTypeReferenceTo: unique symbol;
 // Source: ./sanity/lib/queries.ts
 // Variable: settingsQuery
@@ -469,12 +463,7 @@ export type SettingsQueryResult = {
   footerRightText: string | null;
   footerCenterText: string | null;
   ogImage: {
-    asset?: {
-      _ref: string;
-      _type: "reference";
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-    };
+    asset?: SanityImageAssetReference;
     media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
@@ -486,44 +475,29 @@ export type SettingsQueryResult = {
 // Query: *[_type == "homepage" && _id == "homepage"][0]{    _id,    title,    fotoImage,    movementDirectionImage,    performanceImage,    "previewVideoUrl": previewVideo.asset->url,    seoTitle,    seoDescription  }
 export type HomepageQueryResult = {
   _id: string;
-  title: string;
+  title: string | null;
   fotoImage: {
-    asset?: {
-      _ref: string;
-      _type: "reference";
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-    };
+    asset?: SanityImageAssetReference;
     media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
     _type: "image";
   } | null;
   movementDirectionImage: {
-    asset?: {
-      _ref: string;
-      _type: "reference";
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-    };
+    asset?: SanityImageAssetReference;
     media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
     _type: "image";
   } | null;
   performanceImage: {
-    asset?: {
-      _ref: string;
-      _type: "reference";
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-    };
+    asset?: SanityImageAssetReference;
     media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
     _type: "image";
   } | null;
-  previewVideoUrl: null;
+  previewVideoUrl: string | null;
   seoTitle: string | null;
   seoDescription: string | null;
 } | null;
@@ -531,13 +505,13 @@ export type HomepageQueryResult = {
 // Query: *[_type == "about" && _id == "about"][0]{    _id,    mainText,    selectedClients,    selectedClientsDescription,    specialties,    contact[]{      _key,      label,      linkType,      url,      email    },    backgroundColor,    seoTitle,    seoDescription  }
 export type AboutQueryResult = {
   _id: string;
-  mainText: BlockContent;
+  mainText: BlockContent | null;
   selectedClients: string | null;
   selectedClientsDescription: string | null;
   specialties: Array<string> | null;
   contact: Array<{
     _key: string;
-    label: string;
+    label: string | null;
     linkType: "email" | "external" | null;
     url: string | null;
     email: string | null;
@@ -547,51 +521,41 @@ export type AboutQueryResult = {
   seoDescription: string | null;
 } | null;
 // Variable: allProjectsForNavQuery
-// Query: {    "fotoSelectedWorks": *[_type == "project" && category == "foto-selected-works"] | order(title asc) {      _id,      title,      "slug": slug.current    },    "fotoEditorial": *[_type == "project" && category == "foto-editorial"] | order(title asc) {      _id,      title,      "slug": slug.current    },    "movementDirection": *[_type == "project" && category == "movement-direction"] | order(title asc) {      _id,      title,      "slug": slug.current    },    "performance": *[_type == "project" && category == "performance"] | order(title asc) {      _id,      title,      "slug": slug.current    }  }
+// Query: {    "foto": *[_type == "project" && category == "foto"] | order(title asc) {      _id,      title,      "slug": slug.current    },    "movementDirection": *[_type == "project" && category == "movement-direction"] | order(title asc) {      _id,      title,      "slug": slug.current    },    "performance": *[_type == "project" && category == "performance"] | order(title asc) {      _id,      title,      "slug": slug.current    }  }
 export type AllProjectsForNavQueryResult = {
-  fotoSelectedWorks: Array<{
+  foto: Array<{
     _id: string;
-    title: string;
-    slug: string;
-  }>;
-  fotoEditorial: Array<{
-    _id: string;
-    title: string;
-    slug: string;
+    title: string | null;
+    slug: string | null;
   }>;
   movementDirection: Array<{
     _id: string;
-    title: string;
-    slug: string;
+    title: string | null;
+    slug: string | null;
   }>;
   performance: Array<{
     _id: string;
-    title: string;
-    slug: string;
+    title: string | null;
+    slug: string | null;
   }>;
 };
 // Variable: projectBySlugQuery
 // Query: *[_type == "project" && slug.current == $slug][0]{    _id,    title,    "slug": slug.current,    category,    description,    relevantLinks[]{      _key,      label,      linkType,      url,      email    },    featuredImage,    leftColumn{      photos[]{        _key,        image,        alt,        displayMode      }    },    rightColumn{      photos[]{        _key,        image,        alt,        displayMode      }    },    seoTitle,    seoDescription  }
 export type ProjectBySlugQueryResult = {
   _id: string;
-  title: string;
-  slug: string;
-  category: "foto-editorial" | "foto-selected-works" | "movement-direction" | "performance";
-  description: string | null;
+  title: string | null;
+  slug: string | null;
+  category: "foto" | "movement-direction" | "performance" | null;
+  description: BlockContent | null;
   relevantLinks: Array<{
     _key: string;
-    label: string;
+    label: string | null;
     linkType: "email" | "external" | null;
     url: string | null;
     email: string | null;
   }> | null;
   featuredImage: {
-    asset?: {
-      _ref: string;
-      _type: "reference";
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-    };
+    asset?: SanityImageAssetReference;
     media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
@@ -600,18 +564,7 @@ export type ProjectBySlugQueryResult = {
   leftColumn: {
     photos: Array<{
       _key: string;
-      image: {
-        asset?: {
-          _ref: string;
-          _type: "reference";
-          _weak?: boolean;
-          [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-        };
-        media?: unknown;
-        hotspot?: SanityImageHotspot;
-        crop?: SanityImageCrop;
-        _type: "image";
-      };
+      image: PhotoItemImage | null;
       alt: string | null;
       displayMode: "fullscreen" | "stacked" | null;
     }> | null;
@@ -619,18 +572,7 @@ export type ProjectBySlugQueryResult = {
   rightColumn: {
     photos: Array<{
       _key: string;
-      image: {
-        asset?: {
-          _ref: string;
-          _type: "reference";
-          _weak?: boolean;
-          [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-        };
-        media?: unknown;
-        hotspot?: SanityImageHotspot;
-        crop?: SanityImageCrop;
-        _type: "image";
-      };
+      image: PhotoItemImage | null;
       alt: string | null;
       displayMode: "fullscreen" | "stacked" | null;
     }> | null;
@@ -641,34 +583,29 @@ export type ProjectBySlugQueryResult = {
 // Variable: allProjectSlugsQuery
 // Query: *[_type == "project" && defined(slug.current)]{    "slug": slug.current,    category  }
 export type AllProjectSlugsQueryResult = Array<{
-  slug: string;
-  category: "foto-editorial" | "foto-selected-works" | "movement-direction" | "performance";
+  slug: string | null;
+  category: "foto" | "movement-direction" | "performance" | null;
 }>;
 // Variable: projectsByCategoryQuery
 // Query: *[_type == "project" && category == $category] | order(title asc) {    _id,    title,    "slug": slug.current,    featuredImage,    description  }
 export type ProjectsByCategoryQueryResult = Array<{
   _id: string;
-  title: string;
-  slug: string;
+  title: string | null;
+  slug: string | null;
   featuredImage: {
-    asset?: {
-      _ref: string;
-      _type: "reference";
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-    };
+    asset?: SanityImageAssetReference;
     media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
     _type: "image";
   } | null;
-  description: string | null;
+  description: BlockContent | null;
 }>;
 // Variable: sitemapQuery
 // Query: *[_type == "project" && defined(slug.current)] | order(_updatedAt desc) {    "slug": slug.current,    category,    _updatedAt  }
 export type SitemapQueryResult = Array<{
-  slug: string;
-  category: "foto-editorial" | "foto-selected-works" | "movement-direction" | "performance";
+  slug: string | null;
+  category: "foto" | "movement-direction" | "performance" | null;
   _updatedAt: string;
 }>;
 
@@ -679,7 +616,7 @@ declare module "@sanity/client" {
     "\n  *[_type == \"settings\" && _id == \"siteSettings\"][0]{\n    title,\n    description,\n    footerLeftText,\n    footerRightText,\n    footerCenterText,\n    ogImage\n  }\n": SettingsQueryResult;
     "\n  *[_type == \"homepage\" && _id == \"homepage\"][0]{\n    _id,\n    title,\n    fotoImage,\n    movementDirectionImage,\n    performanceImage,\n    \"previewVideoUrl\": previewVideo.asset->url,\n    seoTitle,\n    seoDescription\n  }\n": HomepageQueryResult;
     "\n  *[_type == \"about\" && _id == \"about\"][0]{\n    _id,\n    mainText,\n    selectedClients,\n    selectedClientsDescription,\n    specialties,\n    contact[]{\n      _key,\n      label,\n      linkType,\n      url,\n      email\n    },\n    backgroundColor,\n    seoTitle,\n    seoDescription\n  }\n": AboutQueryResult;
-    "\n  {\n    \"fotoSelectedWorks\": *[_type == \"project\" && category == \"foto-selected-works\"] | order(title asc) {\n      _id,\n      title,\n      \"slug\": slug.current\n    },\n    \"fotoEditorial\": *[_type == \"project\" && category == \"foto-editorial\"] | order(title asc) {\n      _id,\n      title,\n      \"slug\": slug.current\n    },\n    \"movementDirection\": *[_type == \"project\" && category == \"movement-direction\"] | order(title asc) {\n      _id,\n      title,\n      \"slug\": slug.current\n    },\n    \"performance\": *[_type == \"project\" && category == \"performance\"] | order(title asc) {\n      _id,\n      title,\n      \"slug\": slug.current\n    }\n  }\n": AllProjectsForNavQueryResult;
+    "\n  {\n    \"foto\": *[_type == \"project\" && category == \"foto\"] | order(title asc) {\n      _id,\n      title,\n      \"slug\": slug.current\n    },\n    \"movementDirection\": *[_type == \"project\" && category == \"movement-direction\"] | order(title asc) {\n      _id,\n      title,\n      \"slug\": slug.current\n    },\n    \"performance\": *[_type == \"project\" && category == \"performance\"] | order(title asc) {\n      _id,\n      title,\n      \"slug\": slug.current\n    }\n  }\n": AllProjectsForNavQueryResult;
     "\n  *[_type == \"project\" && slug.current == $slug][0]{\n    _id,\n    title,\n    \"slug\": slug.current,\n    category,\n    description,\n    relevantLinks[]{\n      _key,\n      label,\n      linkType,\n      url,\n      email\n    },\n    featuredImage,\n    leftColumn{\n      photos[]{\n        _key,\n        image,\n        alt,\n        displayMode\n      }\n    },\n    rightColumn{\n      photos[]{\n        _key,\n        image,\n        alt,\n        displayMode\n      }\n    },\n    seoTitle,\n    seoDescription\n  }\n": ProjectBySlugQueryResult;
     "\n  *[_type == \"project\" && defined(slug.current)]{\n    \"slug\": slug.current,\n    category\n  }\n": AllProjectSlugsQueryResult;
     "\n  *[_type == \"project\" && category == $category] | order(title asc) {\n    _id,\n    title,\n    \"slug\": slug.current,\n    featuredImage,\n    description\n  }\n": ProjectsByCategoryQueryResult;

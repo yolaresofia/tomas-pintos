@@ -44,40 +44,10 @@ export const structure: StructureResolver = (S: StructureBuilder) =>
         .title('Foto')
         .icon(ImageIcon)
         .child(
-          S.list()
+          S.documentList()
             .title('Foto')
-            .items([
-              S.listItem()
-                .title('Selected Works')
-                .icon(ImageIcon)
-                .child(
-                  S.documentList()
-                    .title('Selected Works')
-                    .filter('_type == "project" && category == "foto-selected-works"')
-                    .defaultOrdering([{field: 'title', direction: 'asc'}])
-                ),
-              S.listItem()
-                .title('Editorial')
-                .icon(ImageIcon)
-                .child(
-                  S.documentList()
-                    .title('Editorial')
-                    .filter('_type == "project" && category == "foto-editorial"')
-                    .defaultOrdering([{field: 'title', direction: 'asc'}])
-                ),
-              S.divider(),
-              S.listItem()
-                .title('All Foto Projects')
-                .icon(DocumentsIcon)
-                .child(
-                  S.documentList()
-                    .title('All Foto Projects')
-                    .filter(
-                      '_type == "project" && (category == "foto-selected-works" || category == "foto-editorial")'
-                    )
-                    .defaultOrdering([{field: 'title', direction: 'asc'}])
-                ),
-            ])
+            .filter('_type == "project" && category == "foto"')
+            .defaultOrdering([{field: 'title', direction: 'asc'}])
         ),
 
       S.listItem()

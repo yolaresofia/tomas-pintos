@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 
 import ProjectPage from "@/app/components/ProjectPage";
 import { sanityFetch } from "@/sanity/lib/live";
-import { projectBySlugQuery, allProjectSlugsQuery, settingsQuery } from "@/sanity/lib/queries";
+import { projectBySlugQuery, allProjectSlugsQuery, settingsQuery, projectsByCategoryQuery } from "@/sanity/lib/queries";
 import { resolveOpenGraphImage } from "@/sanity/lib/utils";
 
 type Props = {
@@ -18,7 +18,7 @@ export async function generateStaticParams() {
   });
 
   return (data || [])
-    .filter((p: { slug: string | null; category: string | null }) => p.category === "foto-selected-works")
+    .filter((p: { slug: string | null; category: string | null }) => p.category === "foto")
     .map((p: { slug: string | null }) => ({ slug: p.slug }));
 }
 
@@ -34,24 +34,31 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
 
   return {
     title: project?.seoTitle || project?.title,
-    description: project?.seoDescription || project?.description,
+    description: project?.seoDescription,
     openGraph: {
       images: ogImage ? [ogImage] : [],
     },
   };
 }
 
-export default async function FotoSelectedWorksPage(props: Props) {
+export default async function FotoPage(props: Props) {
   const params = await props.params;
 
-  const [{ data: project }, { data: settings }] = await Promise.all([
+  const [{ data: project }, { data: settings }, { data: fotoProjects }] = await Promise.all([
     sanityFetch({ query: projectBySlugQuery, params: { slug: params.slug } }),
     sanityFetch({ query: settingsQuery }),
+    sanityFetch({ query: projectsByCategoryQuery, params: { category: "foto" } }),
   ]);
 
-  if (!project?._id || project.category !== "foto-selected-works") {
+  if (!project?._id || project.category !== "foto") {
     return notFound();
   }
 
-  return <ProjectPage project={project} settings={settings} />;
+  return (
+    <ProjectPage
+      project={project}
+      settings={settings}
+      categoryProjects={fotoProjects}
+    />
+  );
 }

@@ -3,47 +3,21 @@ import Link from "next/link";
 
 import { urlForImage, resolveExternalLink } from "@/sanity/lib/utils";
 import { PortableText } from "@/app/components/PortableText";
+import ProjectNav from "@/app/components/ProjectNav";
+import type { ProjectBySlugQueryResult, SettingsQueryResult } from "@/sanity.types";
 
-type PhotoItem = {
-  _key: string;
-  image: any;
-  alt: string | null;
-  displayMode: string | null;
-};
+type PhotoColumn = NonNullable<ProjectBySlugQueryResult>["leftColumn"];
 
-type PhotoColumn = {
-  photos: PhotoItem[] | null;
-} | null;
-
-type ExternalLinkItem = {
-  _key: string;
-  label: string | null;
-  linkType: string | null;
-  url: string | null;
-  email: string | null;
-};
-
-type ProjectData = {
+type NavProject = {
   _id: string;
   title: string | null;
   slug: string | null;
-  category: string | null;
-  description: any;
-  relevantLinks: ExternalLinkItem[] | null;
-  featuredImage: any;
-  leftColumn: PhotoColumn;
-  rightColumn: PhotoColumn;
 };
 
-type SettingsData = {
-  footerLeftText: string | null;
-  footerCenterText: string | null;
-  footerRightText: string | null;
-} | null;
-
 type ProjectPageProps = {
-  project: ProjectData;
-  settings: SettingsData;
+  project: NonNullable<ProjectBySlugQueryResult>;
+  settings: SettingsQueryResult;
+  categoryProjects?: NavProject[];
 };
 
 function PhotoColumnRenderer({ column, side }: { column: PhotoColumn; side: "left" | "right" }) {
@@ -76,11 +50,22 @@ function PhotoColumnRenderer({ column, side }: { column: PhotoColumn; side: "lef
   );
 }
 
-export default function ProjectPage({ project, settings }: ProjectPageProps) {
+export default function ProjectPage({ project, settings, categoryProjects }: ProjectPageProps) {
+  const category = project.category as "foto" | "movement-direction" | "performance" | null;
+
   return (
     <div className="h-screen relative overflow-hidden">
       <div className="h-full grid grid-cols-[1.1fr_0.8fr_1.1fr]">
-        <div className="overflow-y-auto">
+        <div className="relative overflow-y-auto">
+          {category && categoryProjects && categoryProjects.length > 0 && (
+            <div className="fixed top-0 left-0 p-6 z-10">
+              <ProjectNav
+                category={category}
+                projects={categoryProjects}
+                currentSlug={project.slug ?? undefined}
+              />
+            </div>
+          )}
           <PhotoColumnRenderer column={project.leftColumn} side="left" />
         </div>
         <div className="overflow-y-auto flex flex-col items-start text-left px-4 pt-6">

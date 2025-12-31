@@ -26,15 +26,15 @@ export default async function HomePage() {
 
   // Get image URLs for each section
   const fotoImageUrl = homepage?.fotoImage
-    ? urlForImage(homepage.fotoImage)?.width(800).quality(85).url()
+    ? urlForImage(homepage.fotoImage)?.width(800).quality(85).url() ?? null
     : null;
 
   const movementDirectionImageUrl = homepage?.movementDirectionImage
-    ? urlForImage(homepage.movementDirectionImage)?.width(800).quality(85).url()
+    ? urlForImage(homepage.movementDirectionImage)?.width(800).quality(85).url() ?? null
     : null;
 
   const performanceImageUrl = homepage?.performanceImage
-    ? urlForImage(homepage.performanceImage)?.width(800).quality(85).url()
+    ? urlForImage(homepage.performanceImage)?.width(800).quality(85).url() ?? null
     : null;
 
   // Get preview video URL (already resolved in GROQ query)

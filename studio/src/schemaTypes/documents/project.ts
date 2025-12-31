@@ -44,8 +44,7 @@ export const project = defineType({
       description: 'The main category this project belongs to',
       options: {
         list: [
-          {title: 'Foto - Selected Works', value: 'foto-selected-works'},
-          {title: 'Foto - Editorial', value: 'foto-editorial'},
+          {title: 'Foto', value: 'foto'},
           {title: 'Movement Direction', value: 'movement-direction'},
           {title: 'Performance', value: 'performance'},
         ],
@@ -138,15 +137,13 @@ export const project = defineType({
     },
     prepare({title, category, media}) {
       const categoryLabels: Record<string, string> = {
-        'foto-selected-works': 'Foto - Selected Works',
-        'foto-editorial': 'Foto - Editorial',
+        'foto': 'Foto',
         'movement-direction': 'Movement Direction',
         'performance': 'Performance',
       }
 
       const categoryIcons: Record<string, typeof ImageIcon> = {
-        'foto-selected-works': ImageIcon,
-        'foto-editorial': ImageIcon,
+        'foto': ImageIcon,
         'movement-direction': PlayIcon,
         'performance': StarIcon,
       }

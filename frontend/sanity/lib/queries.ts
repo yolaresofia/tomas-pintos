@@ -52,12 +52,7 @@ export const aboutQuery = defineQuery(`
 // Get all projects for navigation (grouped by category)
 export const allProjectsForNavQuery = defineQuery(`
   {
-    "fotoSelectedWorks": *[_type == "project" && category == "foto-selected-works"] | order(title asc) {
-      _id,
-      title,
-      "slug": slug.current
-    },
-    "fotoEditorial": *[_type == "project" && category == "foto-editorial"] | order(title asc) {
+    "foto": *[_type == "project" && category == "foto"] | order(title asc) {
       _id,
       title,
       "slug": slug.current

@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 
 import ProjectPage from "@/app/components/ProjectPage";
 import { sanityFetch } from "@/sanity/lib/live";
-import { projectBySlugQuery, allProjectSlugsQuery, settingsQuery } from "@/sanity/lib/queries";
+import { projectBySlugQuery, allProjectSlugsQuery, settingsQuery, projectsByCategoryQuery } from "@/sanity/lib/queries";
 import { resolveOpenGraphImage } from "@/sanity/lib/utils";
 
 type Props = {
@@ -34,7 +34,7 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
 
   return {
     title: project?.seoTitle || project?.title,
-    description: project?.seoDescription || project?.description,
+    description: project?.seoDescription,
     openGraph: {
       images: ogImage ? [ogImage] : [],
     },
@@ -44,14 +44,21 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
 export default async function PerformancePage(props: Props) {
   const params = await props.params;
 
-  const [{ data: project }, { data: settings }] = await Promise.all([
+  const [{ data: project }, { data: settings }, { data: categoryProjects }] = await Promise.all([
     sanityFetch({ query: projectBySlugQuery, params: { slug: params.slug } }),
     sanityFetch({ query: settingsQuery }),
+    sanityFetch({ query: projectsByCategoryQuery, params: { category: "performance" } }),
   ]);
 
   if (!project?._id || project.category !== "performance") {
     return notFound();
   }
 
-  return <ProjectPage project={project} settings={settings} />;
+  return (
+    <ProjectPage
+      project={project}
+      settings={settings}
+      categoryProjects={categoryProjects}
+    />
+  );
 }
