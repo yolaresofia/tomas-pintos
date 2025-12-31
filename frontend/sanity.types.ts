@@ -483,7 +483,7 @@ export type SettingsQueryResult = {
   } | null;
 } | null;
 // Variable: homepageQuery
-// Query: *[_type == "homepage" && _id == "homepage"][0]{    _id,    title,    fotoImage,    movementDirectionImage,    performanceImage,    seoTitle,    seoDescription  }
+// Query: *[_type == "homepage" && _id == "homepage"][0]{    _id,    title,    fotoImage,    movementDirectionImage,    performanceImage,    "previewVideoUrl": previewVideo.asset->url,    seoTitle,    seoDescription  }
 export type HomepageQueryResult = {
   _id: string;
   title: string;
@@ -523,6 +523,7 @@ export type HomepageQueryResult = {
     crop?: SanityImageCrop;
     _type: "image";
   } | null;
+  previewVideoUrl: null;
   seoTitle: string | null;
   seoDescription: string | null;
 } | null;
@@ -676,7 +677,7 @@ import "@sanity/client";
 declare module "@sanity/client" {
   interface SanityQueries {
     "\n  *[_type == \"settings\" && _id == \"siteSettings\"][0]{\n    title,\n    description,\n    footerLeftText,\n    footerRightText,\n    footerCenterText,\n    ogImage\n  }\n": SettingsQueryResult;
-    "\n  *[_type == \"homepage\" && _id == \"homepage\"][0]{\n    _id,\n    title,\n    fotoImage,\n    movementDirectionImage,\n    performanceImage,\n    seoTitle,\n    seoDescription\n  }\n": HomepageQueryResult;
+    "\n  *[_type == \"homepage\" && _id == \"homepage\"][0]{\n    _id,\n    title,\n    fotoImage,\n    movementDirectionImage,\n    performanceImage,\n    \"previewVideoUrl\": previewVideo.asset->url,\n    seoTitle,\n    seoDescription\n  }\n": HomepageQueryResult;
     "\n  *[_type == \"about\" && _id == \"about\"][0]{\n    _id,\n    mainText,\n    selectedClients,\n    selectedClientsDescription,\n    specialties,\n    contact[]{\n      _key,\n      label,\n      linkType,\n      url,\n      email\n    },\n    backgroundColor,\n    seoTitle,\n    seoDescription\n  }\n": AboutQueryResult;
     "\n  {\n    \"fotoSelectedWorks\": *[_type == \"project\" && category == \"foto-selected-works\"] | order(title asc) {\n      _id,\n      title,\n      \"slug\": slug.current\n    },\n    \"fotoEditorial\": *[_type == \"project\" && category == \"foto-editorial\"] | order(title asc) {\n      _id,\n      title,\n      \"slug\": slug.current\n    },\n    \"movementDirection\": *[_type == \"project\" && category == \"movement-direction\"] | order(title asc) {\n      _id,\n      title,\n      \"slug\": slug.current\n    },\n    \"performance\": *[_type == \"project\" && category == \"performance\"] | order(title asc) {\n      _id,\n      title,\n      \"slug\": slug.current\n    }\n  }\n": AllProjectsForNavQueryResult;
     "\n  *[_type == \"project\" && slug.current == $slug][0]{\n    _id,\n    title,\n    \"slug\": slug.current,\n    category,\n    description,\n    relevantLinks[]{\n      _key,\n      label,\n      linkType,\n      url,\n      email\n    },\n    featuredImage,\n    leftColumn{\n      photos[]{\n        _key,\n        image,\n        alt,\n        displayMode\n      }\n    },\n    rightColumn{\n      photos[]{\n        _key,\n        image,\n        alt,\n        displayMode\n      }\n    },\n    seoTitle,\n    seoDescription\n  }\n": ProjectBySlugQueryResult;

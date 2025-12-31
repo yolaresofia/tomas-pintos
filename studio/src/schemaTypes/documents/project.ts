@@ -56,9 +56,8 @@ export const project = defineType({
     defineField({
       name: 'description',
       title: 'Description',
-      type: 'text',
+      type: 'blockContent',
       group: 'content',
-      rows: 4,
       description: 'A brief description of the project (displayed in the middle section)',
     }),
     defineField({

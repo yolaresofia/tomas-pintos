@@ -37,11 +37,15 @@ export default async function HomePage() {
     ? urlForImage(homepage.performanceImage)?.width(800).quality(85).url()
     : null;
 
+  // Get preview video URL (already resolved in GROQ query)
+  const previewVideoUrl = homepage?.previewVideoUrl || null;
+
   return (
     <HomePageClient
       fotoImageUrl={fotoImageUrl}
       movementDirectionImageUrl={movementDirectionImageUrl}
       performanceImageUrl={performanceImageUrl}
+      previewVideoUrl={previewVideoUrl}
       projects={projects}
       settings={settings}
     />

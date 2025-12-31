@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { urlForImage, resolveExternalLink } from "@/sanity/lib/utils";
+import { PortableText } from "@/app/components/PortableText";
 
 type PhotoItem = {
   _key: string;
@@ -27,7 +28,7 @@ type ProjectData = {
   title: string | null;
   slug: string | null;
   category: string | null;
-  description: string | null;
+  description: any;
   relevantLinks: ExternalLinkItem[] | null;
   featuredImage: any;
   leftColumn: PhotoColumn;
@@ -77,41 +78,32 @@ function PhotoColumnRenderer({ column, side }: { column: PhotoColumn; side: "lef
 
 export default function ProjectPage({ project, settings }: ProjectPageProps) {
   return (
-    <div className="min-h-screen flex flex-col">
-      {/* Main Content - Three Column Layout */}
-      <div className="flex-1 grid grid-cols-3">
-        {/* Left Column - Photos */}
-        <div className="flex flex-col">
+    <div className="h-screen relative overflow-hidden">
+      <div className="h-full grid grid-cols-[1.1fr_0.8fr_1.1fr]">
+        <div className="overflow-y-auto">
           <PhotoColumnRenderer column={project.leftColumn} side="left" />
         </div>
-
-        {/* Center Column - Info */}
-        <div className="flex flex-col items-center text-center px-4">
-          {/* Title */}
+        <div className="overflow-y-auto flex flex-col items-start text-left px-4 pt-6">
           {project.title && (
             <h1 className="text-lg font-medium mb-4">{project.title}</h1>
           )}
-
-          {/* Description */}
           {project.description && (
-            <p className="text-sm leading-relaxed mb-6">{project.description}</p>
+            <PortableText value={project.description} className="text-xs mb-6" />
           )}
-
-          {/* Relevant Links */}
           {project.relevantLinks && project.relevantLinks.length > 0 && (
             <div className="space-y-2">
               {project.relevantLinks.map((link) => {
                 const href = resolveExternalLink(link);
                 if (!href) return null;
-
                 return (
                   <a
                     key={link._key}
                     href={href}
                     target={link.linkType === "external" ? "_blank" : undefined}
                     rel={link.linkType === "external" ? "noopener noreferrer" : undefined}
-                    className="block text-sm hover:opacity-60 transition-opacity underline"
+                    className="block text-xs hover:opacity-60 transition-opacity uppercase"
                   >
+                    <span className="mr-1">→</span>
                     {link.label}
                   </a>
                 );
@@ -119,22 +111,18 @@ export default function ProjectPage({ project, settings }: ProjectPageProps) {
             </div>
           )}
         </div>
-
-        {/* Right Column - Photos */}
-        <div className="flex flex-col">
+        <div className="overflow-y-auto">
           <PhotoColumnRenderer column={project.rightColumn} side="right" />
         </div>
       </div>
-
-      {/* Footer */}
-      <footer className="p-6 flex justify-between items-end">
-        <Link href="/" className="text-sm font-medium tracking-wider hover:opacity-60 transition-opacity">
+      <footer className="absolute bottom-0 left-0 right-0 p-6 flex justify-between items-end pointer-events-none">
+        <Link href="/" className="text-sm font-medium tracking-wider hover:opacity-60 transition-opacity pointer-events-auto">
           {settings?.footerLeftText || "TOMAS"}
         </Link>
-        <Link href="/about" className="text-sm hover:opacity-60 transition-opacity">
+        <Link href="/about" className="text-sm hover:opacity-60 transition-opacity pointer-events-auto">
           {settings?.footerCenterText || "(ABOUT)"}
         </Link>
-        <Link href="/" className="text-sm font-medium tracking-wider hover:opacity-60 transition-opacity">
+        <Link href="/" className="text-sm font-medium tracking-wider hover:opacity-60 transition-opacity pointer-events-auto">
           {settings?.footerRightText || "PINTOS"}
         </Link>
       </footer>

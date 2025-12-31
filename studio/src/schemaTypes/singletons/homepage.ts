@@ -58,6 +58,16 @@ export const homepage = defineType({
         hotspot: true,
       },
     }),
+    defineField({
+      name: 'previewVideo',
+      title: 'Preview Video',
+      type: 'file',
+      group: 'images',
+      description: 'Video file for the homepage preview',
+      options: {
+        accept: 'video/*',
+      },
+    }),
 
     // ============ SEO GROUP ============
     defineField({

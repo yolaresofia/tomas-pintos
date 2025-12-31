@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import IntroAnimation from "./IntroAnimation";
 
 type ProjectNavItem = {
   _id: string;
@@ -27,6 +28,7 @@ type HomePageClientProps = {
   fotoImageUrl: string | null | undefined;
   movementDirectionImageUrl: string | null | undefined;
   performanceImageUrl: string | null | undefined;
+  previewVideoUrl: string | null | undefined;
   projects: ProjectsData | null;
   settings: SettingsData;
 };
@@ -35,15 +37,40 @@ export default function HomePageClient({
   fotoImageUrl,
   movementDirectionImageUrl,
   performanceImageUrl,
+  previewVideoUrl,
   projects,
   settings,
 }: HomePageClientProps) {
   const [hoveredColumn, setHoveredColumn] = useState<"foto" | "movement" | "performance" | null>(null);
+  const [showIntro, setShowIntro] = useState(true);
+  const [contentVisible, setContentVisible] = useState(false);
+
+  const handleIntroComplete = () => {
+    setShowIntro(false);
+    // Small delay before fading in content
+    setTimeout(() => {
+      setContentVisible(true);
+    }, 50);
+  };
 
   return (
     <div className="min-h-screen">
+      {/* Intro Animation */}
+      {showIntro && (
+        <IntroAnimation
+          videoUrl={previewVideoUrl}
+          onComplete={handleIntroComplete}
+          leftText={settings?.footerLeftText || "TOMAS"}
+          rightText={settings?.footerRightText || "PINTOS"}
+        />
+      )}
+
       {/* Three Column Layout */}
-      <div className="min-h-screen grid grid-cols-3">
+      <div
+        className={`min-h-screen grid grid-cols-3 transition-opacity duration-700 ${
+          contentVisible ? "opacity-100" : "opacity-0"
+        }`}
+      >
         {/* Left Column - FOTO */}
         <div
           className="relative p-6 flex flex-col"
