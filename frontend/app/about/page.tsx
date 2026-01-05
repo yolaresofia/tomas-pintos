@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 
+import Footer from "@/app/components/Footer";
 import { PortableText } from "@/app/components/PortableText";
 import { sanityFetch } from "@/sanity/lib/live";
 import { aboutQuery, settingsQuery } from "@/sanity/lib/queries";
@@ -115,17 +115,11 @@ export default async function AboutPage() {
       </div>
 
       {/* Footer */}
-      <footer className="p-6 flex justify-between items-end">
-        <Link href="/" className="text-base font-medium tracking-wider hover:opacity-60 transition-opacity">
-          {settings?.footerLeftText || "TOMAS"}
-        </Link>
-        <Link href="/" className="text-base hover:opacity-60 transition-opacity">
-          {settings?.footerCenterText || "(ABOUT)"}
-        </Link>
-        <Link href="/" className="text-base font-medium tracking-wider hover:opacity-60 transition-opacity">
-          {settings?.footerRightText || "PINTOS"}
-        </Link>
-      </footer>
+      <Footer
+        leftText={settings?.footerLeftText}
+        centerText={settings?.footerCenterText}
+        rightText={settings?.footerRightText}
+      />
     </div>
   );
 }

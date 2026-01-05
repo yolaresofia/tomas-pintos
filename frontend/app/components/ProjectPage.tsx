@@ -1,6 +1,8 @@
-import Image from "next/image";
-import Link from "next/link";
+"use client";
 
+import Image from "next/image";
+
+import TransitionLink from "@/app/components/TransitionLink";
 import { urlForImage, resolveExternalLink } from "@/sanity/lib/utils";
 import { PortableText } from "@/app/components/PortableText";
 import ProjectNav from "@/app/components/ProjectNav";
@@ -101,15 +103,15 @@ export default function ProjectPage({ project, settings, categoryProjects }: Pro
         </div>
       </div>
       <footer className="absolute bottom-0 left-0 right-0 p-6 flex justify-between items-end pointer-events-none">
-        <Link href="/" className="text-sm font-medium tracking-wider hover:opacity-60 transition-opacity pointer-events-auto">
+        <TransitionLink href="/" className="text-sm font-medium tracking-wider hover:opacity-60 transition-opacity pointer-events-auto">
           {settings?.footerLeftText || "TOMAS"}
-        </Link>
-        <Link href="/about" className="text-sm hover:opacity-60 transition-opacity pointer-events-auto">
+        </TransitionLink>
+        <TransitionLink href="/about" className="text-sm hover:opacity-60 transition-opacity pointer-events-auto">
           {settings?.footerCenterText || "(ABOUT)"}
-        </Link>
-        <Link href="/" className="text-sm font-medium tracking-wider hover:opacity-60 transition-opacity pointer-events-auto">
+        </TransitionLink>
+        <TransitionLink href="/" className="text-sm font-medium tracking-wider hover:opacity-60 transition-opacity pointer-events-auto">
           {settings?.footerRightText || "PINTOS"}
-        </Link>
+        </TransitionLink>
       </footer>
     </div>
   );

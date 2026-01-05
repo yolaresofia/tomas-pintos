@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
 import Image from "next/image";
+
+import TransitionLink from "@/app/components/TransitionLink";
 import IntroAnimation from "./IntroAnimation";
 import type { AllProjectsForNavQueryResult, SettingsQueryResult } from "@/sanity.types";
 
@@ -91,12 +92,12 @@ export default function HomePageClient({
           >
             {projects?.foto?.map((project) => (
               <li key={project._id}>
-                <Link
+                <TransitionLink
                   href={`/foto/${project.slug}`}
                   className="hover:opacity-60 transition-opacity"
                 >
                   {project.title}
-                </Link>
+                </TransitionLink>
               </li>
             ))}
           </ul>
@@ -131,19 +132,19 @@ export default function HomePageClient({
           >
             {projects?.movementDirection?.map((project) => (
               <li key={project._id}>
-                <Link
+                <TransitionLink
                   href={`/movement-direction/${project.slug}`}
                   className="hover:opacity-60 transition-opacity"
                 >
                   {project.title}
-                </Link>
+                </TransitionLink>
               </li>
             ))}
           </ul>
           <div className="mt-auto pt-6">
-            <Link href="/about" className="text-base font-bold hover:opacity-60 transition-opacity">
+            <TransitionLink href="/about" className="text-base font-bold hover:opacity-60 transition-opacity">
               {settings?.footerCenterText || "(ABOUT)"}
-            </Link>
+            </TransitionLink>
           </div>
         </div>
         <div
@@ -171,12 +172,12 @@ export default function HomePageClient({
           >
             {projects?.performance?.map((project) => (
               <li key={project._id}>
-                <Link
+                <TransitionLink
                   href={`/performance/${project.slug}`}
                   className="hover:opacity-60 transition-opacity"
                 >
                   {project.title}
-                </Link>
+                </TransitionLink>
               </li>
             ))}
           </ul>

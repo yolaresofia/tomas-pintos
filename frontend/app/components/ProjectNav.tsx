@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
+
+import TransitionLink from "@/app/components/TransitionLink";
 
 type Project = {
   _id: string;
@@ -69,14 +70,14 @@ export default function ProjectNav({ category, projects, currentSlug }: ProjectN
           const isCurrentProject = project.slug === currentSlug;
           return (
             <li key={project._id}>
-              <Link
+              <TransitionLink
                 href={`${basePath}/${project.slug}`}
                 className={`hover:opacity-60 transition-opacity ${
                   isCurrentProject ? "font-medium" : ""
                 }`}
               >
                 {project.title}
-              </Link>
+              </TransitionLink>
             </li>
           );
         })}
