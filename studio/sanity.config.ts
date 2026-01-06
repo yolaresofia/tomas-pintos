@@ -135,11 +135,6 @@ export default defineConfig({
     structureTool({
       structure,
     }),
-    // Additional plugins
-    unsplashImageAsset(),
-    colorInput(),
-    assist(),
-    visionTool(),
     vercelDeployPlugin(),
   ],
 
