@@ -543,7 +543,7 @@ export type AllProjectsForNavQueryResult = {
   }>;
 };
 // Variable: projectBySlugQuery
-// Query: *[_type == "project" && slug.current == $slug][0]{    _id,    title,    "slug": slug.current,    category,    description,    relevantLinks[]{      _key,      label,      linkType,      url,      email    },    featuredImage,    leftColumn{      photos[]{        _key,        "isVideo": coalesce(isVideo, false),        image,        previewVideoUrl,        fullVideoUrl,        alt,        displayMode      }    },    rightColumn{      photos[]{        _key,        "isVideo": coalesce(isVideo, false),        image,        previewVideoUrl,        fullVideoUrl,        alt,        displayMode      }    },    seoTitle,    seoDescription  }
+// Query: *[_type == "project" && slug.current == $slug][0]{    _id,    title,    "slug": slug.current,    category,    description,    relevantLinks[]{      _key,      label,      linkType,      url,      email    },    featuredImage,    leftColumn{      photos[]{        _key,        "isVideo": coalesce(isVideo, false),        image,        "previewVideoUrl": previewVideoUrl.asset->url,        fullVideoUrl,        alt,        displayMode      }    },    rightColumn{      photos[]{        _key,        "isVideo": coalesce(isVideo, false),        image,        "previewVideoUrl": previewVideoUrl.asset->url,        fullVideoUrl,        alt,        displayMode      }    },    seoTitle,    seoDescription  }
 export type ProjectBySlugQueryResult = {
   _id: string;
   title: string | null;
@@ -569,7 +569,7 @@ export type ProjectBySlugQueryResult = {
       _key: string;
       isVideo: boolean | false;
       image: PhotoItemImage | null;
-      previewVideoUrl: string | null;
+      previewVideoUrl: null;
       fullVideoUrl: string | null;
       alt: string | null;
       displayMode: "fullscreen" | "stacked" | null;
@@ -580,7 +580,7 @@ export type ProjectBySlugQueryResult = {
       _key: string;
       isVideo: boolean | false;
       image: PhotoItemImage | null;
-      previewVideoUrl: string | null;
+      previewVideoUrl: null;
       fullVideoUrl: string | null;
       alt: string | null;
       displayMode: "fullscreen" | "stacked" | null;
@@ -626,7 +626,7 @@ declare module "@sanity/client" {
     "\n  *[_type == \"homepage\" && _id == \"homepage\"][0]{\n    _id,\n    title,\n    fotoImage,\n    movementDirectionImage,\n    performanceImage,\n    \"previewVideoUrl\": previewVideo.asset->url,\n    seoTitle,\n    seoDescription\n  }\n": HomepageQueryResult;
     "\n  *[_type == \"about\" && _id == \"about\"][0]{\n    _id,\n    mainText,\n    selectedClients,\n    selectedClientsDescription,\n    specialties,\n    contact[]{\n      _key,\n      label,\n      linkType,\n      url,\n      email\n    },\n    backgroundColor,\n    seoTitle,\n    seoDescription\n  }\n": AboutQueryResult;
     "\n  {\n    \"foto\": *[_type == \"project\" && category == \"foto\"] | order(title asc) {\n      _id,\n      title,\n      \"slug\": slug.current\n    },\n    \"movementDirection\": *[_type == \"project\" && category == \"movement-direction\"] | order(title asc) {\n      _id,\n      title,\n      \"slug\": slug.current\n    },\n    \"performance\": *[_type == \"project\" && category == \"performance\"] | order(title asc) {\n      _id,\n      title,\n      \"slug\": slug.current\n    }\n  }\n": AllProjectsForNavQueryResult;
-    "\n  *[_type == \"project\" && slug.current == $slug][0]{\n    _id,\n    title,\n    \"slug\": slug.current,\n    category,\n    description,\n    relevantLinks[]{\n      _key,\n      label,\n      linkType,\n      url,\n      email\n    },\n    featuredImage,\n    leftColumn{\n      photos[]{\n        _key,\n        \"isVideo\": coalesce(isVideo, false),\n        image,\n        previewVideoUrl,\n        fullVideoUrl,\n        alt,\n        displayMode\n      }\n    },\n    rightColumn{\n      photos[]{\n        _key,\n        \"isVideo\": coalesce(isVideo, false),\n        image,\n        previewVideoUrl,\n        fullVideoUrl,\n        alt,\n        displayMode\n      }\n    },\n    seoTitle,\n    seoDescription\n  }\n": ProjectBySlugQueryResult;
+    "\n  *[_type == \"project\" && slug.current == $slug][0]{\n    _id,\n    title,\n    \"slug\": slug.current,\n    category,\n    description,\n    relevantLinks[]{\n      _key,\n      label,\n      linkType,\n      url,\n      email\n    },\n    featuredImage,\n    leftColumn{\n      photos[]{\n        _key,\n        \"isVideo\": coalesce(isVideo, false),\n        image,\n        \"previewVideoUrl\": previewVideoUrl.asset->url,\n        fullVideoUrl,\n        alt,\n        displayMode\n      }\n    },\n    rightColumn{\n      photos[]{\n        _key,\n        \"isVideo\": coalesce(isVideo, false),\n        image,\n        \"previewVideoUrl\": previewVideoUrl.asset->url,\n        fullVideoUrl,\n        alt,\n        displayMode\n      }\n    },\n    seoTitle,\n    seoDescription\n  }\n": ProjectBySlugQueryResult;
     "\n  *[_type == \"project\" && defined(slug.current)]{\n    \"slug\": slug.current,\n    category\n  }\n": AllProjectSlugsQueryResult;
     "\n  *[_type == \"project\" && category == $category] | order(title asc) {\n    _id,\n    title,\n    \"slug\": slug.current,\n    featuredImage,\n    description\n  }\n": ProjectsByCategoryQueryResult;
     "\n  *[_type == \"project\" && defined(slug.current)] | order(_updatedAt desc) {\n    \"slug\": slug.current,\n    category,\n    _updatedAt\n  }\n": SitemapQueryResult;
