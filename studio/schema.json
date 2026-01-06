@@ -97,11 +97,32 @@
             "of": {
               "type": "object",
               "attributes": {
+                "isVideo": {
+                  "type": "objectAttribute",
+                  "value": {
+                    "type": "boolean"
+                  },
+                  "optional": true
+                },
                 "image": {
                   "type": "objectAttribute",
                   "value": {
                     "type": "inline",
                     "name": "photoItem.image"
+                  },
+                  "optional": true
+                },
+                "previewVideoUrl": {
+                  "type": "objectAttribute",
+                  "value": {
+                    "type": "string"
+                  },
+                  "optional": true
+                },
+                "fullVideoUrl": {
+                  "type": "objectAttribute",
+                  "value": {
+                    "type": "string"
                   },
                   "optional": true
                 },

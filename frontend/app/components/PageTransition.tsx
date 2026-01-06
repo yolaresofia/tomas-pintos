@@ -57,7 +57,7 @@ export default function PageTransition({ children }: PageTransitionProps) {
         startTransition(() => {
           router.push(href);
         });
-      }, 300);
+      }, 200);
     },
     [pathname, router]
   );

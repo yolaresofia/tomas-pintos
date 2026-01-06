@@ -81,17 +81,17 @@ export const project = defineType({
     }),
     defineField({
       name: 'leftColumn',
-      title: 'Left Photo Column',
+      title: 'Left Media Column',
       type: 'photoColumn',
       group: 'media',
-      description: 'Photos displayed on the left side of the project page',
+      description: 'Media items displayed on the left side of the project page',
     }),
     defineField({
       name: 'rightColumn',
-      title: 'Right Photo Column',
+      title: 'Right Media Column',
       type: 'photoColumn',
       group: 'media',
-      description: 'Photos displayed on the right side of the project page',
+      description: 'Media items displayed on the right side of the project page',
     }),
 
     // ============ SEO GROUP ============

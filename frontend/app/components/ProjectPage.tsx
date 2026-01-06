@@ -3,12 +3,31 @@
 import Image from "next/image";
 
 import TransitionLink from "@/app/components/TransitionLink";
+import VideoPlayer from "@/app/components/VideoPlayer";
 import { urlForImage, resolveExternalLink } from "@/sanity/lib/utils";
 import { PortableText } from "@/app/components/PortableText";
 import ProjectNav from "@/app/components/ProjectNav";
 import type { ProjectBySlugQueryResult, SettingsQueryResult } from "@/sanity.types";
 
-type PhotoColumn = NonNullable<ProjectBySlugQueryResult>["leftColumn"];
+type MediaItem = {
+  _key: string;
+  isVideo: boolean;
+  image?: {
+    _type: "image";
+    asset?: {
+      _ref: string;
+      _type: "reference";
+    };
+  } | null;
+  previewVideoUrl?: string | null;
+  fullVideoUrl?: string | null;
+  alt?: string | null;
+  displayMode?: "stacked" | "fullscreen" | null;
+};
+
+type MediaColumn = {
+  photos: MediaItem[] | null;
+} | null;
 
 type NavProject = {
   _id: string;
@@ -22,25 +41,40 @@ type ProjectPageProps = {
   categoryProjects?: NavProject[];
 };
 
-function PhotoColumnRenderer({ column, side }: { column: PhotoColumn; side: "left" | "right" }) {
+function MediaColumnRenderer({ column, side, projectTitle }: { column: MediaColumn; side: "left" | "right"; projectTitle?: string }) {
   if (!column?.photos || column.photos.length === 0) return null;
 
   return (
     <div className={`flex flex-col ${side === "right" ? "items-end" : "items-start"}`}>
-      {column.photos.map((photo) => {
-        const imageUrl = urlForImage(photo.image)?.width(800).quality(85).url();
-        if (!imageUrl) return null;
+      {column.photos.map((item) => {
+        const isFullscreen = item.displayMode === "fullscreen";
 
-        const isFullscreen = photo.displayMode === "fullscreen";
+        // Handle video items
+        if (item.isVideo && item.previewVideoUrl && item.fullVideoUrl) {
+          return (
+            <VideoPlayer
+              key={item._key}
+              previewVideoUrl={item.previewVideoUrl}
+              fullVideoUrl={item.fullVideoUrl}
+              alt={item.alt}
+              isFullscreen={isFullscreen}
+              title={projectTitle}
+            />
+          );
+        }
+
+        // Handle image items
+        const imageUrl = urlForImage(item.image)?.width(800).quality(85).url();
+        if (!imageUrl) return null;
 
         return (
           <div
-            key={photo._key}
+            key={item._key}
             className={`relative ${isFullscreen ? "w-full h-screen" : "w-full"}`}
           >
             <Image
               src={imageUrl}
-              alt={photo.alt || ""}
+              alt={item.alt || ""}
               width={800}
               height={isFullscreen ? 1200 : 600}
               className={`object-cover ${isFullscreen ? "w-full h-full" : "w-full h-auto"}`}
@@ -68,7 +102,7 @@ export default function ProjectPage({ project, settings, categoryProjects }: Pro
               />
             </div>
           )}
-          <PhotoColumnRenderer column={project.leftColumn} side="left" />
+          <MediaColumnRenderer column={project.leftColumn as MediaColumn} side="left" projectTitle={project.title ?? undefined} />
         </div>
         <div className="overflow-y-auto flex flex-col items-start text-left px-4 pt-6">
           {project.title && (
@@ -99,7 +133,7 @@ export default function ProjectPage({ project, settings, categoryProjects }: Pro
           )}
         </div>
         <div className="overflow-y-auto">
-          <PhotoColumnRenderer column={project.rightColumn} side="right" />
+          <MediaColumnRenderer column={project.rightColumn as MediaColumn} side="right" projectTitle={project.title ?? undefined} />
         </div>
       </div>
       <footer className="absolute bottom-0 left-0 right-0 p-6 flex justify-between items-end pointer-events-none">

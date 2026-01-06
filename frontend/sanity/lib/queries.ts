@@ -89,7 +89,10 @@ export const projectBySlugQuery = defineQuery(`
     leftColumn{
       photos[]{
         _key,
+        "isVideo": coalesce(isVideo, false),
         image,
+        "previewVideoUrl": previewVideoUrl.asset->url,
+        fullVideoUrl,
         alt,
         displayMode
       }
@@ -97,7 +100,10 @@ export const projectBySlugQuery = defineQuery(`
     rightColumn{
       photos[]{
         _key,
+        "isVideo": coalesce(isVideo, false),
         image,
+        "previewVideoUrl": previewVideoUrl.asset->url,
+        fullVideoUrl,
         alt,
         displayMode
       }

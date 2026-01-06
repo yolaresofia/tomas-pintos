@@ -9,7 +9,7 @@ import {settings} from './singletons/settings'
 // Objects
 import {blockContent} from './objects/blockContent'
 import {externalLink} from './objects/externalLink'
-import {photoColumn} from './objects/photoColumn'
+import {mediaColumn} from './objects/mediaColumn'
 
 /**
  * Export an array of all the schema types.
@@ -28,5 +28,5 @@ export const schemaTypes = [
   // Objects
   blockContent,
   externalLink,
-  photoColumn,
+  mediaColumn,
 ]
