@@ -17,7 +17,7 @@ import {
 } from 'sanity/presentation'
 import {assist} from '@sanity/assist'
 import {colorInput} from '@sanity/color-input'
-import {netlifyDeployPlugin} from './src/plugins/netlifyDeploy'
+import {vercelDeployPlugin} from './src/plugins/vercelDeploy'
 
 // Environment variables for project configuration
 const projectId = process.env.SANITY_STUDIO_PROJECT_ID || 'your-projectID'
@@ -140,7 +140,7 @@ export default defineConfig({
     colorInput(),
     assist(),
     visionTool(),
-    netlifyDeployPlugin(),
+    vercelDeployPlugin(),
   ],
 
   schema: {
