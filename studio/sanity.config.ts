@@ -5,17 +5,14 @@
 
 import {defineConfig} from 'sanity'
 import {structureTool} from 'sanity/structure'
-import {visionTool} from '@sanity/vision'
 import {schemaTypes} from './src/schemaTypes'
 import {structure} from './src/structure'
-import {unsplashImageAsset} from 'sanity-plugin-asset-source-unsplash'
 import {
   presentationTool,
   defineDocuments,
   defineLocations,
   type DocumentLocation,
 } from 'sanity/presentation'
-import {assist} from '@sanity/assist'
 import {colorInput} from '@sanity/color-input'
 import {vercelDeployPlugin} from './src/plugins/vercelDeploy'
 
@@ -135,6 +132,7 @@ export default defineConfig({
     structureTool({
       structure,
     }),
+    colorInput(),
     vercelDeployPlugin(),
   ],
 

@@ -91,7 +91,7 @@ export default function ProjectPage({ project, settings, categoryProjects }: Pro
 
   return (
     <div className="h-screen relative overflow-hidden">
-      <div className="h-full grid grid-cols-[1.1fr_0.8fr_1.1fr]">
+      <div className="h-full grid grid-cols-[1.2fr_0.6fr_1.2fr]">
         <div className="relative overflow-y-auto">
           {category && categoryProjects && categoryProjects.length > 0 && (
             <div className="fixed top-0 left-0 p-6 z-10">
