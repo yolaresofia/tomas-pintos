@@ -7,7 +7,11 @@ import VideoPlayer from "@/app/components/VideoPlayer";
 import { urlForImage, resolveExternalLink } from "@/sanity/lib/utils";
 import { PortableText } from "@/app/components/PortableText";
 import ProjectNav from "@/app/components/ProjectNav";
-import type { ProjectBySlugQueryResult, SettingsQueryResult } from "@/sanity.types";
+import type {
+  ProjectBySlugQueryResult,
+  SettingsQueryResult,
+} from "@/sanity.types";
+import Footer from "./Footer";
 
 type MediaItem = {
   _key: string;
@@ -41,11 +45,21 @@ type ProjectPageProps = {
   categoryProjects?: NavProject[];
 };
 
-function MediaColumnRenderer({ column, side, projectTitle }: { column: MediaColumn; side: "left" | "right"; projectTitle?: string }) {
+function MediaColumnRenderer({
+  column,
+  side,
+  projectTitle,
+}: {
+  column: MediaColumn;
+  side: "left" | "right";
+  projectTitle?: string;
+}) {
   if (!column?.photos || column.photos.length === 0) return null;
 
   return (
-    <div className={`flex flex-col ${side === "right" ? "items-end" : "items-start"}`}>
+    <div
+      className={`flex flex-col ${side === "right" ? "items-end" : "items-start"}`}
+    >
       {column.photos.map((item) => {
         const isFullscreen = item.displayMode === "fullscreen";
 
@@ -86,8 +100,16 @@ function MediaColumnRenderer({ column, side, projectTitle }: { column: MediaColu
   );
 }
 
-export default function ProjectPage({ project, settings, categoryProjects }: ProjectPageProps) {
-  const category = project.category as "foto" | "movement-direction" | "performance" | null;
+export default function ProjectPage({
+  project,
+  settings,
+  categoryProjects,
+}: ProjectPageProps) {
+  const category = project.category as
+    | "foto"
+    | "movement-direction"
+    | "performance"
+    | null;
 
   return (
     <div className="h-screen relative overflow-hidden">
@@ -102,14 +124,21 @@ export default function ProjectPage({ project, settings, categoryProjects }: Pro
               />
             </div>
           )}
-          <MediaColumnRenderer column={project.leftColumn as MediaColumn} side="left" projectTitle={project.title ?? undefined} />
+          <MediaColumnRenderer
+            column={project.leftColumn as MediaColumn}
+            side="left"
+            projectTitle={project.title ?? undefined}
+          />
         </div>
         <div className="overflow-y-auto flex flex-col items-start text-left px-4 pt-6">
           {project.title && (
             <h1 className="text-lg font-medium mb-4">{project.title}</h1>
           )}
           {project.description && (
-            <PortableText value={project.description} className="text-xs mb-6" />
+            <PortableText
+              value={project.description}
+              className="text-xs mb-6"
+            />
           )}
           {project.relevantLinks && project.relevantLinks.length > 0 && (
             <div className="space-y-2">
@@ -121,7 +150,11 @@ export default function ProjectPage({ project, settings, categoryProjects }: Pro
                     key={link._key}
                     href={href}
                     target={link.linkType === "external" ? "_blank" : undefined}
-                    rel={link.linkType === "external" ? "noopener noreferrer" : undefined}
+                    rel={
+                      link.linkType === "external"
+                        ? "noopener noreferrer"
+                        : undefined
+                    }
                     className="block text-xs hover:opacity-60 transition-opacity uppercase"
                   >
                     <span className="mr-1">→</span>
@@ -133,20 +166,19 @@ export default function ProjectPage({ project, settings, categoryProjects }: Pro
           )}
         </div>
         <div className="overflow-y-auto">
-          <MediaColumnRenderer column={project.rightColumn as MediaColumn} side="right" projectTitle={project.title ?? undefined} />
+          <MediaColumnRenderer
+            column={project.rightColumn as MediaColumn}
+            side="right"
+            projectTitle={project.title ?? undefined}
+          />
         </div>
       </div>
-      <footer className="absolute bottom-0 left-0 right-0 p-6 flex justify-between items-end pointer-events-none">
-        <TransitionLink href="/" className="text-sm font-medium tracking-wider hover:opacity-60 transition-opacity pointer-events-auto">
-          {settings?.footerLeftText || "TOMAS"}
-        </TransitionLink>
-        <TransitionLink href="/about" className="text-sm hover:opacity-60 transition-opacity pointer-events-auto">
-          {settings?.footerCenterText || "(ABOUT)"}
-        </TransitionLink>
-        <TransitionLink href="/" className="text-sm font-medium tracking-wider hover:opacity-60 transition-opacity pointer-events-auto">
-          {settings?.footerRightText || "PINTOS"}
-        </TransitionLink>
-      </footer>
+      <Footer
+        leftText={settings?.footerLeftText}
+        centerText={settings?.footerCenterText}
+        rightText={settings?.footerRightText}
+        className="absolute bottom-0 left-0 right-0 pointer-events-none [&>*]:pointer-events-auto"
+      />
     </div>
   );
 }

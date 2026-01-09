@@ -24,7 +24,7 @@ export default function Footer({
         {leftText || "TOMAS"}
       </TransitionLink>
       <TransitionLink
-        href="/"
+        href="/about"
         className="text-base hover:opacity-60 font-bold transition-opacity"
       >
         {centerText || "(ABOUT)"}
