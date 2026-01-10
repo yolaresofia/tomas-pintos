@@ -16,22 +16,22 @@ export default function Footer({
   className = "",
 }: FooterProps) {
   return (
-    <footer className={`p-6 flex justify-between items-end ${className}`}>
+    <footer className={`p-2 flex justify-between items-end ${className}`}>
       <TransitionLink
         href="/"
-        className="text-base tracking-wider font-bold hover:opacity-60 transition-opacity"
+        className="text-base tracking-wider font-semibold hover:opacity-60 transition-opacity"
       >
         {leftText || "TOMAS"}
       </TransitionLink>
       <TransitionLink
         href="/about"
-        className="text-base hover:opacity-60 font-bold transition-opacity"
+        className="text-base hover:opacity-60 font-semibold transition-opacity"
       >
         {centerText || "(ABOUT)"}
       </TransitionLink>
       <TransitionLink
         href="/"
-        className="text-base tracking-wider font-bold hover:opacity-60 transition-opacity"
+        className="text-base tracking-wider font-semibold hover:opacity-60 transition-opacity"
       >
         {rightText || "PINTOS"}
       </TransitionLink>

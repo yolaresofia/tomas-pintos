@@ -116,7 +116,7 @@ export default function ProjectPage({
       <div className="h-full grid grid-cols-[1.2fr_0.6fr_1.2fr]">
         <div className="relative overflow-y-auto">
           {category && categoryProjects && categoryProjects.length > 0 && (
-            <div className="fixed top-0 left-0 p-6 z-10">
+            <div className="fixed top-0 left-0 p-2 z-10">
               <ProjectNav
                 category={category}
                 projects={categoryProjects}
