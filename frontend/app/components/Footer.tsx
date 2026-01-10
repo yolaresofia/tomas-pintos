@@ -19,19 +19,19 @@ export default function Footer({
     <footer className={`p-2 flex justify-between items-end ${className}`}>
       <TransitionLink
         href="/"
-        className="text-base tracking-wider font-semibold hover:opacity-60 transition-opacity"
+        className="text-sm tracking-wider font-semibold hover:opacity-60 transition-opacity"
       >
         {leftText || "TOMAS"}
       </TransitionLink>
-      <TransitionLink
+      <TransitionLink 
         href="/about"
-        className="text-base hover:opacity-60 font-semibold transition-opacity"
+        className="text-sm hover:opacity-60 font-semibold transition-opacity"
       >
         {centerText || "(ABOUT)"}
       </TransitionLink>
       <TransitionLink
         href="/"
-        className="text-base tracking-wider font-semibold hover:opacity-60 transition-opacity"
+        className="text-sm tracking-wider font-semibold hover:opacity-60 transition-opacity"
       >
         {rightText || "PINTOS"}
       </TransitionLink>

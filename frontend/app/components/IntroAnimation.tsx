@@ -103,14 +103,14 @@ export default function IntroAnimation({
       >
         <div className="flex">
           <span
-            className={`text-base font-bold tracking-wider transition-transform duration-700 ease-in-out ${
+            className={`text-sm font-semibold tracking-wider transition-transform duration-700 ease-in-out ${
               curtainOpen ? "-translate-x-[calc(50vw-100px)]" : ""
             }`}
           >
             {leftText}
           </span>
           <span
-            className={`text-base font-bold tracking-wider ml-4 transition-transform duration-700 ease-in-out ${
+            className={`text-sm font-semibold tracking-wider ml-4 transition-transform duration-700 ease-in-out ${
               curtainOpen ? "translate-x-[calc(50vw-100px)]" : ""
             }`}
           >

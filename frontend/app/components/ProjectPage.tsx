@@ -130,9 +130,9 @@ export default function ProjectPage({
             projectTitle={project.title ?? undefined}
           />
         </div>
-        <div className="overflow-y-auto flex flex-col items-start text-left px-4 pt-6">
+        <div className="overflow-y-auto flex flex-col items-start text-left px-4 pt-1">
           {project.title && (
-            <h1 className="text-lg font-medium mb-4">{project.title}</h1>
+            <h1 className="text-sm font-medium mb-4">{project.title}</h1>
           )}
           {project.description && (
             <PortableText

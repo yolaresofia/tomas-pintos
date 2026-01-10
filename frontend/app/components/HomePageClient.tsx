@@ -84,9 +84,9 @@ export default function HomePageClient({
             </div>
           )}
 
-          <h2 className="text-base font-semibold tracking-wider cursor-default">FOTO</h2>
+          <h2 className="text-sm font-semibold tracking-wider cursor-default">FOTO</h2>
           <ul
-            className={`text-base transition-opacity duration-300 leading-tight ${
+            className={`text-sm transition-opacity duration-300 leading-tight ${
               hoveredColumn === "foto" ? "opacity-100" : "opacity-0 pointer-events-none"
             }`}
           >
@@ -102,7 +102,7 @@ export default function HomePageClient({
             ))}
           </ul>
           <div className="mt-auto pt-6">
-            <span className="text-base font-semibold tracking-wider">
+            <span className="text-sm font-semibold tracking-wider">
               {settings?.footerLeftText || "TOMAS"}
             </span>
           </div>
@@ -124,9 +124,9 @@ export default function HomePageClient({
             </div>
           )}
 
-          <h2 className="text-base font-semibold tracking-wider cursor-default">MOVEMENT DIRECTION</h2>
+          <h2 className="text-sm font-semibold tracking-wider cursor-default">MOVEMENT DIRECTION</h2>
           <ul
-            className={`text-base text-center transition-opacity duration-300 leading-tight ${
+            className={`text-sm text-center transition-opacity duration-300 leading-tight ${
               hoveredColumn === "movement" ? "opacity-100" : "opacity-0 pointer-events-none"
             }`}
           >
@@ -142,7 +142,7 @@ export default function HomePageClient({
             ))}
           </ul>
           <div className="mt-auto pt-6">
-            <TransitionLink href="/about" className="text-base font-semibold hover:opacity-60 transition-opacity">
+            <TransitionLink href="/about" className="text-sm font-semibold hover:opacity-60 transition-opacity">
               {settings?.footerCenterText || "(ABOUT)"}
             </TransitionLink>
           </div>
@@ -164,9 +164,9 @@ export default function HomePageClient({
             </div>
           )}
 
-          <h2 className="text-base font-semibold tracking-wider cursor-default">PERFORMANCE</h2>
+          <h2 className="text-sm font-semibold tracking-wider cursor-default">PERFORMANCE</h2>
           <ul
-            className={`text-base transition-opacity duration-300 leading-tight ${
+            className={`text-sm transition-opacity duration-300 leading-tight ${
               hoveredColumn === "performance" ? "opacity-100" : "opacity-0 pointer-events-none"
             }`}
           >
@@ -182,7 +182,7 @@ export default function HomePageClient({
             ))}
           </ul>
           <div className="mt-auto pt-6">
-            <span className="text-base font-semibold tracking-wider">
+            <span className="text-sm font-semibold tracking-wider">
               {settings?.footerRightText || "PINTOS"}
             </span>
           </div>

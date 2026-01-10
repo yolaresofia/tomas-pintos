@@ -50,9 +50,9 @@ export default function ProjectNav({ category, projects, currentSlug }: ProjectN
       onMouseLeave={() => setIsHovered(false)}
     >
       <div className="flex items-center gap-1 cursor-pointer">
-        <span className="text-base font-bold tracking-wider">{label}</span>
+        <span className="text-sm font-semibold tracking-wider">{label}</span>
         <span
-          className={`text-base transition-opacity duration-500 ${
+          className={`text-sm transition-opacity duration-500 ${
             showArrow ? "opacity-100" : "opacity-0"
           }`}
         >
@@ -62,7 +62,7 @@ export default function ProjectNav({ category, projects, currentSlug }: ProjectN
 
       {/* Dropdown */}
       <ul
-        className={`text-base leading-tight transition-opacity duration-300 mt-1 ${
+        className={`text-sm leading-tight transition-opacity duration-300 mt-1 ${
           isHovered ? "opacity-100" : "opacity-0 pointer-events-none"
         }`}
       >
