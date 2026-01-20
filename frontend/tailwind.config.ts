@@ -9,6 +9,9 @@ export default {
       padding: "2rem",
     },
     extend: {
+      screens: {
+        desktop: "1100px", // Custom breakpoint for tablet/desktop split
+      },
       boxShadow: {
         layer: "0 35px 60px -15px rgba(0, 0, 0, 0.3)",
       },

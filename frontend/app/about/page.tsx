@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import Footer from "@/app/components/Footer";
+import HomeButton from "@/app/components/HomeButton";
 import { PortableText } from "@/app/components/PortableText";
 import { sanityFetch } from "@/sanity/lib/live";
 import { aboutQuery, settingsQuery } from "@/sanity/lib/queries";
@@ -37,16 +38,17 @@ export default async function AboutPage() {
 
   return (
     <div
-      className="min-h-screen flex flex-col"
+      className="min-h-screen flex flex-col lg:pt-24 pt-12"
       style={backgroundColor ? { backgroundColor } : undefined}
     >
+      <HomeButton />
       {/* Main Content */}
-      <div className="flex-1 p-6 mx-auto">
+      <div className="flex-1 p-2 mx-auto pb-12">
         {/* Main Text */}
         {about?.mainText && (
           <PortableText
             value={about.mainText}
-            className="text-base leading-relaxed mb-12"
+            className="text-[10px] md:text-sm text-justify leading-relaxed mb-12"
           />
         )}
 
@@ -55,12 +57,12 @@ export default async function AboutPage() {
           {/* Selected Clients */}
           <div>
             {about?.selectedClients && (
-              <h2 className="text-base font-medium tracking-wider mb-2">
+              <h2 className="text-[10px] md:text-sm font-medium tracking-wider mb-2">
                 {about.selectedClients}
               </h2>
             )}
             {about?.selectedClientsDescription && (
-              <p className="text-base leading-relaxed">
+              <p className="text-[10px] md:text-sm leading-relaxed">
                 {about.selectedClientsDescription}
               </p>
             )}
@@ -70,12 +72,12 @@ export default async function AboutPage() {
           <div>
             {about?.specialties && about.specialties.length > 0 && (
               <>
-                <h2 className="text-base font-medium tracking-wider mb-2">
+                <h2 className="text-[10px] md:text-sm font-medium tracking-wider mb-2">
                   Especialidades
                 </h2>
                 <ul className="space-y-1">
                   {about.specialties.map((specialty: string, index: number) => (
-                    <li key={index} className="text-sm">
+                    <li key={index} className="text-[10px] md:text-sm">
                       {specialty}
                     </li>
                   ))}
@@ -88,7 +90,7 @@ export default async function AboutPage() {
           <div>
             {about?.contact && about.contact.length > 0 && (
               <>
-                <h2 className="text-base font-medium tracking-wider mb-2">Contact</h2>
+                <h2 className="text-[10px] md:text-sm font-medium tracking-wider mb-2">Contact</h2>
                 <ul className="space-y-1">
                   {about.contact.map((link: ExternalLinkItem) => {
                     const href = resolveExternalLink(link);
@@ -100,8 +102,7 @@ export default async function AboutPage() {
                           href={href}
                           target={link.linkType === "external" ? "_blank" : undefined}
                           rel={link.linkType === "external" ? "noopener noreferrer" : undefined}
-                          className="text-base hover:opacity-60 transition-opacity"
-                        >
+                          className="text-[10px] md:text-sm hover:opacity-60 transition-opacity">
                           {link.label}
                         </a>
                       </li>

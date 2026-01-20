@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 
-import TransitionLink from "@/app/components/TransitionLink";
 import VideoPlayer from "@/app/components/VideoPlayer";
 import { urlForImage, resolveExternalLink } from "@/sanity/lib/utils";
 import { PortableText } from "@/app/components/PortableText";
@@ -12,6 +11,7 @@ import type {
   SettingsQueryResult,
 } from "@/sanity.types";
 import Footer from "./Footer";
+import HomeButton from "./HomeButton";
 
 type MediaItem = {
   _key: string;
@@ -112,8 +112,80 @@ export default function ProjectPage({
     | null;
 
   return (
-    <div className="h-screen relative overflow-hidden">
-      <div className="h-full grid grid-cols-[1.2fr_0.6fr_1.2fr]">
+    <div className="min-h-screen relative min-[1100px]:h-screen min-[1100px]:overflow-hidden">
+      <HomeButton />
+
+      {/* Mobile Layout (below 1100px) */}
+      <div className="min-[1100px]:hidden flex flex-col">
+        {/* Project Nav - Fixed overlay */}
+        {category && categoryProjects && categoryProjects.length > 0 && (
+          <div className="fixed top-0 left-0 p-2 z-10">
+            <ProjectNav
+              category={category}
+              projects={categoryProjects}
+              currentSlug={project.slug ?? undefined}
+            />
+          </div>
+        )}
+
+        {/* Left Images - Full Width */}
+        <div className="w-full">
+          <MediaColumnRenderer
+            column={project.leftColumn as MediaColumn}
+            side="left"
+            projectTitle={project.title ?? undefined}
+          />
+        </div>
+
+        {/* Project Info */}
+        <div className="flex flex-col items-start text-left px-2 py-6">
+          {project.title && (
+            <h1 className="text-[10px] md:text-sm font-medium mb-4">{project.title}</h1>
+          )}
+          {project.description && (
+            <PortableText
+              value={project.description}
+              className="text-[10px] md:text-xs mb-6"
+            />
+          )}
+          {project.relevantLinks && project.relevantLinks.length > 0 && (
+            <div className="space-y-2">
+              {project.relevantLinks.map((link) => {
+                const href = resolveExternalLink(link);
+                if (!href) return null;
+                return (
+                  <a
+                    key={link._key}
+                    href={href}
+                    target={link.linkType === "external" ? "_blank" : undefined}
+                    rel={
+                      link.linkType === "external"
+                        ? "noopener noreferrer"
+                        : undefined
+                    }
+                    className="block text-[10px] md:text-xs hover:opacity-60 transition-opacity uppercase"
+                  >
+                    <span className="mr-1">→</span>
+                    {link.label}
+                  </a>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* Right Images - Full Width */}
+        <div className="w-full">
+          <MediaColumnRenderer
+            column={project.rightColumn as MediaColumn}
+            side="left"
+            projectTitle={project.title ?? undefined}
+          />
+        </div>
+      </div>
+
+      {/* Desktop Layout (1100px and larger) */}
+      <div className="hidden min-[1100px]:grid h-full grid-cols-[1.2fr_0.6fr_1.2fr]">
         <div className="relative overflow-y-auto">
           {category && categoryProjects && categoryProjects.length > 0 && (
             <div className="fixed top-0 left-0 p-2 z-10">
@@ -173,11 +245,11 @@ export default function ProjectPage({
           />
         </div>
       </div>
+
       <Footer
         leftText={settings?.footerLeftText}
         centerText={settings?.footerCenterText}
         rightText={settings?.footerRightText}
-        className="absolute bottom-0 left-0 right-0 pointer-events-none [&>*]:pointer-events-auto"
       />
     </div>
   );

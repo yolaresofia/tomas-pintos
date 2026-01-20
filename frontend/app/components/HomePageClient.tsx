@@ -5,6 +5,7 @@ import Image from "next/image";
 
 import TransitionLink from "@/app/components/TransitionLink";
 import IntroAnimation from "./IntroAnimation";
+import Footer from "./Footer";
 import type { AllProjectsForNavQueryResult, SettingsQueryResult } from "@/sanity.types";
 
 const INTRO_SEEN_KEY = "tomas-pintos-intro-seen";
@@ -27,9 +28,10 @@ export default function HomePageClient({
   settings,
 }: HomePageClientProps) {
   const [hoveredColumn, setHoveredColumn] = useState<"foto" | "movement" | "performance" | null>(null);
+  const [expandedSection, setExpandedSection] = useState<"foto" | "movement" | "performance" | null>("movement");
   const [showIntro, setShowIntro] = useState<boolean | null>(null);
   const [contentVisible, setContentVisible] = useState(false);
-  
+
   useEffect(() => {
     const hasSeenIntro = sessionStorage.getItem(INTRO_SEEN_KEY);
     if (hasSeenIntro) {
@@ -48,9 +50,27 @@ export default function HomePageClient({
     }, 50);
   };
 
+  const toggleSection = (section: "foto" | "movement" | "performance") => {
+    setExpandedSection(expandedSection === section ? null : section);
+  };
+
   if (showIntro === null) {
     return <div className="min-h-screen" />;
   }
+
+  // Get the image URL for the currently expanded section on mobile
+  const getExpandedImageUrl = () => {
+    switch (expandedSection) {
+      case "foto":
+        return fotoImageUrl;
+      case "movement":
+        return movementDirectionImageUrl;
+      case "performance":
+        return performanceImageUrl;
+      default:
+        return null;
+    }
+  };
 
   return (
     <div className="min-h-screen">
@@ -62,8 +82,121 @@ export default function HomePageClient({
           rightText={settings?.footerRightText || "PINTOS"}
         />
       )}
+
+      {/* Mobile/Tablet Layout (below 1100px) */}
       <div
-        className={`min-h-screen grid grid-cols-3 transition-opacity duration-700 ${
+        className={`min-[1100px]:hidden min-h-screen flex flex-col transition-opacity duration-700 ${
+          contentVisible ? "opacity-100" : "opacity-0"
+        }`}
+      >
+        {/* Full screen background image when section is expanded */}
+        {expandedSection && getExpandedImageUrl() && (
+          <div className="fixed inset-0 -z-10">
+            <Image
+              src={getExpandedImageUrl()!}
+              alt=""
+              fill
+              className="object-cover"
+              priority
+            />
+          </div>
+        )}
+
+        <div className="flex-1 flex flex-col p-2">
+          {/* Header row with all three categories */}
+          <div className="flex justify-between">
+            {/* FOTO - Left */}
+            <div className="flex flex-col">
+              <button
+                onClick={() => toggleSection("foto")}
+                className="text-[9px] md:text-sm font-semibold tracking-wider text-left"
+              >
+                FOTO
+              </button>
+              <ul
+                className={`text-[9px] md:text-sm leading-tight overflow-hidden transition-all duration-300 ${
+                  expandedSection === "foto" ? "max-h-96 opacity-100 mt-1" : "max-h-0 opacity-0"
+                }`}
+              >
+                {projects?.foto?.map((project) => (
+                  <li key={project._id}>
+                    <TransitionLink
+                      href={`/foto/${project.slug}`}
+                      className="hover:opacity-60 transition-opacity"
+                    >
+                      {project.title}
+                    </TransitionLink>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* MOVEMENT DIRECTION - Center */}
+            <div className="flex flex-col items-center absolute left-1/2 -translate-x-1/2">
+              <button
+                onClick={() => toggleSection("movement")}
+                className="text-[9px] md:text-sm font-semibold tracking-wider text-center whitespace-nowrap"
+              >
+                MOVEMENT DIRECTION
+              </button>
+              <ul
+                className={`text-[9px] md:text-sm leading-tight text-center overflow-hidden transition-all duration-300 ${
+                  expandedSection === "movement" ? "max-h-96 opacity-100 mt-1" : "max-h-0 opacity-0"
+                }`}
+              >
+                {projects?.movementDirection?.map((project) => (
+                  <li key={project._id}>
+                    <TransitionLink
+                      href={`/movement-direction/${project.slug}`}
+                      className="hover:opacity-60 transition-opacity"
+                    >
+                      {project.title}
+                    </TransitionLink>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* PERFORMANCE - Right */}
+            <div className="flex flex-col items-end">
+              <button
+                onClick={() => toggleSection("performance")}
+                className="text-[9px] md:text-sm font-semibold tracking-wider text-right"
+              >
+                PERFORMANCE
+              </button>
+              <ul
+                className={`text-[9px] md:text-sm leading-tight text-right overflow-hidden transition-all duration-300 ${
+                  expandedSection === "performance" ? "max-h-96 opacity-100 mt-1" : "max-h-0 opacity-0"
+                }`}
+              >
+                {projects?.performance?.map((project) => (
+                  <li key={project._id}>
+                    <TransitionLink
+                      href={`/performance/${project.slug}`}
+                      className="hover:opacity-60 transition-opacity"
+                    >
+                      {project.title}
+                    </TransitionLink>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+        </div>
+
+        {/* Footer */}
+        <Footer
+          leftText={settings?.footerLeftText}
+          centerText={settings?.footerCenterText}
+          rightText={settings?.footerRightText}
+        />
+      </div>
+
+      {/* Desktop Layout (1100px and larger) */}
+      <div
+        className={`hidden min-[1100px]:grid min-h-screen grid-cols-3 transition-opacity duration-700 ${
           contentVisible ? "opacity-100" : "opacity-0"
         }`}
       >
