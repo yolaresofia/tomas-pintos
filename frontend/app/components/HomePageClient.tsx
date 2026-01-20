@@ -29,6 +29,7 @@ export default function HomePageClient({
 }: HomePageClientProps) {
   const [hoveredColumn, setHoveredColumn] = useState<"foto" | "movement" | "performance" | null>(null);
   const [expandedSection, setExpandedSection] = useState<"foto" | "movement" | "performance" | null>("movement");
+  const [activeBackground, setActiveBackground] = useState<"foto" | "movement" | "performance">("movement");
   const [showIntro, setShowIntro] = useState<boolean | null>(null);
   const [contentVisible, setContentVisible] = useState(false);
 
@@ -51,24 +52,29 @@ export default function HomePageClient({
   };
 
   const toggleSection = (section: "foto" | "movement" | "performance") => {
-    setExpandedSection(expandedSection === section ? null : section);
+    if (expandedSection === section) {
+      // Clicking on already expanded section - just close dropdown, keep background
+      setExpandedSection(null);
+    } else {
+      // Clicking on different section - change both dropdown and background
+      setExpandedSection(section);
+      setActiveBackground(section);
+    }
   };
 
   if (showIntro === null) {
     return <div className="min-h-screen" />;
   }
 
-  // Get the image URL for the currently expanded section on mobile
-  const getExpandedImageUrl = () => {
-    switch (expandedSection) {
+  // Get the image URL for the active background section on mobile
+  const getActiveBackgroundUrl = () => {
+    switch (activeBackground) {
       case "foto":
         return fotoImageUrl;
       case "movement":
         return movementDirectionImageUrl;
       case "performance":
         return performanceImageUrl;
-      default:
-        return null;
     }
   };
 
@@ -89,11 +95,11 @@ export default function HomePageClient({
           contentVisible ? "opacity-100" : "opacity-0"
         }`}
       >
-        {/* Full screen background image when section is expanded */}
-        {expandedSection && getExpandedImageUrl() && (
+        {/* Full screen background image - stays visible even when dropdown is closed */}
+        {getActiveBackgroundUrl() && (
           <div className="fixed inset-0 -z-10">
             <Image
-              src={getExpandedImageUrl()!}
+              src={getActiveBackgroundUrl()!}
               alt=""
               fill
               className="object-cover"
@@ -109,13 +115,15 @@ export default function HomePageClient({
             <div className="flex flex-col">
               <button
                 onClick={() => toggleSection("foto")}
-                className="text-[9px] md:text-sm font-semibold tracking-wider text-left hover:text-[#E72B1C] transition-colors"
+                className={`text-[11px] md:text-sm font-semibold tracking-wider text-left hover:text-[#E72B1C] transition-colors ${
+                  expandedSection === "foto" ? "text-[#E72B1C]" : ""
+                }`}
               >
                 FOTO
               </button>
               <ul
-                className={`text-[9px] md:text-sm leading-tight overflow-hidden transition-all duration-300 ${
-                  expandedSection === "foto" ? "max-h-96 opacity-100 mt-1" : "max-h-0 opacity-0"
+                className={`text-[13px] space-y-3 min-[1100px]:space-y-0 md:text-sm leading-tight overflow-hidden transition-all duration-300 ${
+                  expandedSection === "foto" ? "opacity-100 mt-1" : "max-h-0 opacity-0"
                 }`}
               >
                 {projects?.foto?.map((project) => (
@@ -135,13 +143,15 @@ export default function HomePageClient({
             <div className="flex flex-col items-center absolute left-1/2 -translate-x-1/2">
               <button
                 onClick={() => toggleSection("movement")}
-                className="text-[9px] md:text-sm font-semibold tracking-wider text-center whitespace-nowrap hover:text-[#E72B1C] transition-colors"
+                className={`text-[11px] md:text-sm font-semibold tracking-wider text-center whitespace-nowrap hover:text-[#E72B1C] transition-colors ${
+                  expandedSection === "movement" ? "text-[#E72B1C]" : ""
+                }`}
               >
                 MOVEMENT DIRECTION
               </button>
               <ul
-                className={`text-[9px] md:text-sm leading-tight text-center overflow-hidden transition-all duration-300 ${
-                  expandedSection === "movement" ? "max-h-96 opacity-100 mt-1" : "max-h-0 opacity-0"
+                className={`text-[13px] space-y-3 min-[1100px]:space-y-0 md:text-sm leading-tight text-center overflow-hidden transition-all duration-300 ${
+                  expandedSection === "movement" ? "max-h-[80vh] opacity-100 mt-1" : "max-h-0 opacity-0"
                 }`}
               >
                 {projects?.movementDirection?.map((project) => (
@@ -161,13 +171,15 @@ export default function HomePageClient({
             <div className="flex flex-col items-end">
               <button
                 onClick={() => toggleSection("performance")}
-                className="text-[9px] md:text-sm font-semibold tracking-wider text-right hover:text-[#E72B1C] transition-colors"
+                className={`text-[11px] md:text-sm font-semibold tracking-wider text-right hover:text-[#E72B1C] transition-colors ${
+                  expandedSection === "performance" ? "text-[#E72B1C]" : ""
+                }`}
               >
                 PERFORMANCE
               </button>
               <ul
-                className={`text-[9px] md:text-sm leading-tight text-right overflow-hidden transition-all duration-300 ${
-                  expandedSection === "performance" ? "max-h-96 opacity-100 mt-1" : "max-h-0 opacity-0"
+                className={`text-[13px] space-y-3 min-[1100px]:space-y-0 md:text-sm leading-tight text-right overflow-hidden transition-all duration-300 ${
+                  expandedSection === "performance" ? "max-h-[80vh] opacity-100 mt-1" : "max-h-0 opacity-0"
                 }`}
               >
                 {projects?.performance?.map((project) => (

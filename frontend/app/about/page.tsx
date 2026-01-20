@@ -48,7 +48,7 @@ export default async function AboutPage() {
         {about?.mainText && (
           <PortableText
             value={about.mainText}
-            className="text-[10px] md:text-sm text-justify leading-relaxed mb-12"
+            className="text-[11px] md:text-sm text-justify leading-relaxed mb-12"
           />
         )}
 
@@ -57,12 +57,12 @@ export default async function AboutPage() {
           {/* Selected Clients */}
           <div>
             {about?.selectedClients && (
-              <h2 className="text-[10px] md:text-sm font-medium tracking-wider mb-2">
+              <h2 className="text-[11px] md:text-sm font-medium tracking-wider mb-2">
                 {about.selectedClients}
               </h2>
             )}
             {about?.selectedClientsDescription && (
-              <p className="text-[10px] md:text-sm leading-relaxed">
+              <p className="text-[11px] md:text-sm leading-relaxed">
                 {about.selectedClientsDescription}
               </p>
             )}
@@ -72,12 +72,12 @@ export default async function AboutPage() {
           <div>
             {about?.specialties && about.specialties.length > 0 && (
               <>
-                <h2 className="text-[10px] md:text-sm font-medium tracking-wider mb-2">
+                <h2 className="text-[11px] md:text-sm font-medium tracking-wider mb-2">
                   Especialidades
                 </h2>
                 <ul className="space-y-1">
                   {about.specialties.map((specialty: string, index: number) => (
-                    <li key={index} className="text-[10px] md:text-sm">
+                    <li key={index} className="text-[11px] md:text-sm">
                       {specialty}
                     </li>
                   ))}
@@ -90,7 +90,7 @@ export default async function AboutPage() {
           <div>
             {about?.contact && about.contact.length > 0 && (
               <>
-                <h2 className="text-[10px] md:text-sm font-medium tracking-wider mb-2">Contact</h2>
+                <h2 className="text-[11px] md:text-sm font-medium tracking-wider mb-2">Contact</h2>
                 <ul className="space-y-1">
                   {about.contact.map((link: ExternalLinkItem) => {
                     const href = resolveExternalLink(link);
@@ -102,7 +102,7 @@ export default async function AboutPage() {
                           href={href}
                           target={link.linkType === "external" ? "_blank" : undefined}
                           rel={link.linkType === "external" ? "noopener noreferrer" : undefined}
-                          className="text-[10px] md:text-sm hover:opacity-60 transition-opacity">
+                          className="text-[11px] md:text-sm hover:opacity-60 transition-opacity">
                           {link.label}
                         </a>
                       </li>

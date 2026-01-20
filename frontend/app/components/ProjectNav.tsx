@@ -29,7 +29,7 @@ const categoryPaths: Record<string, string> = {
 };
 
 export default function ProjectNav({ category, projects, currentSlug }: ProjectNavProps) {
-  const [isHovered, setIsHovered] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const [showArrow, setShowArrow] = useState(false);
 
   // Ease in the arrow after mount
@@ -43,27 +43,36 @@ export default function ProjectNav({ category, projects, currentSlug }: ProjectN
   const label = categoryLabels[category] || category.toUpperCase();
   const basePath = categoryPaths[category] || `/${category}`;
 
+  const handleToggle = () => {
+    setIsOpen(!isOpen);
+  };
+
   return (
     <div
       className="relative"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      onMouseEnter={() => setIsOpen(true)}
+      onMouseLeave={() => setIsOpen(false)}
     >
-      <div className="flex items-center gap-1 cursor-pointer">
-        <span className="text-[9px] md:text-sm font-semibold tracking-wider">{label}</span>
+      <button
+        onClick={handleToggle}
+        className={`flex items-center gap-1 cursor-pointer hover:text-[#E72B1C] transition-colors ${
+          isOpen ? "text-[#E72B1C]" : ""
+        }`}
+      >
+        <span className="text-[11px] md:text-sm font-semibold tracking-wider">{label}</span>
         <span
-          className={`text-[9px] md:text-sm transition-opacity duration-500 ${
+          className={`text-[11px] md:text-sm transition-opacity duration-500 ${
             showArrow ? "opacity-100" : "opacity-0"
           }`}
         >
           ↓
         </span>
-      </div>
+      </button>
 
       {/* Dropdown */}
       <ul
-        className={`text-[9px] md:text-sm leading-tight transition-opacity duration-300 mt-1 ${
-          isHovered ? "opacity-100" : "opacity-0 pointer-events-none"
+        className={`text-[13px] space-y-3 min-[1100px]:space-y-0 md:text-sm leading-tight transition-opacity duration-300 mt-1 ${
+          isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
         }`}
       >
         {projects.map((project) => {

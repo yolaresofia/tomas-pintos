@@ -108,14 +108,14 @@ export default function IntroAnimation({
       <div className="absolute inset-0 flex items-end justify-center pb-2 pointer-events-none">
         <div className="flex">
           <span
-            className={`text-[9px] md:text-sm font-semibold tracking-wider transition-transform duration-700 ease-in-out ${
+            className={`text-[11px] md:text-sm font-semibold tracking-wider transition-transform duration-700 ease-in-out ${
               curtainOpen ? "-translate-x-[calc(50vw-55px)] min-[1100px]:-translate-x-[calc(50vw-90px)]" : ""
             }`}
           >
             {leftText}
           </span>
           <span
-            className={`text-[9px] md:text-sm font-semibold tracking-wider ml-4 transition-transform duration-700 ease-in-out ${
+            className={`text-[11px] md:text-sm font-semibold tracking-wider ml-4 transition-transform duration-700 ease-in-out ${
               curtainOpen ? "translate-x-[calc(50vw-55px)] min-[1100px]:translate-x-[calc(50vw-90px)]" : ""
             }`}
           >
