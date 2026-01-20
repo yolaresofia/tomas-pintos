@@ -74,7 +74,10 @@ export default function IntroAnimation({
   }
 
   return (
-    <div className="fixed inset-0 z-50">
+    <div
+      className={`fixed inset-0 z-50 ${phase === "video" ? "cursor-pointer" : ""}`}
+      onClick={phase === "video" ? handleVideoClick : undefined}
+    >
       {/* Video layer - behind curtain */}
       {videoUrl && (
         <div
@@ -85,33 +88,35 @@ export default function IntroAnimation({
           <video
             ref={videoRef}
             src={videoUrl}
-            className="w-full h-full object-cover cursor-pointer"
+            className="w-full h-full object-cover"
             muted
             playsInline
-            onClick={handleVideoClick}
             onEnded={handleVideoEnd}
           />
         </div>
       )}
 
-      {/* Curtain layer */}
+      {/* Curtain background layer - fades out */}
       <div
-        className={`absolute inset-0 flex items-end justify-center pb-6 transition-opacity duration-500 ${
-          phase === "video" ? "opacity-0 pointer-events-none" : "opacity-100"
+        className={`absolute inset-0 transition-opacity duration-500 pointer-events-none ${
+          phase === "video" ? "opacity-0" : "opacity-100"
         }`}
         style={{ backgroundColor: "#E72B1C" }}
-      >
+      />
+
+      {/* Labels layer - stays visible on top of video */}
+      <div className="absolute inset-0 flex items-end justify-center pb-2 pointer-events-none">
         <div className="flex">
           <span
             className={`text-[9px] md:text-sm font-semibold tracking-wider transition-transform duration-700 ease-in-out ${
-              curtainOpen ? "-translate-x-[calc(50vw-100px)]" : ""
+              curtainOpen ? "-translate-x-[calc(50vw-55px)] min-[1100px]:-translate-x-[calc(50vw-90px)]" : ""
             }`}
           >
             {leftText}
           </span>
           <span
             className={`text-[9px] md:text-sm font-semibold tracking-wider ml-4 transition-transform duration-700 ease-in-out ${
-              curtainOpen ? "translate-x-[calc(50vw-100px)]" : ""
+              curtainOpen ? "translate-x-[calc(50vw-55px)] min-[1100px]:translate-x-[calc(50vw-90px)]" : ""
             }`}
           >
             {rightText}

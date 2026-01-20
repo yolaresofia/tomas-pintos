@@ -72,7 +72,7 @@ export default function ProjectNav({ category, projects, currentSlug }: ProjectN
             <li key={project._id}>
               <TransitionLink
                 href={`${basePath}/${project.slug}`}
-                className={`hover:opacity-60 transition-opacity ${
+                className={`hover:text-[#E72B1C] transition-colors ${
                   isCurrentProject ? "font-medium" : ""
                 }`}
               >

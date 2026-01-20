@@ -73,7 +73,7 @@ export default function HomePageClient({
   };
 
   return (
-    <div className="min-h-screen">
+    <div className="h-screen overflow-hidden">
       {showIntro && (
         <IntroAnimation
           videoUrl={previewVideoUrl}
@@ -85,7 +85,7 @@ export default function HomePageClient({
 
       {/* Mobile/Tablet Layout (below 1100px) */}
       <div
-        className={`min-[1100px]:hidden min-h-screen flex flex-col transition-opacity duration-700 ${
+        className={`min-[1100px]:hidden h-screen overflow-hidden flex flex-col transition-opacity duration-700 ${
           contentVisible ? "opacity-100" : "opacity-0"
         }`}
       >
@@ -102,14 +102,14 @@ export default function HomePageClient({
           </div>
         )}
 
-        <div className="flex-1 flex flex-col p-2">
-          {/* Header row with all three categories */}
+        {/* Fixed header row with all three categories */}
+        <div className="fixed top-0 left-0 right-0 p-2 z-10">
           <div className="flex justify-between">
             {/* FOTO - Left */}
             <div className="flex flex-col">
               <button
                 onClick={() => toggleSection("foto")}
-                className="text-[9px] md:text-sm font-semibold tracking-wider text-left"
+                className="text-[9px] md:text-sm font-semibold tracking-wider text-left hover:text-[#E72B1C] transition-colors"
               >
                 FOTO
               </button>
@@ -122,7 +122,7 @@ export default function HomePageClient({
                   <li key={project._id}>
                     <TransitionLink
                       href={`/foto/${project.slug}`}
-                      className="hover:opacity-60 transition-opacity"
+                      className="hover:text-[#E72B1C] transition-colors"
                     >
                       {project.title}
                     </TransitionLink>
@@ -135,7 +135,7 @@ export default function HomePageClient({
             <div className="flex flex-col items-center absolute left-1/2 -translate-x-1/2">
               <button
                 onClick={() => toggleSection("movement")}
-                className="text-[9px] md:text-sm font-semibold tracking-wider text-center whitespace-nowrap"
+                className="text-[9px] md:text-sm font-semibold tracking-wider text-center whitespace-nowrap hover:text-[#E72B1C] transition-colors"
               >
                 MOVEMENT DIRECTION
               </button>
@@ -148,7 +148,7 @@ export default function HomePageClient({
                   <li key={project._id}>
                     <TransitionLink
                       href={`/movement-direction/${project.slug}`}
-                      className="hover:opacity-60 transition-opacity"
+                      className="hover:text-[#E72B1C] transition-colors"
                     >
                       {project.title}
                     </TransitionLink>
@@ -161,7 +161,7 @@ export default function HomePageClient({
             <div className="flex flex-col items-end">
               <button
                 onClick={() => toggleSection("performance")}
-                className="text-[9px] md:text-sm font-semibold tracking-wider text-right"
+                className="text-[9px] md:text-sm font-semibold tracking-wider text-right hover:text-[#E72B1C] transition-colors"
               >
                 PERFORMANCE
               </button>
@@ -174,7 +174,7 @@ export default function HomePageClient({
                   <li key={project._id}>
                     <TransitionLink
                       href={`/performance/${project.slug}`}
-                      className="hover:opacity-60 transition-opacity"
+                      className="hover:text-[#E72B1C] transition-colors"
                     >
                       {project.title}
                     </TransitionLink>
@@ -196,7 +196,7 @@ export default function HomePageClient({
 
       {/* Desktop Layout (1100px and larger) */}
       <div
-        className={`hidden min-[1100px]:grid min-h-screen grid-cols-3 transition-opacity duration-700 ${
+        className={`hidden min-[1100px]:grid h-screen grid-cols-3 transition-opacity duration-700 ${
           contentVisible ? "opacity-100" : "opacity-0"
         }`}
       >
@@ -217,7 +217,7 @@ export default function HomePageClient({
             </div>
           )}
 
-          <h2 className="text-sm font-semibold tracking-wider cursor-default">FOTO</h2>
+          <h2 className="text-sm font-semibold tracking-wider cursor-default hover:text-[#E72B1C] transition-colors">FOTO</h2>
           <ul
             className={`text-sm transition-opacity duration-300 leading-tight ${
               hoveredColumn === "foto" ? "opacity-100" : "opacity-0 pointer-events-none"
@@ -227,7 +227,7 @@ export default function HomePageClient({
               <li key={project._id}>
                 <TransitionLink
                   href={`/foto/${project.slug}`}
-                  className="hover:opacity-60 transition-opacity"
+                  className="hover:text-[#E72B1C] transition-colors"
                 >
                   {project.title}
                 </TransitionLink>
@@ -257,7 +257,7 @@ export default function HomePageClient({
             </div>
           )}
 
-          <h2 className="text-sm font-semibold tracking-wider cursor-default">MOVEMENT DIRECTION</h2>
+          <h2 className="text-sm font-semibold tracking-wider cursor-default hover:text-[#E72B1C] transition-colors">MOVEMENT DIRECTION</h2>
           <ul
             className={`text-sm text-center transition-opacity duration-300 leading-tight ${
               hoveredColumn === "movement" ? "opacity-100" : "opacity-0 pointer-events-none"
@@ -267,7 +267,7 @@ export default function HomePageClient({
               <li key={project._id}>
                 <TransitionLink
                   href={`/movement-direction/${project.slug}`}
-                  className="hover:opacity-60 transition-opacity"
+                  className="hover:text-[#E72B1C] transition-colors"
                 >
                   {project.title}
                 </TransitionLink>
@@ -275,7 +275,7 @@ export default function HomePageClient({
             ))}
           </ul>
           <div className="mt-auto pt-6">
-            <TransitionLink href="/about" className="text-sm font-semibold hover:opacity-60 transition-opacity">
+            <TransitionLink href="/about" className="text-sm font-semibold hover:text-[#E72B1C] transition-colors">
               {settings?.footerCenterText || "(ABOUT)"}
             </TransitionLink>
           </div>
@@ -297,7 +297,7 @@ export default function HomePageClient({
             </div>
           )}
 
-          <h2 className="text-sm font-semibold tracking-wider cursor-default">PERFORMANCE</h2>
+          <h2 className="text-sm font-semibold tracking-wider cursor-default hover:text-[#E72B1C] transition-colors">PERFORMANCE</h2>
           <ul
             className={`text-sm transition-opacity duration-300 leading-tight ${
               hoveredColumn === "performance" ? "opacity-100" : "opacity-0 pointer-events-none"
@@ -307,7 +307,7 @@ export default function HomePageClient({
               <li key={project._id}>
                 <TransitionLink
                   href={`/performance/${project.slug}`}
-                  className="hover:opacity-60 transition-opacity"
+                  className="hover:text-[#E72B1C] transition-colors"
                 >
                   {project.title}
                 </TransitionLink>
