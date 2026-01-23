@@ -31,6 +31,7 @@ const categoryPaths: Record<string, string> = {
 export default function ProjectNav({ category, projects, currentSlug }: ProjectNavProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [showArrow, setShowArrow] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(false);
 
   // Ease in the arrow after mount
   useEffect(() => {
@@ -38,6 +39,16 @@ export default function ProjectNav({ category, projects, currentSlug }: ProjectN
       setShowArrow(true);
     }, 300);
     return () => clearTimeout(timer);
+  }, []);
+
+  // Check if we're on desktop
+  useEffect(() => {
+    const checkDesktop = () => {
+      setIsDesktop(window.innerWidth >= 1100);
+    };
+    checkDesktop();
+    window.addEventListener("resize", checkDesktop);
+    return () => window.removeEventListener("resize", checkDesktop);
   }, []);
 
   const label = categoryLabels[category] || category.toUpperCase();
@@ -50,8 +61,8 @@ export default function ProjectNav({ category, projects, currentSlug }: ProjectN
   return (
     <div
       className="relative"
-      onMouseEnter={() => setIsOpen(true)}
-      onMouseLeave={() => setIsOpen(false)}
+      onMouseEnter={() => isDesktop && setIsOpen(true)}
+      onMouseLeave={() => isDesktop && setIsOpen(false)}
     >
       <button
         onClick={handleToggle}
@@ -59,7 +70,7 @@ export default function ProjectNav({ category, projects, currentSlug }: ProjectN
           isOpen ? "text-[#E72B1C]" : ""
         }`}
       >
-        <span className="text-[11px] md:text-sm font-semibold tracking-wider">{label}</span>
+        <span className="text-[11px] md:text-sm font-extrabold min-[1100px]:font-semibold tracking-wider">{label}</span>
         <span
           className={`text-[11px] md:text-sm transition-opacity duration-500 ${
             showArrow ? "opacity-100" : "opacity-0"

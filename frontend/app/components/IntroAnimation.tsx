@@ -69,6 +69,42 @@ export default function IntroAnimation({
     }
   }, [videoUrl, curtainOpen, onComplete]);
 
+  // Handle scroll/touch to dismiss video on mobile
+  useEffect(() => {
+    if (phase !== "video") return;
+
+    let touchStartY = 0;
+
+    const handleTouchStart = (e: TouchEvent) => {
+      touchStartY = e.touches[0].clientY;
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      const touchCurrentY = e.touches[0].clientY;
+      const diff = Math.abs(touchCurrentY - touchStartY);
+      // If user scrolls more than 30px, dismiss the video
+      if (diff > 30) {
+        setPhase("complete");
+        onComplete();
+      }
+    };
+
+    const handleWheel = () => {
+      setPhase("complete");
+      onComplete();
+    };
+
+    window.addEventListener("touchstart", handleTouchStart, { passive: true });
+    window.addEventListener("touchmove", handleTouchMove, { passive: true });
+    window.addEventListener("wheel", handleWheel, { passive: true });
+
+    return () => {
+      window.removeEventListener("touchstart", handleTouchStart);
+      window.removeEventListener("touchmove", handleTouchMove);
+      window.removeEventListener("wheel", handleWheel);
+    };
+  }, [phase, onComplete]);
+
   if (phase === "complete") {
     return null;
   }
@@ -105,23 +141,21 @@ export default function IntroAnimation({
       />
 
       {/* Labels layer - stays visible on top of video */}
-      <div className="absolute inset-0 flex items-end justify-center pb-2 pointer-events-none">
-        <div className="flex">
-          <span
-            className={`text-[11px] md:text-sm font-semibold tracking-wider transition-transform duration-700 ease-in-out ${
-              curtainOpen ? "-translate-x-[calc(50vw-55px)] min-[1100px]:-translate-x-[calc(50vw-90px)]" : ""
-            }`}
-          >
-            {leftText}
-          </span>
-          <span
-            className={`text-[11px] md:text-sm font-semibold tracking-wider ml-4 transition-transform duration-700 ease-in-out ${
-              curtainOpen ? "translate-x-[calc(50vw-55px)] min-[1100px]:translate-x-[calc(50vw-90px)]" : ""
-            }`}
-          >
-            {rightText}
-          </span>
-        </div>
+      <div className="absolute bottom-0 left-0 right-0 p-2 flex justify-between items-end pointer-events-none">
+        <span
+          className={`text-[11px] md:text-sm font-extrabold min-[1100px]:font-semibold tracking-wider transition-all duration-700 ease-in-out ${
+            curtainOpen ? "opacity-100" : "opacity-0 translate-x-[calc(50vw-50%)]"
+          }`}
+        >
+          {leftText}
+        </span>
+        <span
+          className={`text-[11px] md:text-sm font-extrabold min-[1100px]:font-semibold tracking-wider transition-all duration-700 ease-in-out ${
+            curtainOpen ? "opacity-100" : "opacity-0 -translate-x-[calc(50vw-50%)]"
+          }`}
+        >
+          {rightText}
+        </span>
       </div>
     </div>
   );

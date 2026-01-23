@@ -138,14 +138,14 @@ export default function ProjectPage({
         </div>
 
         {/* Project Info */}
-        <div className="flex flex-col items-start text-left px-2 py-6">
+        <div className="h-screen flex flex-col items-start text-left px-2 py-6">
           {project.title && (
-            <h1 className="text-[10px] md:text-sm font-medium mb-4">{project.title}</h1>
+            <h1 className="text-[13px] min-[1100px]:text-sm font-medium mb-4">{project.title}</h1>
           )}
           {project.description && (
             <PortableText
               value={project.description}
-              className="text-[10px] md:text-xs mb-6"
+              className="text-[13px] min-[1100px]:text-xs mb-6"
             />
           )}
           {project.relevantLinks && project.relevantLinks.length > 0 && (
@@ -163,7 +163,7 @@ export default function ProjectPage({
                         ? "noopener noreferrer"
                         : undefined
                     }
-                    className="block text-[10px] md:text-xs hover:opacity-60 transition-opacity uppercase"
+                    className="block text-[13px] min-[1100px]:text-xs hover:opacity-60 transition-opacity uppercase"
                   >
                     <span className="mr-1">→</span>
                     {link.label}

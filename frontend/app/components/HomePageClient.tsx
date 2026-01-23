@@ -115,7 +115,7 @@ export default function HomePageClient({
             <div className="flex flex-col">
               <button
                 onClick={() => toggleSection("foto")}
-                className={`text-[11px] md:text-sm font-semibold tracking-wider text-left hover:text-[#E72B1C] transition-colors ${
+                className={`text-[11px] md:text-sm font-extrabold tracking-wider text-left hover:text-[#E72B1C] transition-colors ${
                   expandedSection === "foto" ? "text-[#E72B1C]" : ""
                 }`}
               >
@@ -143,7 +143,7 @@ export default function HomePageClient({
             <div className="flex flex-col items-center absolute left-1/2 -translate-x-1/2">
               <button
                 onClick={() => toggleSection("movement")}
-                className={`text-[11px] md:text-sm font-semibold tracking-wider text-center whitespace-nowrap hover:text-[#E72B1C] transition-colors ${
+                className={`text-[11px] md:text-sm font-extrabold tracking-wider text-center whitespace-nowrap hover:text-[#E72B1C] transition-colors ${
                   expandedSection === "movement" ? "text-[#E72B1C]" : ""
                 }`}
               >
@@ -171,7 +171,7 @@ export default function HomePageClient({
             <div className="flex flex-col items-end">
               <button
                 onClick={() => toggleSection("performance")}
-                className={`text-[11px] md:text-sm font-semibold tracking-wider text-right hover:text-[#E72B1C] transition-colors ${
+                className={`text-[11px] md:text-sm font-extrabold tracking-wider text-right hover:text-[#E72B1C] transition-colors ${
                   expandedSection === "performance" ? "text-[#E72B1C]" : ""
                 }`}
               >
