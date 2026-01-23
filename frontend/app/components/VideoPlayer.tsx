@@ -51,6 +51,31 @@ function VimeoModal({ vimeoId, title, onClose }: VimeoModalProps) {
   const [progress, setProgress] = useState(0);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showControls, setShowControls] = useState(true);
+  const [isVisible, setIsVisible] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
+
+  // Fade in on mount
+  useEffect(() => {
+    const timer = setTimeout(() => setIsVisible(true), 10);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Handle closing with animation - fade out first, then exit fullscreen
+  const handleAnimatedClose = useCallback(() => {
+    if (isClosing) return;
+    setIsClosing(true);
+    setIsVisible(false);
+    setTimeout(() => {
+      // Exit fullscreen after fade animation completes
+      if (document.fullscreenElement) {
+        document.exitFullscreen().finally(() => {
+          onClose();
+        });
+      } else {
+        onClose();
+      }
+    }, 500); // Match the transition duration
+  }, [isClosing, onClose]);
 
   useEffect(() => {
     const loadVimeoPlayer = async () => {
@@ -108,9 +133,10 @@ function VimeoModal({ vimeoId, title, onClose }: VimeoModalProps) {
       const isNowFullscreen = !!document.fullscreenElement;
       setIsFullscreen(isNowFullscreen);
 
-      // Close modal when exiting fullscreen (user pressed Escape or clicked Close)
-      if (!isNowFullscreen) {
-        onClose();
+      // Only handle close if user exited fullscreen externally (e.g., Escape key)
+      // and we're not already in the process of closing
+      if (!isNowFullscreen && !isClosing) {
+        handleAnimatedClose();
       }
     };
 
@@ -121,7 +147,7 @@ function VimeoModal({ vimeoId, title, onClose }: VimeoModalProps) {
       document.removeEventListener("fullscreenchange", handleFullscreenChange);
       document.body.style.overflow = "";
     };
-  }, [onClose]);
+  }, [handleAnimatedClose, isClosing]);
 
   // Auto-hide controls after 2 seconds of inactivity
   const resetHideTimer = useCallback(() => {
@@ -201,19 +227,17 @@ function VimeoModal({ vimeoId, title, onClose }: VimeoModalProps) {
   );
 
   const handleClose = useCallback(() => {
-    if (document.fullscreenElement) {
-      document.exitFullscreen().then(onClose);
-    } else {
-      onClose();
-    }
-  }, [onClose]);
+    handleAnimatedClose();
+  }, [handleAnimatedClose]);
 
   const remainingTime = duration - currentTime;
 
   return createPortal(
     <div
       ref={containerRef}
-      className="fixed inset-0 z-50 flex flex-col bg-black"
+      className={`fixed inset-0 z-50 flex flex-col bg-black transition-opacity duration-500 ease-in-out ${
+        isVisible ? "opacity-100" : "opacity-0"
+      }`}
     >
       <div className="flex-1 relative">
         <iframe
@@ -233,11 +257,54 @@ function VimeoModal({ vimeoId, title, onClose }: VimeoModalProps) {
 
       {/* Custom Controls */}
       <div
-        className={`absolute bottom-0 left-0 right-0 px-6 py-4 bg-gradient-to-t from-black/60 to-transparent transition-opacity duration-300 ${
+        className={`absolute bottom-0 left-0 right-0 px-4 min-[1100px]:px-6 py-4 bg-gradient-to-t from-black/60 to-transparent transition-opacity duration-300 ${
           showControls ? "opacity-100" : "opacity-0 pointer-events-none"
         }`}
       >
-        <div className="flex items-center gap-6 text-white text-sm">
+        {/* Mobile layout - justify-between, no progress bar */}
+        <div className="flex min-[1100px]:hidden items-center justify-between text-white text-sm">
+          {/* Left side - Title and Play/Pause */}
+          <div className="flex items-center gap-3">
+            <span className="font-medium min-w-0 truncate max-w-[120px]">
+              {title}
+            </span>
+            <button
+              onClick={togglePlay}
+              className="hover:opacity-60 transition-opacity flex-shrink-0"
+              aria-label={isPlaying ? "Pause" : "Play"}
+            >
+              {isPlaying ? (
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
+                </svg>
+              ) : (
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M8 5v14l11-7z" />
+                </svg>
+              )}
+            </button>
+            <span className="tabular-nums flex-shrink-0">{formatTime(currentTime)}</span>
+          </div>
+
+          {/* Right side - Sound and Close */}
+          <div className="flex items-center gap-3">
+            <button
+              onClick={toggleMute}
+              className="hover:opacity-60 transition-opacity flex-shrink-0"
+            >
+              Sound {isMuted ? "OFF" : "ON"}
+            </button>
+            <button
+              onClick={isFullscreen ? handleClose : toggleFullscreen}
+              className="hover:opacity-60 transition-opacity flex-shrink-0"
+            >
+              {isFullscreen ? "Close" : "Fullscreen"}
+            </button>
+          </div>
+        </div>
+
+        {/* Desktop layout - with progress bar */}
+        <div className="hidden min-[1100px]:flex items-center gap-6 text-white text-sm">
           {/* Title */}
           <span className="font-medium min-w-0 truncate max-w-[200px]">
             {title}
