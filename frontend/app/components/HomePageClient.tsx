@@ -31,26 +31,18 @@ export default function HomePageClient({
   const [expandedSection, setExpandedSection] = useState<"foto" | "movement" | "performance" | null>("movement");
   const [activeBackground, setActiveBackground] = useState<"foto" | "movement" | "performance">("movement");
 
-  // Track intro state - starts as true (show intro), will be set to false via inline script if intro was seen
-  const [showIntro, setShowIntro] = useState(true);
-  const [introPlaying, setIntroPlaying] = useState(true);
+  // Start with null to indicate "not yet determined" - prevents hydration mismatch
+  const [showIntro, setShowIntro] = useState<boolean | null>(null);
 
-  // Sync React state with DOM changes made by inline script on mount
+  // Check sessionStorage on mount (client-side only)
   useEffect(() => {
     const hasSeenIntro = sessionStorage.getItem(INTRO_SEEN_KEY);
-    if (hasSeenIntro) {
-      setShowIntro(false);
-      setIntroPlaying(false);
-    }
+    setShowIntro(!hasSeenIntro);
   }, []);
 
   const handleIntroComplete = () => {
     sessionStorage.setItem(INTRO_SEEN_KEY, "true");
     setShowIntro(false);
-    // Small delay before showing content for smooth transition
-    setTimeout(() => {
-      setIntroPlaying(false);
-    }, 50);
   };
 
   const toggleSection = (section: "foto" | "movement" | "performance") => {
@@ -76,9 +68,13 @@ export default function HomePageClient({
     }
   };
 
+  // Content is visible when we've determined intro state and intro is not showing
+  // showIntro === null means we haven't checked sessionStorage yet (SSR/initial render)
+  const contentVisible = showIntro === false;
+
   return (
     <div className="h-screen overflow-hidden">
-      {showIntro && (
+      {showIntro === true && (
         <IntroAnimation
           videoUrl={previewVideoUrl}
           onComplete={handleIntroComplete}
@@ -89,9 +85,8 @@ export default function HomePageClient({
 
       {/* Mobile/Tablet Layout (below 1100px) */}
       <div
-        className={`min-[1100px]:hidden h-screen overflow-hidden flex flex-col ${
-          introPlaying ? "opacity-0" : "opacity-100"
-        }`}
+        className="min-[1100px]:hidden h-screen overflow-hidden flex flex-col"
+        style={{ opacity: contentVisible ? 1 : 0 }}
       >
         {/* Full screen background image - stays visible even when dropdown is closed */}
         {getActiveBackgroundUrl() && (
@@ -207,9 +202,8 @@ export default function HomePageClient({
 
       {/* Desktop Layout (1100px and larger) */}
       <div
-        className={`hidden min-[1100px]:grid h-screen grid-cols-3 ${
-          introPlaying ? "opacity-0" : "opacity-100"
-        }`}
+        className="hidden min-[1100px]:grid h-screen grid-cols-3"
+        style={{ opacity: contentVisible ? 1 : 0 }}
       >
         <div
           className="relative p-2 flex flex-col"

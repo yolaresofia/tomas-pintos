@@ -109,11 +109,13 @@ export default function IntroAnimation({
 
   return (
     <div
-      className={`fixed top-0 left-0 right-0 bottom-0 z-50 overflow-hidden ${phase === "video" ? "cursor-pointer" : ""}`}
+      className={`fixed inset-0 z-50 ${phase === "video" ? "cursor-pointer" : ""}`}
       style={{
+        // Use red background always - video will cover it when playing
+        backgroundColor: "#E72B1C",
+        // Ensure full viewport coverage on mobile
         height: "100dvh",
         minHeight: "-webkit-fill-available",
-        backgroundColor: phase === "video" ? "#000" : "#E72B1C"
       }}
       onClick={phase === "video" ? handleVideoClick : undefined}
       role="region"
@@ -127,44 +129,38 @@ export default function IntroAnimation({
         </span>
       )}
 
-      {/* Video layer - behind curtain */}
+      {/* Video layer - scaled up slightly to ensure full coverage */}
       {videoUrl && (
-        <div
-          className={`absolute top-0 left-0 right-0 bottom-0 transition-opacity duration-500 ${
+        <video
+          ref={videoRef}
+          src={videoUrl}
+          className={`absolute transition-opacity duration-500 ${
             phase === "video" ? "opacity-100" : "opacity-0"
           }`}
           style={{
-            height: "100dvh",
-            minHeight: "-webkit-fill-available",
-            backgroundColor: "#000"
+            // Position at center and scale slightly larger to eliminate any gaps
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            minWidth: "100%",
+            minHeight: "100%",
+            width: "auto",
+            height: "auto",
+            objectFit: "cover",
           }}
-        >
-          <video
-            ref={videoRef}
-            src={videoUrl}
-            className="absolute top-0 left-0 w-full h-full object-cover"
-            style={{
-              height: "100dvh",
-              minHeight: "-webkit-fill-available"
-            }}
-            muted
-            playsInline
-            onEnded={handleVideoEnd}
-            aria-hidden="true"
-          />
-        </div>
+          muted
+          playsInline
+          onEnded={handleVideoEnd}
+          aria-hidden="true"
+        />
       )}
 
-      {/* Curtain background layer - fades out */}
+      {/* Curtain background layer - fades out when video starts */}
       <div
-        className={`absolute top-0 left-0 right-0 bottom-0 transition-opacity duration-500 pointer-events-none ${
+        className={`absolute inset-0 transition-opacity duration-500 pointer-events-none ${
           phase === "video" ? "opacity-0" : "opacity-100"
         }`}
-        style={{
-          height: "100dvh",
-          minHeight: "-webkit-fill-available",
-          backgroundColor: "#E72B1C"
-        }}
+        style={{ backgroundColor: "#E72B1C" }}
       />
 
       {/* Labels layer - stays visible on top of video */}
