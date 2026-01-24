@@ -343,11 +343,11 @@ function VimeoModal({ vimeoId, title, onClose }: VimeoModalProps) {
             </button>
             <button
               ref={closeButtonRef}
-              onClick={isFullscreen ? handleClose : toggleFullscreen}
+              onClick={handleClose}
               className="hover:opacity-60 transition-opacity flex-shrink-0 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-black rounded"
-              aria-label={isFullscreen ? "Close video player" : "Enter fullscreen"}
+              aria-label="Close video player"
             >
-              {isFullscreen ? "Close" : "Fullscreen"}
+              Close
             </button>
           </div>
         </div>
