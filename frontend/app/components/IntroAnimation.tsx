@@ -107,9 +107,13 @@ export default function IntroAnimation({
     return null;
   }
 
+  // Use white background during video phase to hide any viewport gaps
+  const bgColor = phase === "video" ? "white" : "#E72B1C";
+
   return (
     <div
-      className={`fixed inset-0 z-50 min-h-[100dvh] ${phase === "video" ? "cursor-pointer bg-white" : ""}`}
+      className={`fixed inset-0 z-50 min-h-[100dvh] ${phase === "video" ? "cursor-pointer" : ""}`}
+      style={{ backgroundColor: bgColor }}
       onClick={phase === "video" ? handleVideoClick : undefined}
       role="region"
       aria-label="Intro animation"
