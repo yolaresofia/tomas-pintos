@@ -102,6 +102,7 @@ export default function HomePageClient({
               src={getActiveBackgroundUrl()!}
               alt=""
               fill
+              sizes="100vw"
               className="object-cover"
               priority
             />
@@ -223,6 +224,7 @@ export default function HomePageClient({
                 src={fotoImageUrl}
                 alt=""
                 fill
+                sizes="33vw"
                 className="object-cover"
                 priority
               />
@@ -263,6 +265,7 @@ export default function HomePageClient({
                 src={movementDirectionImageUrl}
                 alt=""
                 fill
+                sizes="33vw"
                 className="object-cover"
                 priority
               />
@@ -303,6 +306,7 @@ export default function HomePageClient({
                 src={performanceImageUrl}
                 alt=""
                 fill
+                sizes="33vw"
                 className="object-cover"
                 priority
               />

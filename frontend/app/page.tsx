@@ -28,16 +28,17 @@ export default async function HomePage() {
   ]);
 
   // Get image URLs for each section
+  // Use 1920px width for high-DPI displays, WebP format, and auto quality
   const fotoImageUrl = homepage?.fotoImage
-    ? urlForImage(homepage.fotoImage)?.width(800).quality(85).url() ?? null
+    ? urlForImage(homepage.fotoImage)?.width(1920).format("webp").quality(80).url() ?? null
     : null;
 
   const movementDirectionImageUrl = homepage?.movementDirectionImage
-    ? urlForImage(homepage.movementDirectionImage)?.width(800).quality(85).url() ?? null
+    ? urlForImage(homepage.movementDirectionImage)?.width(1920).format("webp").quality(80).url() ?? null
     : null;
 
   const performanceImageUrl = homepage?.performanceImage
-    ? urlForImage(homepage.performanceImage)?.width(800).quality(85).url() ?? null
+    ? urlForImage(homepage.performanceImage)?.width(1920).format("webp").quality(80).url() ?? null
     : null;
 
   // Get preview video URL (already resolved in GROQ query)

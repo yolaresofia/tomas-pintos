@@ -66,6 +66,13 @@ export default async function RootLayout({
 
   return (
     <html lang="en" className={`${outfit.variable} bg-white text-black`}>
+      <head>
+        {/* Preconnect to critical third-party origins */}
+        <link rel="preconnect" href="https://cdn.sanity.io" />
+        <link rel="dns-prefetch" href="https://cdn.sanity.io" />
+        <link rel="preconnect" href="https://player.vimeo.com" />
+        <link rel="dns-prefetch" href="https://player.vimeo.com" />
+      </head>
       <body>
         <section className="min-h-screen">
           {/* The <Toaster> component is responsible for rendering toast notifications used in /app/client-utils.ts and /app/components/DraftModeToast.tsx */}
