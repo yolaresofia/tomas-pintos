@@ -40,7 +40,7 @@ export default function PageTransition({ children }: PageTransitionProps) {
 
   // Fade in on initial mount and when pathname changes (after navigation)
   useEffect(() => {
-    setIsVisible(false);
+    // Content is already hidden from the navigate() fade-out, just fade in
     const timer = setTimeout(() => {
       setIsVisible(true);
       setIsTransitioning(false);

@@ -30,20 +30,17 @@ export default function HomePageClient({
   const [hoveredColumn, setHoveredColumn] = useState<"foto" | "movement" | "performance" | null>(null);
   const [expandedSection, setExpandedSection] = useState<"foto" | "movement" | "performance" | null>("movement");
   const [activeBackground, setActiveBackground] = useState<"foto" | "movement" | "performance">("movement");
-  // Track intro state: null = checking, true = show intro, false = skip intro
-  const [showIntro, setShowIntro] = useState<boolean | null>(null);
-  // Track if intro animation is currently playing (for fade-in after completion)
-  const [introPlaying, setIntroPlaying] = useState(false);
 
+  // Track intro state - starts as true (show intro), will be set to false via inline script if intro was seen
+  const [showIntro, setShowIntro] = useState(true);
+  const [introPlaying, setIntroPlaying] = useState(true);
+
+  // Sync React state with DOM changes made by inline script on mount
   useEffect(() => {
     const hasSeenIntro = sessionStorage.getItem(INTRO_SEEN_KEY);
     if (hasSeenIntro) {
-      // Skip intro, show content immediately
       setShowIntro(false);
-    } else {
-      // Show intro
-      setShowIntro(true);
-      setIntroPlaying(true);
+      setIntroPlaying(false);
     }
   }, []);
 
@@ -67,21 +64,6 @@ export default function HomePageClient({
     }
   };
 
-  // Show intro by default during SSR/initial render to ensure FCP
-  // This will be updated on client once sessionStorage is checked
-  if (showIntro === null) {
-    return (
-      <div className="h-screen overflow-hidden bg-black">
-        <IntroAnimation
-          videoUrl={previewVideoUrl}
-          onComplete={handleIntroComplete}
-          leftText={settings?.footerLeftText || "TOMAS"}
-          rightText={settings?.footerRightText || "PINTOS"}
-        />
-      </div>
-    );
-  }
-
   // Get the image URL for the active background section on mobile
   const getActiveBackgroundUrl = () => {
     switch (activeBackground) {
@@ -96,17 +78,41 @@ export default function HomePageClient({
 
   return (
     <div className="h-screen overflow-hidden">
+      {/* Inline script to check sessionStorage synchronously before React hydrates */}
+      {/* This prevents flash by updating DOM before it's visible */}
+      <script
+        dangerouslySetInnerHTML={{
+          __html: `
+            (function() {
+              try {
+                var hasSeenIntro = sessionStorage.getItem('${INTRO_SEEN_KEY}');
+                if (hasSeenIntro) {
+                  var intro = document.getElementById('intro-animation');
+                  var mobile = document.getElementById('mobile-layout');
+                  var desktop = document.getElementById('desktop-layout');
+                  if (intro) intro.style.display = 'none';
+                  if (mobile) mobile.classList.remove('opacity-0');
+                  if (desktop) desktop.classList.remove('opacity-0');
+                }
+              } catch (e) {}
+            })();
+          `,
+        }}
+      />
       {showIntro && (
-        <IntroAnimation
-          videoUrl={previewVideoUrl}
-          onComplete={handleIntroComplete}
-          leftText={settings?.footerLeftText || "TOMAS"}
-          rightText={settings?.footerRightText || "PINTOS"}
-        />
+        <div id="intro-animation">
+          <IntroAnimation
+            videoUrl={previewVideoUrl}
+            onComplete={handleIntroComplete}
+            leftText={settings?.footerLeftText || "TOMAS"}
+            rightText={settings?.footerRightText || "PINTOS"}
+          />
+        </div>
       )}
 
       {/* Mobile/Tablet Layout (below 1100px) */}
       <div
+        id="mobile-layout"
         className={`min-[1100px]:hidden h-screen overflow-hidden flex flex-col ${
           introPlaying ? "opacity-0" : "opacity-100"
         }`}
@@ -225,6 +231,7 @@ export default function HomePageClient({
 
       {/* Desktop Layout (1100px and larger) */}
       <div
+        id="desktop-layout"
         className={`hidden min-[1100px]:grid h-screen grid-cols-3 ${
           introPlaying ? "opacity-0" : "opacity-100"
         }`}
