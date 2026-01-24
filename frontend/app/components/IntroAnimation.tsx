@@ -129,15 +129,9 @@ export default function IntroAnimation({
       {/* Video layer - always in DOM but only visible during video phase */}
       {videoUrl && (
         <div
-          className={`absolute bg-white ${
+          className={`absolute inset-0 bg-white ${
             phase === "video" ? "visible" : "invisible"
           }`}
-          style={{
-            top: "-60px",
-            left: 0,
-            right: 0,
-            bottom: "-60px",
-          }}
         >
           <video
             ref={videoRef}
