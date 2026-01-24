@@ -44,6 +44,8 @@ function VimeoModal({ vimeoId, title, onClose }: VimeoModalProps) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const playerRef = useRef<any>(null);
   const hideTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const previouslyFocusedRef = useRef<HTMLElement | null>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
   const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -54,10 +56,22 @@ function VimeoModal({ vimeoId, title, onClose }: VimeoModalProps) {
   const [isVisible, setIsVisible] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
 
-  // Fade in on mount
+  // Fade in on mount and manage focus
   useEffect(() => {
-    const timer = setTimeout(() => setIsVisible(true), 10);
-    return () => clearTimeout(timer);
+    // Store previously focused element
+    previouslyFocusedRef.current = document.activeElement as HTMLElement;
+
+    const timer = setTimeout(() => {
+      setIsVisible(true);
+      // Focus the close button for accessibility
+      closeButtonRef.current?.focus();
+    }, 10);
+
+    return () => {
+      clearTimeout(timer);
+      // Restore focus when modal closes
+      previouslyFocusedRef.current?.focus();
+    };
   }, []);
 
   // Handle closing with animation - fade out first, then exit fullscreen
@@ -230,11 +244,42 @@ function VimeoModal({ vimeoId, title, onClose }: VimeoModalProps) {
     handleAnimatedClose();
   }, [handleAnimatedClose]);
 
+  // Keyboard handler for modal
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      switch (e.key) {
+        case "Escape":
+          e.preventDefault();
+          handleClose();
+          break;
+        case " ":
+          e.preventDefault();
+          togglePlay();
+          break;
+        case "m":
+        case "M":
+          e.preventDefault();
+          toggleMute();
+          break;
+        case "f":
+        case "F":
+          e.preventDefault();
+          toggleFullscreen();
+          break;
+      }
+    },
+    [handleClose, togglePlay, toggleMute, toggleFullscreen]
+  );
+
   const remainingTime = duration - currentTime;
 
   return createPortal(
     <div
       ref={containerRef}
+      role="dialog"
+      aria-modal="true"
+      aria-label={`Video player: ${title}`}
+      onKeyDown={handleKeyDown}
       className={`fixed inset-0 z-50 flex flex-col bg-black transition-opacity duration-500 ease-in-out ${
         isVisible ? "opacity-100" : "opacity-0"
       }`}
@@ -246,10 +291,11 @@ function VimeoModal({ vimeoId, title, onClose }: VimeoModalProps) {
           className="absolute inset-0 w-full h-full pointer-events-none"
           allow="autoplay; fullscreen; picture-in-picture"
           allowFullScreen
+          title={title}
         />
         {/* Clickable overlay for play/pause */}
-        <div
-          className="absolute inset-0 cursor-pointer"
+        <button
+          className="absolute inset-0 cursor-pointer bg-transparent border-none w-full focus:outline-none focus:ring-2 focus:ring-white focus:ring-inset"
           onClick={togglePlay}
           aria-label={isPlaying ? "Pause video" : "Play video"}
         />
@@ -270,7 +316,7 @@ function VimeoModal({ vimeoId, title, onClose }: VimeoModalProps) {
             </span>
             <button
               onClick={togglePlay}
-              className="hover:opacity-60 transition-opacity flex-shrink-0"
+              className="hover:opacity-60 transition-opacity flex-shrink-0 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-black rounded"
               aria-label={isPlaying ? "Pause" : "Play"}
             >
               {isPlaying ? (
@@ -290,13 +336,16 @@ function VimeoModal({ vimeoId, title, onClose }: VimeoModalProps) {
           <div className="flex items-center gap-3">
             <button
               onClick={toggleMute}
-              className="hover:opacity-60 transition-opacity flex-shrink-0"
+              className="hover:opacity-60 transition-opacity flex-shrink-0 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-black rounded"
+              aria-label={isMuted ? "Unmute video" : "Mute video"}
             >
               Sound {isMuted ? "OFF" : "ON"}
             </button>
             <button
+              ref={closeButtonRef}
               onClick={isFullscreen ? handleClose : toggleFullscreen}
-              className="hover:opacity-60 transition-opacity flex-shrink-0"
+              className="hover:opacity-60 transition-opacity flex-shrink-0 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-black rounded"
+              aria-label={isFullscreen ? "Close video player" : "Enter fullscreen"}
             >
               {isFullscreen ? "Close" : "Fullscreen"}
             </button>
@@ -313,7 +362,7 @@ function VimeoModal({ vimeoId, title, onClose }: VimeoModalProps) {
           {/* Play/Pause Button */}
           <button
             onClick={togglePlay}
-            className="hover:opacity-60 transition-opacity flex-shrink-0"
+            className="hover:opacity-60 transition-opacity flex-shrink-0 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-black rounded"
             aria-label={isPlaying ? "Pause" : "Play"}
           >
             {isPlaying ? (
@@ -332,8 +381,15 @@ function VimeoModal({ vimeoId, title, onClose }: VimeoModalProps) {
 
           {/* Progress Bar */}
           <div
-            className="flex-1 h-[2px] bg-white/30 cursor-pointer relative group"
+            className="flex-1 h-[2px] bg-white/30 cursor-pointer relative group focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-4 focus:ring-offset-black rounded"
             onClick={handleProgressClick}
+            role="slider"
+            aria-label="Video progress"
+            aria-valuenow={Math.round(progress)}
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-valuetext={`${formatTime(currentTime)} of ${formatTime(duration)}`}
+            tabIndex={0}
           >
             <div
               className="absolute left-0 top-0 h-full bg-white transition-all"
@@ -342,12 +398,13 @@ function VimeoModal({ vimeoId, title, onClose }: VimeoModalProps) {
           </div>
 
           {/* Remaining Time */}
-          <span className="tabular-nums flex-shrink-0">{formatTime(remainingTime)}</span>
+          <span className="tabular-nums flex-shrink-0" aria-hidden="true">{formatTime(remainingTime)}</span>
 
           {/* Sound Toggle */}
           <button
             onClick={toggleMute}
-            className="hover:opacity-60 transition-opacity flex-shrink-0"
+            className="hover:opacity-60 transition-opacity flex-shrink-0 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-black rounded"
+            aria-label={isMuted ? "Unmute video" : "Mute video"}
           >
             Sound {isMuted ? "OFF" : "ON"}
           </button>
@@ -355,7 +412,8 @@ function VimeoModal({ vimeoId, title, onClose }: VimeoModalProps) {
           {/* Fullscreen/Close Toggle */}
           <button
             onClick={isFullscreen ? handleClose : toggleFullscreen}
-            className="hover:opacity-60 transition-opacity flex-shrink-0"
+            className="hover:opacity-60 transition-opacity flex-shrink-0 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-black rounded"
+            aria-label={isFullscreen ? "Close video player" : "Enter fullscreen"}
           >
             {isFullscreen ? "Close" : "Fullscreen"}
           </button>
@@ -369,7 +427,7 @@ function VimeoModal({ vimeoId, title, onClose }: VimeoModalProps) {
 export default function VideoPlayer({
   previewVideoUrl,
   fullVideoUrl,
-  alt,
+  alt: _alt,
   isFullscreen = false,
   title = "Video",
 }: VideoPlayerProps) {
@@ -389,6 +447,13 @@ export default function VideoPlayer({
     }
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      handleClick();
+    }
+  };
+
   return (
     <>
       <div
@@ -396,6 +461,10 @@ export default function VideoPlayer({
           isFullscreen ? "w-full h-screen" : "w-full"
         }`}
         onClick={handleClick}
+        onKeyDown={handleKeyDown}
+        role="button"
+        tabIndex={0}
+        aria-label={`Play video: ${title}`}
       >
         <video
           ref={videoRef}
@@ -404,10 +473,10 @@ export default function VideoPlayer({
           loop
           muted
           playsInline
+          aria-hidden="true"
           className={`object-cover ${
             isFullscreen ? "w-full h-full" : "w-full h-auto"
           }`}
-          aria-label={alt || "Video preview"}
         />
       </div>
       {mounted && isModalOpen && vimeoId && (

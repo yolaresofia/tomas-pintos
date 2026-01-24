@@ -6,6 +6,12 @@ import { sanityFetch } from "@/sanity/lib/live";
 import { projectBySlugQuery, allProjectSlugsQuery, settingsQuery, projectsByCategoryQuery } from "@/sanity/lib/queries";
 import { resolveOpenGraphImage } from "@/sanity/lib/utils";
 
+// Revalidate every hour (ISR)
+export const revalidate = 3600;
+
+// Allow dynamic params for new slugs not in generateStaticParams
+export const dynamicParams = true;
+
 type Props = {
   params: Promise<{ slug: string }>;
 };

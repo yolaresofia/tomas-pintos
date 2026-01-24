@@ -7,6 +7,9 @@ import { sanityFetch } from "@/sanity/lib/live";
 import { aboutQuery, settingsQuery } from "@/sanity/lib/queries";
 import { resolveExternalLink } from "@/sanity/lib/utils";
 
+// Revalidate every hour (ISR)
+export const revalidate = 3600;
+
 type ExternalLinkItem = {
   _key: string;
   label: string | null;

@@ -5,6 +5,9 @@ import { homepageQuery, allProjectsForNavQuery, settingsQuery } from "@/sanity/l
 import { urlForImage } from "@/sanity/lib/utils";
 import HomePageClient from "@/app/components/HomePageClient";
 
+// Revalidate every hour (ISR)
+export const revalidate = 3600;
+
 export async function generateMetadata(): Promise<Metadata> {
   const { data: homepage } = await sanityFetch({
     query: homepageQuery,

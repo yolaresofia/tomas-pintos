@@ -12,6 +12,12 @@ const nextConfig: NextConfig = {
         hostname: "cdn.sanity.io",
       },
     ],
+    // Enable modern image formats for better compression
+    formats: ["image/avif", "image/webp"],
+    // Optimize device sizes for common viewports
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920],
+    // Image sizes for thumbnails and smaller images
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
   },
 };
 

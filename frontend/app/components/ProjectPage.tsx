@@ -1,10 +1,10 @@
 "use client";
 
+import { useState } from "react";
+import dynamic from "next/dynamic";
 import Image from "next/image";
 
-import VideoPlayer from "@/app/components/VideoPlayer";
 import { urlForImage, resolveExternalLink } from "@/sanity/lib/utils";
-import { PortableText } from "@/app/components/PortableText";
 import ProjectNav from "@/app/components/ProjectNav";
 import type {
   ProjectBySlugQueryResult,
@@ -12,6 +12,51 @@ import type {
 } from "@/sanity.types";
 import Footer from "./Footer";
 import HomeButton from "./HomeButton";
+
+// Lazy load VideoPlayer - only loaded when a project has videos
+// ssr: false because it uses browser APIs (fullscreen, createPortal)
+const VideoPlayer = dynamic(() => import("@/app/components/VideoPlayer"), {
+  ssr: false,
+});
+
+// Lazy load PortableText - reduces initial bundle when description is empty
+const PortableText = dynamic(
+  () =>
+    import("@/app/components/PortableText").then((mod) => ({
+      default: mod.PortableText,
+    })),
+  { ssr: true }
+);
+
+// Image component with fade-in on load
+function FadeInImage({
+  src,
+  alt,
+  width,
+  height,
+  className,
+}: {
+  src: string;
+  alt: string;
+  width: number;
+  height: number;
+  className?: string;
+}) {
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  return (
+    <Image
+      src={src}
+      alt={alt}
+      width={width}
+      height={height}
+      className={`${className} transition-opacity duration-500 ease-in-out ${
+        isLoaded ? "opacity-100" : "opacity-0"
+      }`}
+      onLoad={() => setIsLoaded(true)}
+    />
+  );
+}
 
 type MediaItem = {
   _key: string;
@@ -86,7 +131,7 @@ function MediaColumnRenderer({
             key={item._key}
             className={`relative ${isFullscreen ? "w-full h-screen" : "w-full"}`}
           >
-            <Image
+            <FadeInImage
               src={imageUrl}
               alt={item.alt || ""}
               width={800}

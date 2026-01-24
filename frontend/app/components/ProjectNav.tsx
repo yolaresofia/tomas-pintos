@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 
 import TransitionLink from "@/app/components/TransitionLink";
 
@@ -32,6 +32,10 @@ export default function ProjectNav({ category, projects, currentSlug }: ProjectN
   const [isOpen, setIsOpen] = useState(false);
   const [showArrow, setShowArrow] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
+  const [focusedIndex, setFocusedIndex] = useState(-1);
+  const menuRef = useRef<HTMLUListElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const menuId = `project-nav-menu-${category}`;
 
   // Ease in the arrow after mount
   useEffect(() => {
@@ -54,18 +58,86 @@ export default function ProjectNav({ category, projects, currentSlug }: ProjectN
   const label = categoryLabels[category] || category.toUpperCase();
   const basePath = categoryPaths[category] || `/${category}`;
 
+  const closeMenu = useCallback(() => {
+    setIsOpen(false);
+    setFocusedIndex(-1);
+  }, []);
+
   const handleToggle = () => {
     setIsOpen(!isOpen);
+    if (!isOpen) {
+      setFocusedIndex(-1);
+    }
   };
 
+  // Keyboard navigation
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (!isOpen) {
+        if (e.key === "Enter" || e.key === " " || e.key === "ArrowDown") {
+          e.preventDefault();
+          setIsOpen(true);
+          setFocusedIndex(0);
+        }
+        return;
+      }
+
+      switch (e.key) {
+        case "Escape":
+          e.preventDefault();
+          closeMenu();
+          buttonRef.current?.focus();
+          break;
+        case "ArrowDown":
+          e.preventDefault();
+          setFocusedIndex((prev) =>
+            prev < projects.length - 1 ? prev + 1 : 0
+          );
+          break;
+        case "ArrowUp":
+          e.preventDefault();
+          setFocusedIndex((prev) =>
+            prev > 0 ? prev - 1 : projects.length - 1
+          );
+          break;
+        case "Home":
+          e.preventDefault();
+          setFocusedIndex(0);
+          break;
+        case "End":
+          e.preventDefault();
+          setFocusedIndex(projects.length - 1);
+          break;
+        case "Tab":
+          closeMenu();
+          break;
+      }
+    },
+    [isOpen, projects.length, closeMenu]
+  );
+
+  // Focus management for menu items
+  useEffect(() => {
+    if (isOpen && focusedIndex >= 0 && menuRef.current) {
+      const items = menuRef.current.querySelectorAll<HTMLAnchorElement>('[role="menuitem"]');
+      items[focusedIndex]?.focus();
+    }
+  }, [focusedIndex, isOpen]);
+
   return (
-    <div
+    <nav
       className="relative"
       onMouseEnter={() => isDesktop && setIsOpen(true)}
-      onMouseLeave={() => isDesktop && setIsOpen(false)}
+      onMouseLeave={() => isDesktop && closeMenu()}
+      aria-label={`${label} projects navigation`}
     >
       <button
+        ref={buttonRef}
         onClick={handleToggle}
+        onKeyDown={handleKeyDown}
+        aria-expanded={isOpen}
+        aria-controls={menuId}
+        aria-haspopup="menu"
         className={`flex items-center gap-1 cursor-pointer hover:text-[#E72B1C] transition-colors ${
           isOpen ? "text-[#E72B1C]" : ""
         }`}
@@ -75,6 +147,7 @@ export default function ProjectNav({ category, projects, currentSlug }: ProjectN
           className={`text-[11px] md:text-sm transition-opacity duration-500 ${
             showArrow ? "opacity-100" : "opacity-0"
           }`}
+          aria-hidden="true"
         >
           ↓
         </span>
@@ -82,19 +155,28 @@ export default function ProjectNav({ category, projects, currentSlug }: ProjectN
 
       {/* Dropdown */}
       <ul
+        ref={menuRef}
+        id={menuId}
+        role="menu"
+        aria-label={`${label} projects`}
+        onKeyDown={handleKeyDown}
         className={`text-[13px] space-y-3 min-[1100px]:space-y-0 md:text-sm leading-tight transition-opacity duration-300 mt-1 ${
           isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
         }`}
       >
-        {projects.map((project) => {
+        {projects.map((project, index) => {
           const isCurrentProject = project.slug === currentSlug;
           return (
-            <li key={project._id}>
+            <li key={project._id} role="none">
               <TransitionLink
                 href={`${basePath}/${project.slug}`}
-                className={`hover:text-[#E72B1C] transition-colors ${
+                role="menuitem"
+                tabIndex={isOpen ? 0 : -1}
+                aria-current={isCurrentProject ? "page" : undefined}
+                className={`hover:text-[#E72B1C] transition-colors focus-visible:outline-2 focus-visible:outline-[#E72B1C] focus-visible:outline-offset-2 ${
                   isCurrentProject ? "font-medium" : ""
-                }`}
+                } ${focusedIndex === index ? "text-[#E72B1C]" : ""}`}
+                onClick={() => closeMenu()}
               >
                 {project.title}
               </TransitionLink>
@@ -102,6 +184,6 @@ export default function ProjectNav({ category, projects, currentSlug }: ProjectN
           );
         })}
       </ul>
-    </div>
+    </nav>
   );
 }

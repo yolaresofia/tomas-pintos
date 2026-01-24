@@ -8,6 +8,8 @@ import {
   useEffect,
   useCallback,
   useTransition,
+  useMemo,
+  useRef,
 } from "react";
 
 type TransitionContextType = {
@@ -34,6 +36,7 @@ export default function PageTransition({ children }: PageTransitionProps) {
   const [isVisible, setIsVisible] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [, startTransition] = useTransition();
+  const navigateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Fade in on initial mount and when pathname changes (after navigation)
   useEffect(() => {
@@ -45,6 +48,15 @@ export default function PageTransition({ children }: PageTransitionProps) {
     return () => clearTimeout(timer);
   }, [pathname]);
 
+  // Cleanup navigate timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (navigateTimeoutRef.current) {
+        clearTimeout(navigateTimeoutRef.current);
+      }
+    };
+  }, []);
+
   const navigate = useCallback(
     (href: string) => {
       if (href === pathname) return;
@@ -52,8 +64,13 @@ export default function PageTransition({ children }: PageTransitionProps) {
       setIsTransitioning(true);
       setIsVisible(false);
 
+      // Clear any pending navigation timeout
+      if (navigateTimeoutRef.current) {
+        clearTimeout(navigateTimeoutRef.current);
+      }
+
       // Wait for fade out, then navigate
-      setTimeout(() => {
+      navigateTimeoutRef.current = setTimeout(() => {
         startTransition(() => {
           router.push(href);
         });
@@ -62,8 +79,14 @@ export default function PageTransition({ children }: PageTransitionProps) {
     [pathname, router]
   );
 
+  // Memoize context value to prevent unnecessary consumer re-renders
+  const contextValue = useMemo(
+    () => ({ navigate, isTransitioning }),
+    [navigate, isTransitioning]
+  );
+
   return (
-    <TransitionContext.Provider value={{ navigate, isTransitioning }}>
+    <TransitionContext.Provider value={contextValue}>
       <div
         className={`transition-opacity duration-300 ease-in-out ${
           isVisible ? "opacity-100" : "opacity-0"
