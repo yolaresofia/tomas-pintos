@@ -30,34 +30,29 @@ export default function HomePageClient({
   const [hoveredColumn, setHoveredColumn] = useState<"foto" | "movement" | "performance" | null>(null);
   const [expandedSection, setExpandedSection] = useState<"foto" | "movement" | "performance" | null>("movement");
   const [activeBackground, setActiveBackground] = useState<"foto" | "movement" | "performance">("movement");
-  // Initialize state from sessionStorage to avoid flash on return visits
-  const [showIntro, setShowIntro] = useState<boolean | null>(() => {
-    if (typeof window === "undefined") return null;
-    return sessionStorage.getItem(INTRO_SEEN_KEY) ? false : null;
-  });
-  const [contentVisible, setContentVisible] = useState(() => {
-    if (typeof window === "undefined") return false;
-    return !!sessionStorage.getItem(INTRO_SEEN_KEY);
-  });
+  // Track intro state: null = checking, true = show intro, false = skip intro
+  const [showIntro, setShowIntro] = useState<boolean | null>(null);
+  // Track if intro animation is currently playing (for fade-in after completion)
+  const [introPlaying, setIntroPlaying] = useState(false);
 
   useEffect(() => {
-    // Only run on initial mount if state wasn't set by initializer
-    if (showIntro === null) {
-      const hasSeenIntro = sessionStorage.getItem(INTRO_SEEN_KEY);
-      if (hasSeenIntro) {
-        setShowIntro(false);
-        setContentVisible(true);
-      } else {
-        setShowIntro(true);
-      }
+    const hasSeenIntro = sessionStorage.getItem(INTRO_SEEN_KEY);
+    if (hasSeenIntro) {
+      // Skip intro, show content immediately
+      setShowIntro(false);
+    } else {
+      // Show intro
+      setShowIntro(true);
+      setIntroPlaying(true);
     }
-  }, [showIntro]);
+  }, []);
 
   const handleIntroComplete = () => {
     sessionStorage.setItem(INTRO_SEEN_KEY, "true");
     setShowIntro(false);
+    // Small delay before showing content for smooth transition
     setTimeout(() => {
-      setContentVisible(true);
+      setIntroPlaying(false);
     }, 50);
   };
 
@@ -112,8 +107,8 @@ export default function HomePageClient({
 
       {/* Mobile/Tablet Layout (below 1100px) */}
       <div
-        className={`min-[1100px]:hidden h-screen overflow-hidden flex flex-col transition-opacity duration-700 ${
-          contentVisible ? "opacity-100" : "opacity-0"
+        className={`min-[1100px]:hidden h-screen overflow-hidden flex flex-col ${
+          introPlaying ? "opacity-0" : "opacity-100"
         }`}
       >
         {/* Full screen background image - stays visible even when dropdown is closed */}
@@ -230,8 +225,8 @@ export default function HomePageClient({
 
       {/* Desktop Layout (1100px and larger) */}
       <div
-        className={`hidden min-[1100px]:grid h-screen grid-cols-3 transition-opacity duration-700 ${
-          contentVisible ? "opacity-100" : "opacity-0"
+        className={`hidden min-[1100px]:grid h-screen grid-cols-3 ${
+          introPlaying ? "opacity-0" : "opacity-100"
         }`}
       >
         <div
