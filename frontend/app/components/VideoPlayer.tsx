@@ -483,10 +483,14 @@ export default function VideoPlayer({
   return (
     <>
       <div
-        className={`relative cursor-pointer ${
+        className={`relative cursor-pointer touch-manipulation ${
           isFullscreen ? "w-full h-screen" : "w-full"
         }`}
         onClick={handleClick}
+        onTouchEnd={(e) => {
+          e.preventDefault();
+          handleClick();
+        }}
         onKeyDown={handleKeyDown}
         role="button"
         tabIndex={0}
@@ -500,7 +504,7 @@ export default function VideoPlayer({
           muted
           playsInline
           aria-hidden="true"
-          className={`object-cover ${
+          className={`object-cover pointer-events-none ${
             isFullscreen ? "w-full h-full" : "w-full h-auto"
           }`}
         />
