@@ -56,18 +56,6 @@ export default function HomePageClient({
     }
   };
 
-  // Get the image URL for the active background section on mobile
-  const getActiveBackgroundUrl = () => {
-    switch (activeBackground) {
-      case "foto":
-        return fotoImageUrl;
-      case "movement":
-        return movementDirectionImageUrl;
-      case "performance":
-        return performanceImageUrl;
-    }
-  };
-
   // Content is visible when we've determined intro state and intro is not showing
   // showIntro === null means we haven't checked sessionStorage yet (SSR/initial render)
   const contentVisible = showIntro === false;
@@ -90,19 +78,60 @@ export default function HomePageClient({
       <div
         className={`min-[1100px]:hidden h-screen overflow-hidden flex flex-col ${contentClasses}`}
       >
-        {/* Full screen background image - stays visible even when dropdown is closed */}
-        {getActiveBackgroundUrl() && (
-          <div className="fixed inset-0 -z-10">
-            <Image
-              src={getActiveBackgroundUrl()!}
-              alt=""
-              fill
-              sizes="100vw"
-              className="object-cover"
-              priority
-            />
-          </div>
-        )}
+        {/* Full screen background images with crossfade transitions */}
+        <div className="fixed inset-0 -z-10">
+          {/* FOTO background */}
+          {fotoImageUrl && (
+            <div
+              className={`absolute inset-0 transition-opacity duration-500 ease-in-out ${
+                activeBackground === "foto" ? "opacity-100" : "opacity-0"
+              }`}
+            >
+              <Image
+                src={fotoImageUrl}
+                alt=""
+                fill
+                sizes="100vw"
+                className="object-cover"
+                priority
+              />
+            </div>
+          )}
+          {/* MOVEMENT DIRECTION background */}
+          {movementDirectionImageUrl && (
+            <div
+              className={`absolute inset-0 transition-opacity duration-500 ease-in-out ${
+                activeBackground === "movement" ? "opacity-100" : "opacity-0"
+              }`}
+            >
+              <Image
+                src={movementDirectionImageUrl}
+                alt=""
+                fill
+                sizes="100vw"
+                className="object-cover"
+                priority
+              />
+            </div>
+          )}
+          {/* PERFORMANCE background */}
+          {performanceImageUrl && (
+            <div
+              className={`absolute inset-0 transition-opacity duration-500 ease-in-out ${
+                activeBackground === "performance" ? "opacity-100" : "opacity-0"
+              }`}
+            >
+              <Image
+                src={performanceImageUrl}
+                alt=""
+                fill
+                sizes="100vw"
+                className="object-cover"
+                priority
+              />
+            </div>
+          )}
+        </div>
 
         {/* Fixed header row with all three categories */}
         <div className="fixed top-0 left-0 right-0 p-2 z-10">

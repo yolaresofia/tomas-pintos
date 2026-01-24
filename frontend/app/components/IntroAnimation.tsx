@@ -145,13 +145,13 @@ export default function IntroAnimation({
         </div>
       )}
 
-      {/* Curtain background layer - fades out */}
-      <div
-        className={`absolute inset-0 transition-opacity duration-500 pointer-events-none ${
-          phase === "video" ? "opacity-0" : "opacity-100"
-        }`}
-        style={{ backgroundColor: "#E72B1C" }}
-      />
+      {/* Curtain background layer - fades out and removes from view */}
+      {phase !== "video" && (
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{ backgroundColor: "#E72B1C" }}
+        />
+      )}
 
       {/* Labels layer - uses justify-between for final position, animates from center */}
       <div className="absolute bottom-0 left-0 right-0 p-2 flex justify-between items-end pointer-events-none">
