@@ -126,17 +126,17 @@ export default function IntroAnimation({
         </span>
       )}
 
-      {/* Video layer - behind curtain */}
+      {/* Video layer - always in DOM but only visible during video phase */}
       {videoUrl && (
         <div
-          className={`absolute inset-0 min-h-[100dvh] bg-white transition-opacity duration-500 ${
-            phase === "video" ? "opacity-100" : "opacity-0"
+          className={`absolute inset-0 bg-white ${
+            phase === "video" ? "visible" : "invisible"
           }`}
         >
           <video
             ref={videoRef}
             src={videoUrl}
-            className="w-full h-full min-h-[100dvh] object-cover"
+            className="w-full h-full object-cover"
             muted
             playsInline
             onEnded={handleVideoEnd}
@@ -154,22 +154,24 @@ export default function IntroAnimation({
       )}
 
       {/* Labels layer - uses justify-between for final position, animates from center */}
-      <div className="absolute bottom-0 left-0 right-0 p-2 flex justify-between items-end pointer-events-none">
-        <span
-          className={`text-[11px] md:text-sm font-extrabold min-[1100px]:font-semibold tracking-wider transition-transform duration-700 ease-in-out ${
-            curtainOpen ? "" : "translate-x-[calc(50vw-100%-8px)]"
-          }`}
-        >
-          {leftText}
-        </span>
-        <span
-          className={`text-[11px] md:text-sm font-extrabold min-[1100px]:font-semibold tracking-wider transition-transform duration-700 ease-in-out ${
-            curtainOpen ? "" : "-translate-x-[calc(50vw-100%-8px)]"
-          }`}
-        >
-          {rightText}
-        </span>
-      </div>
+      {phase !== "video" && (
+        <div className="absolute bottom-0 left-0 right-0 p-2 flex justify-between items-end pointer-events-none">
+          <span
+            className={`text-[11px] md:text-sm font-extrabold min-[1100px]:font-semibold tracking-wider transition-transform duration-700 ease-in-out ${
+              curtainOpen ? "" : "translate-x-[calc(50vw-100%-8px)]"
+            }`}
+          >
+            {leftText}
+          </span>
+          <span
+            className={`text-[11px] md:text-sm font-extrabold min-[1100px]:font-semibold tracking-wider transition-transform duration-700 ease-in-out ${
+              curtainOpen ? "" : "-translate-x-[calc(50vw-100%-8px)]"
+            }`}
+          >
+            {rightText}
+          </span>
+        </div>
+      )}
     </div>
   );
 }
