@@ -129,9 +129,15 @@ export default function IntroAnimation({
       {/* Video layer - always in DOM but only visible during video phase */}
       {videoUrl && (
         <div
-          className={`absolute inset-0 bg-white ${
+          className={`absolute bg-white ${
             phase === "video" ? "visible" : "invisible"
           }`}
+          style={{
+            top: "-60px",
+            left: 0,
+            right: 0,
+            bottom: "-60px",
+          }}
         >
           <video
             ref={videoRef}
@@ -154,24 +160,22 @@ export default function IntroAnimation({
       )}
 
       {/* Labels layer - uses justify-between for final position, animates from center */}
-      {phase !== "video" && (
-        <div className="absolute bottom-0 left-0 right-0 p-2 flex justify-between items-end pointer-events-none">
-          <span
-            className={`text-[11px] md:text-sm font-extrabold min-[1100px]:font-semibold tracking-wider transition-transform duration-700 ease-in-out ${
-              curtainOpen ? "" : "translate-x-[calc(50vw-100%-8px)]"
-            }`}
-          >
-            {leftText}
-          </span>
-          <span
-            className={`text-[11px] md:text-sm font-extrabold min-[1100px]:font-semibold tracking-wider transition-transform duration-700 ease-in-out ${
-              curtainOpen ? "" : "-translate-x-[calc(50vw-100%-8px)]"
-            }`}
-          >
-            {rightText}
-          </span>
-        </div>
-      )}
+      <div className="absolute bottom-0 left-0 right-0 p-2 flex justify-between items-end pointer-events-none">
+        <span
+          className={`text-[11px] md:text-sm font-extrabold min-[1100px]:font-semibold tracking-wider transition-transform duration-700 ease-in-out ${
+            curtainOpen ? "" : "translate-x-[calc(50vw-100%-8px)]"
+          }`}
+        >
+          {leftText}
+        </span>
+        <span
+          className={`text-[11px] md:text-sm font-extrabold min-[1100px]:font-semibold tracking-wider transition-transform duration-700 ease-in-out ${
+            curtainOpen ? "" : "-translate-x-[calc(50vw-100%-8px)]"
+          }`}
+        >
+          {rightText}
+        </span>
+      </div>
     </div>
   );
 }

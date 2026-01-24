@@ -48,6 +48,7 @@ function VimeoModal({ vimeoId, title, onClose }: VimeoModalProps) {
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(false);
+  const [hasUnmutedOnMobile, setHasUnmutedOnMobile] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [progress, setProgress] = useState(0);
@@ -102,11 +103,6 @@ function VimeoModal({ vimeoId, title, onClose }: VimeoModalProps) {
 
         player.on("loaded", () => {
           player.getDuration().then(setDuration);
-          // On mobile (below 1100px), unmute by default
-          if (window.innerWidth < 1100) {
-            player.setMuted(false);
-            player.setVolume(1);
-          }
         });
 
         player.on("timeupdate", (data: { seconds: number; percent: number }) => {
@@ -180,6 +176,31 @@ function VimeoModal({ vimeoId, title, onClose }: VimeoModalProps) {
       setShowControls(false);
     }, 2000);
   }, []);
+
+  // Unmute on first interaction for mobile
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container || hasUnmutedOnMobile) return;
+
+    // Only apply to mobile
+    if (window.innerWidth >= 1100) return;
+
+    const handleFirstInteraction = () => {
+      if (playerRef.current && !hasUnmutedOnMobile) {
+        playerRef.current.setMuted(false);
+        playerRef.current.setVolume(1);
+        setHasUnmutedOnMobile(true);
+      }
+    };
+
+    container.addEventListener("touchstart", handleFirstInteraction, { once: true });
+    container.addEventListener("click", handleFirstInteraction, { once: true });
+
+    return () => {
+      container.removeEventListener("touchstart", handleFirstInteraction);
+      container.removeEventListener("click", handleFirstInteraction);
+    };
+  }, [hasUnmutedOnMobile]);
 
   useEffect(() => {
     const container = containerRef.current;
