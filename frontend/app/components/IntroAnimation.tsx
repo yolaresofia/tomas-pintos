@@ -109,14 +109,7 @@ export default function IntroAnimation({
 
   return (
     <div
-      className={`fixed inset-0 z-50 ${phase === "video" ? "cursor-pointer" : ""}`}
-      style={{
-        // Use red background always - video will cover it when playing
-        backgroundColor: "#E72B1C",
-        // Ensure full viewport coverage on mobile
-        height: "100dvh",
-        minHeight: "-webkit-fill-available",
-      }}
+      className={`fixed inset-0 z-50 min-h-[100dvh] ${phase === "video" ? "cursor-pointer bg-white" : ""}`}
       onClick={phase === "video" ? handleVideoClick : undefined}
       role="region"
       aria-label="Intro animation"
@@ -129,33 +122,26 @@ export default function IntroAnimation({
         </span>
       )}
 
-      {/* Video layer - scaled up slightly to ensure full coverage */}
+      {/* Video layer - behind curtain */}
       {videoUrl && (
-        <video
-          ref={videoRef}
-          src={videoUrl}
-          className={`absolute transition-opacity duration-500 ${
+        <div
+          className={`absolute inset-0 min-h-[100dvh] bg-white transition-opacity duration-500 ${
             phase === "video" ? "opacity-100" : "opacity-0"
           }`}
-          style={{
-            // Position at center and scale slightly larger to eliminate any gaps
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            minWidth: "100%",
-            minHeight: "100%",
-            width: "auto",
-            height: "auto",
-            objectFit: "cover",
-          }}
-          muted
-          playsInline
-          onEnded={handleVideoEnd}
-          aria-hidden="true"
-        />
+        >
+          <video
+            ref={videoRef}
+            src={videoUrl}
+            className="w-full h-full min-h-[100dvh] object-cover"
+            muted
+            playsInline
+            onEnded={handleVideoEnd}
+            aria-hidden="true"
+          />
+        </div>
       )}
 
-      {/* Curtain background layer - fades out when video starts */}
+      {/* Curtain background layer - fades out */}
       <div
         className={`absolute inset-0 transition-opacity duration-500 pointer-events-none ${
           phase === "video" ? "opacity-0" : "opacity-100"
@@ -163,18 +149,18 @@ export default function IntroAnimation({
         style={{ backgroundColor: "#E72B1C" }}
       />
 
-      {/* Labels layer - stays visible on top of video */}
+      {/* Labels layer - uses justify-between for final position, animates from center */}
       <div className="absolute bottom-0 left-0 right-0 p-2 flex justify-between items-end pointer-events-none">
         <span
-          className={`text-[11px] md:text-sm font-extrabold min-[1100px]:font-semibold tracking-wider transition-all duration-700 ease-in-out ${
-            curtainOpen ? "opacity-100" : "opacity-0 translate-x-[calc(50vw-50%)]"
+          className={`text-[11px] md:text-sm font-extrabold min-[1100px]:font-semibold tracking-wider transition-transform duration-700 ease-in-out ${
+            curtainOpen ? "" : "translate-x-[calc(50vw-100%-8px)]"
           }`}
         >
           {leftText}
         </span>
         <span
-          className={`text-[11px] md:text-sm font-extrabold min-[1100px]:font-semibold tracking-wider transition-all duration-700 ease-in-out ${
-            curtainOpen ? "opacity-100" : "opacity-0 -translate-x-[calc(50vw-50%)]"
+          className={`text-[11px] md:text-sm font-extrabold min-[1100px]:font-semibold tracking-wider transition-transform duration-700 ease-in-out ${
+            curtainOpen ? "" : "-translate-x-[calc(50vw-100%-8px)]"
           }`}
         >
           {rightText}

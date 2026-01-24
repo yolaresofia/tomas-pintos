@@ -72,6 +72,9 @@ export default function HomePageClient({
   // showIntro === null means we haven't checked sessionStorage yet (SSR/initial render)
   const contentVisible = showIntro === false;
 
+  // Use CSS animation class for smooth fade-in
+  const contentClasses = contentVisible ? "animate-fade-in" : "opacity-0";
+
   return (
     <div className="h-screen overflow-hidden">
       {showIntro === true && (
@@ -85,8 +88,7 @@ export default function HomePageClient({
 
       {/* Mobile/Tablet Layout (below 1100px) */}
       <div
-        className="min-[1100px]:hidden h-screen overflow-hidden flex flex-col"
-        style={{ opacity: contentVisible ? 1 : 0 }}
+        className={`min-[1100px]:hidden h-screen overflow-hidden flex flex-col ${contentClasses}`}
       >
         {/* Full screen background image - stays visible even when dropdown is closed */}
         {getActiveBackgroundUrl() && (
@@ -202,8 +204,7 @@ export default function HomePageClient({
 
       {/* Desktop Layout (1100px and larger) */}
       <div
-        className="hidden min-[1100px]:grid h-screen grid-cols-3"
-        style={{ opacity: contentVisible ? 1 : 0 }}
+        className={`hidden min-[1100px]:grid h-screen grid-cols-3 ${contentClasses}`}
       >
         <div
           className="relative p-2 flex flex-col"

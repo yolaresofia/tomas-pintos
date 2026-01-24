@@ -5,9 +5,7 @@ import {
   createContext,
   useContext,
   useCallback,
-  useTransition,
   useMemo,
-  useRef,
 } from "react";
 
 type TransitionContextType = {
@@ -28,70 +26,28 @@ type PageTransitionProps = {
   children: React.ReactNode;
 };
 
-// Transition duration in ms - used for both CSS and JS timing
-const TRANSITION_DURATION = 300;
-
 export default function PageTransition({ children }: PageTransitionProps) {
   const router = useRouter();
   const pathname = usePathname();
-  const [isPending, startTransition] = useTransition();
-  const containerRef = useRef<HTMLDivElement>(null);
-  const navigateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Simple navigation - no fade out, just navigate directly
+  // Next.js handles the transition naturally
   const navigate = useCallback(
     (href: string) => {
       if (href === pathname) return;
-
-      const container = containerRef.current;
-      if (!container) {
-        // Fallback: navigate immediately if no container
-        startTransition(() => {
-          router.push(href);
-        });
-        return;
-      }
-
-      // Clear any pending navigation
-      if (navigateTimeoutRef.current) {
-        clearTimeout(navigateTimeoutRef.current);
-      }
-
-      // Trigger fade out via CSS class
-      container.style.opacity = "0";
-
-      // Wait for fade out, then navigate
-      navigateTimeoutRef.current = setTimeout(() => {
-        startTransition(() => {
-          router.push(href);
-          // Fade back in after navigation
-          requestAnimationFrame(() => {
-            if (container) {
-              container.style.opacity = "1";
-            }
-          });
-        });
-      }, TRANSITION_DURATION);
+      router.push(href);
     },
-    [pathname, router, startTransition]
+    [pathname, router]
   );
 
-  // Memoize context value to prevent unnecessary consumer re-renders
   const contextValue = useMemo(
-    () => ({ navigate, isTransitioning: isPending }),
-    [navigate, isPending]
+    () => ({ navigate, isTransitioning: false }),
+    [navigate]
   );
 
   return (
     <TransitionContext.Provider value={contextValue}>
-      <div
-        ref={containerRef}
-        style={{
-          opacity: 1,
-          transition: `opacity ${TRANSITION_DURATION}ms ease-in-out`,
-        }}
-      >
-        {children}
-      </div>
+      {children}
     </TransitionContext.Provider>
   );
 }
