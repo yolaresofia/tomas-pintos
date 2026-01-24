@@ -30,18 +30,28 @@ export default function HomePageClient({
   const [hoveredColumn, setHoveredColumn] = useState<"foto" | "movement" | "performance" | null>(null);
   const [expandedSection, setExpandedSection] = useState<"foto" | "movement" | "performance" | null>("movement");
   const [activeBackground, setActiveBackground] = useState<"foto" | "movement" | "performance">("movement");
-  const [showIntro, setShowIntro] = useState<boolean | null>(null);
-  const [contentVisible, setContentVisible] = useState(false);
+  // Initialize state from sessionStorage to avoid flash on return visits
+  const [showIntro, setShowIntro] = useState<boolean | null>(() => {
+    if (typeof window === "undefined") return null;
+    return sessionStorage.getItem(INTRO_SEEN_KEY) ? false : null;
+  });
+  const [contentVisible, setContentVisible] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return !!sessionStorage.getItem(INTRO_SEEN_KEY);
+  });
 
   useEffect(() => {
-    const hasSeenIntro = sessionStorage.getItem(INTRO_SEEN_KEY);
-    if (hasSeenIntro) {
-      setShowIntro(false);
-      setContentVisible(true);
-    } else {
-      setShowIntro(true);
+    // Only run on initial mount if state wasn't set by initializer
+    if (showIntro === null) {
+      const hasSeenIntro = sessionStorage.getItem(INTRO_SEEN_KEY);
+      if (hasSeenIntro) {
+        setShowIntro(false);
+        setContentVisible(true);
+      } else {
+        setShowIntro(true);
+      }
     }
-  }, []);
+  }, [showIntro]);
 
   const handleIntroComplete = () => {
     sessionStorage.setItem(INTRO_SEEN_KEY, "true");
