@@ -33,14 +33,20 @@ type PageTransitionProps = {
 export default function PageTransition({ children }: PageTransitionProps) {
   const router = useRouter();
   const pathname = usePathname();
-  const [isVisible, setIsVisible] = useState(false);
+  // Start visible - only hide during active transitions
+  const [isVisible, setIsVisible] = useState(true);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [, startTransition] = useTransition();
   const navigateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const prevPathnameRef = useRef(pathname);
 
-  // Fade in on initial mount and when pathname changes (after navigation)
+  // Handle pathname changes (after navigation completes)
   useEffect(() => {
-    // Content is already hidden from the navigate() fade-out, just fade in
+    // Skip on initial mount (pathname hasn't changed)
+    if (prevPathnameRef.current === pathname) return;
+    prevPathnameRef.current = pathname;
+
+    // After navigation, content was hidden by navigate(), now fade it in
     const timer = setTimeout(() => {
       setIsVisible(true);
       setIsTransitioning(false);
