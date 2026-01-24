@@ -102,6 +102,11 @@ function VimeoModal({ vimeoId, title, onClose }: VimeoModalProps) {
 
         player.on("loaded", () => {
           player.getDuration().then(setDuration);
+          // On mobile (below 1100px), unmute by default
+          if (window.innerWidth < 1100) {
+            player.setMuted(false);
+            player.setVolume(1);
+          }
         });
 
         player.on("timeupdate", (data: { seconds: number; percent: number }) => {
