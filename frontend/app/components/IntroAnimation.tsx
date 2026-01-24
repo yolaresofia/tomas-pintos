@@ -109,7 +109,12 @@ export default function IntroAnimation({
 
   return (
     <div
-      className={`fixed inset-0 z-50 min-h-[100dvh] ${phase === "video" ? "cursor-pointer bg-white" : ""}`}
+      className={`fixed top-0 left-0 right-0 bottom-0 z-50 overflow-hidden ${phase === "video" ? "cursor-pointer" : ""}`}
+      style={{
+        height: "100dvh",
+        minHeight: "-webkit-fill-available",
+        backgroundColor: phase === "video" ? "#000" : "#E72B1C"
+      }}
       onClick={phase === "video" ? handleVideoClick : undefined}
       role="region"
       aria-label="Intro animation"
@@ -125,14 +130,23 @@ export default function IntroAnimation({
       {/* Video layer - behind curtain */}
       {videoUrl && (
         <div
-          className={`absolute inset-0 min-h-[100dvh] bg-white transition-opacity duration-500 ${
+          className={`absolute top-0 left-0 right-0 bottom-0 transition-opacity duration-500 ${
             phase === "video" ? "opacity-100" : "opacity-0"
           }`}
+          style={{
+            height: "100dvh",
+            minHeight: "-webkit-fill-available",
+            backgroundColor: "#000"
+          }}
         >
           <video
             ref={videoRef}
             src={videoUrl}
-            className="w-full h-full min-h-[100dvh] object-cover"
+            className="absolute top-0 left-0 w-full h-full object-cover"
+            style={{
+              height: "100dvh",
+              minHeight: "-webkit-fill-available"
+            }}
             muted
             playsInline
             onEnded={handleVideoEnd}
@@ -143,10 +157,14 @@ export default function IntroAnimation({
 
       {/* Curtain background layer - fades out */}
       <div
-        className={`absolute inset-0 transition-opacity duration-500 pointer-events-none ${
+        className={`absolute top-0 left-0 right-0 bottom-0 transition-opacity duration-500 pointer-events-none ${
           phase === "video" ? "opacity-0" : "opacity-100"
         }`}
-        style={{ backgroundColor: "#E72B1C" }}
+        style={{
+          height: "100dvh",
+          minHeight: "-webkit-fill-available",
+          backgroundColor: "#E72B1C"
+        }}
       />
 
       {/* Labels layer - stays visible on top of video */}

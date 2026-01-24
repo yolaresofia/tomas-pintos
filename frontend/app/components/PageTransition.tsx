@@ -4,8 +4,6 @@ import { useRouter, usePathname } from "next/navigation";
 import {
   createContext,
   useContext,
-  useState,
-  useEffect,
   useCallback,
   useTransition,
   useMemo,
@@ -30,73 +28,67 @@ type PageTransitionProps = {
   children: React.ReactNode;
 };
 
+// Transition duration in ms - used for both CSS and JS timing
+const TRANSITION_DURATION = 300;
+
 export default function PageTransition({ children }: PageTransitionProps) {
   const router = useRouter();
   const pathname = usePathname();
-  // Start visible - only hide during active transitions
-  const [isVisible, setIsVisible] = useState(true);
-  const [isTransitioning, setIsTransitioning] = useState(false);
-  const [, startTransition] = useTransition();
+  const [isPending, startTransition] = useTransition();
+  const containerRef = useRef<HTMLDivElement>(null);
   const navigateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const prevPathnameRef = useRef(pathname);
-
-  // Handle pathname changes (after navigation completes)
-  useEffect(() => {
-    // Skip on initial mount (pathname hasn't changed)
-    if (prevPathnameRef.current === pathname) return;
-    prevPathnameRef.current = pathname;
-
-    // After navigation, content was hidden by navigate(), now fade it in
-    const timer = setTimeout(() => {
-      setIsVisible(true);
-      setIsTransitioning(false);
-    }, 50);
-    return () => clearTimeout(timer);
-  }, [pathname]);
-
-  // Cleanup navigate timeout on unmount
-  useEffect(() => {
-    return () => {
-      if (navigateTimeoutRef.current) {
-        clearTimeout(navigateTimeoutRef.current);
-      }
-    };
-  }, []);
 
   const navigate = useCallback(
     (href: string) => {
       if (href === pathname) return;
 
-      setIsTransitioning(true);
-      setIsVisible(false);
+      const container = containerRef.current;
+      if (!container) {
+        // Fallback: navigate immediately if no container
+        startTransition(() => {
+          router.push(href);
+        });
+        return;
+      }
 
-      // Clear any pending navigation timeout
+      // Clear any pending navigation
       if (navigateTimeoutRef.current) {
         clearTimeout(navigateTimeoutRef.current);
       }
+
+      // Trigger fade out via CSS class
+      container.style.opacity = "0";
 
       // Wait for fade out, then navigate
       navigateTimeoutRef.current = setTimeout(() => {
         startTransition(() => {
           router.push(href);
+          // Fade back in after navigation
+          requestAnimationFrame(() => {
+            if (container) {
+              container.style.opacity = "1";
+            }
+          });
         });
-      }, 200);
+      }, TRANSITION_DURATION);
     },
-    [pathname, router]
+    [pathname, router, startTransition]
   );
 
   // Memoize context value to prevent unnecessary consumer re-renders
   const contextValue = useMemo(
-    () => ({ navigate, isTransitioning }),
-    [navigate, isTransitioning]
+    () => ({ navigate, isTransitioning: isPending }),
+    [navigate, isPending]
   );
 
   return (
     <TransitionContext.Provider value={contextValue}>
       <div
-        className={`transition-opacity duration-300 ease-in-out ${
-          isVisible ? "opacity-100" : "opacity-0"
-        }`}
+        ref={containerRef}
+        style={{
+          opacity: 1,
+          transition: `opacity ${TRANSITION_DURATION}ms ease-in-out`,
+        }}
       >
         {children}
       </div>
