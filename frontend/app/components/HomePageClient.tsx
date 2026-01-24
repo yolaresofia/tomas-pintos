@@ -62,8 +62,19 @@ export default function HomePageClient({
     }
   };
 
+  // Show intro by default during SSR/initial render to ensure FCP
+  // This will be updated on client once sessionStorage is checked
   if (showIntro === null) {
-    return <div className="min-h-screen" />;
+    return (
+      <div className="h-screen overflow-hidden bg-black">
+        <IntroAnimation
+          videoUrl={previewVideoUrl}
+          onComplete={handleIntroComplete}
+          leftText={settings?.footerLeftText || "TOMAS"}
+          rightText={settings?.footerRightText || "PINTOS"}
+        />
+      </div>
+    );
   }
 
   // Get the image URL for the active background section on mobile

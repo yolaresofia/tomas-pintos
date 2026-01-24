@@ -57,14 +57,9 @@ body {
   }
 }
 
-/* Global visible focus styles */
+/* Remove all focus outlines */
+*:focus,
 *:focus-visible {
-  outline: 2px solid #E72B1C;
-  outline-offset: 2px;
-}
-
-/* Remove default focus outline when focus-visible is supported */
-*:focus:not(:focus-visible) {
   outline: none;
 }
 
