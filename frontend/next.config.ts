@@ -12,12 +12,16 @@ const nextConfig: NextConfig = {
         hostname: "cdn.sanity.io",
       },
     ],
-    // Enable modern image formats for better compression
-    formats: ["image/avif", "image/webp"],
-    // Optimize device sizes for common viewports
-    deviceSizes: [640, 750, 828, 1080, 1200, 1920],
-    // Image sizes for thumbnails and smaller images
-    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    // Use only webp to reduce transformations (avif is slower to encode)
+    formats: ["image/webp"],
+    // Reduced device sizes to minimize cache variations
+    deviceSizes: [640, 828, 1200, 1920],
+    // Reduced image sizes for thumbnails
+    imageSizes: [64, 128, 256],
+    // Cache images for 31 days to reduce cache reads/writes
+    minimumCacheTTL: 2678400,
+    // Limit quality options to reduce variations
+    qualities: [75],
   },
 };
 

@@ -107,13 +107,17 @@ export default function IntroAnimation({
     return null;
   }
 
-  // Use white background during video phase to hide any viewport gaps
-  const bgColor = phase === "video" ? "white" : "#E72B1C";
-
   return (
     <div
-      className={`fixed inset-0 z-50 min-h-[100dvh] ${phase === "video" ? "cursor-pointer" : ""}`}
-      style={{ backgroundColor: bgColor }}
+      className={`fixed z-50 ${phase === "video" ? "cursor-pointer bg-white" : "bg-[#E72B1C]"}`}
+      style={{
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        height: "100%",
+        minHeight: "100dvh",
+      }}
       onClick={phase === "video" ? handleVideoClick : undefined}
       role="region"
       aria-label="Intro animation"
@@ -128,33 +132,22 @@ export default function IntroAnimation({
 
       {/* Video layer - always in DOM but only visible during video phase */}
       {videoUrl && (
-        <div
-          className={`absolute inset-0 bg-white ${
+        <video
+          ref={videoRef}
+          src={videoUrl}
+          className={`absolute top-0 left-0 w-full h-full object-cover ${
             phase === "video" ? "visible" : "invisible"
           }`}
-        >
-          <video
-            ref={videoRef}
-            src={videoUrl}
-            className="w-full h-full object-cover"
-            muted
-            playsInline
-            onEnded={handleVideoEnd}
-            aria-hidden="true"
-          />
-        </div>
-      )}
-
-      {/* Curtain background layer - fades out and removes from view */}
-      {phase !== "video" && (
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{ backgroundColor: "#E72B1C" }}
+          style={{ minHeight: "100vh" }}
+          muted
+          playsInline
+          onEnded={handleVideoEnd}
+          aria-hidden="true"
         />
       )}
 
       {/* Labels layer - uses justify-between for final position, animates from center */}
-      <div className="absolute bottom-0 left-0 right-0 p-2 flex justify-between items-end pointer-events-none">
+      <div className="absolute bottom-0 left-0 right-0 p-2 flex justify-between items-end pointer-events-none z-10">
         <span
           className={`text-[11px] md:text-sm font-extrabold min-[1100px]:font-semibold tracking-wider transition-transform duration-700 ease-in-out ${
             curtainOpen ? "" : "translate-x-[calc(50vw-100%-8px)]"
