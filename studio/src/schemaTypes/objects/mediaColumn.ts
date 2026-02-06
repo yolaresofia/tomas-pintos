@@ -72,31 +72,16 @@ export const mediaColumn = defineType({
               type: 'string',
               description: 'Alternative text for accessibility',
             }),
-            defineField({
-              name: 'displayMode',
-              title: 'Display Mode',
-              type: 'string',
-              initialValue: 'stacked',
-              options: {
-                list: [
-                  {title: 'Stacked (one on top of another)', value: 'stacked'},
-                  {title: 'Fullscreen (takes full height)', value: 'fullscreen'},
-                ],
-                layout: 'radio',
-              },
-            }),
           ],
           preview: {
             select: {
               media: 'image',
-              displayMode: 'displayMode',
               alt: 'alt',
               isVideo: 'isVideo',
             },
-            prepare({media, displayMode, alt, isVideo}) {
+            prepare({media, alt, isVideo}) {
               return {
                 title: alt || (isVideo ? 'Video' : 'Image'),
-                subtitle: displayMode === 'fullscreen' ? 'Fullscreen' : 'Stacked',
                 media: isVideo ? PlayIcon : media,
               }
             },

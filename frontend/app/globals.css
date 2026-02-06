@@ -42,6 +42,38 @@ body {
   min-height: -webkit-fill-available;
 }
 
+/* Lenis smooth scroll */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
+}
+
+/* Nested Lenis scroll containers */
+[data-lenis-scroller] {
+  overscroll-behavior: contain;
+}
+
+[data-lenis-scroller].lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
 /* Smooth scrolling for users who don't prefer reduced motion */
 @media (prefers-reduced-motion: no-preference) {
   html {

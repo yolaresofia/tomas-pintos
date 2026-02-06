@@ -9,6 +9,7 @@ import { Toaster } from "sonner";
 
 import DraftModeToast from "@/app/components/DraftModeToast";
 import PageTransition from "@/app/components/PageTransition";
+import SmoothScroll from "@/app/components/SmoothScroll";
 import * as demo from "@/sanity/lib/demo";
 import { sanityFetch, SanityLive } from "@/sanity/lib/live";
 import { settingsQuery } from "@/sanity/lib/queries";
@@ -87,7 +88,9 @@ export default async function RootLayout({
           {/* The <SanityLive> component is responsible for making all sanityFetch calls in your application live, so should always be rendered. */}
           <SanityLive onError={handleError} />
           <main>
-            <PageTransition>{children}</PageTransition>
+            <SmoothScroll>
+              <PageTransition>{children}</PageTransition>
+            </SmoothScroll>
           </main>
         </section>
         <SpeedInsights />

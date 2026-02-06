@@ -235,11 +235,7 @@ export default function HomePageClient({
       <div
         className={`hidden min-[1100px]:grid h-screen grid-cols-3 ${contentClasses}`}
       >
-        <div
-          className="relative p-2 flex flex-col"
-          onMouseEnter={() => setHoveredColumn("foto")}
-          onMouseLeave={() => setHoveredColumn(null)}
-        >
+        <div className="relative p-2 flex flex-col">
           {fotoImageUrl && (
             <div className="absolute inset-0 -z-10">
               <Image
@@ -253,34 +249,37 @@ export default function HomePageClient({
             </div>
           )}
 
-          <h2 className="text-sm font-semibold tracking-wider cursor-default hover:text-[#E72B1C] transition-colors">FOTO</h2>
-          <ul
-            className={`text-sm transition-opacity duration-300 leading-tight ${
-              hoveredColumn === "foto" ? "opacity-100" : "opacity-0 pointer-events-none"
-            }`}
+          {/* Hover area that covers header + dropdown space */}
+          <div
+            className="relative"
+            onMouseEnter={() => setHoveredColumn("foto")}
+            onMouseLeave={() => setHoveredColumn(null)}
           >
-            {projects?.foto?.map((project) => (
-              <li key={project._id}>
-                <TransitionLink
-                  href={`/foto/${project.slug}`}
-                  className="hover:text-[#E72B1C] transition-colors"
-                >
-                  {project.title}
-                </TransitionLink>
-              </li>
-            ))}
-          </ul>
+            <h2 className="text-sm font-semibold tracking-wider cursor-default hover:text-[#E72B1C] transition-colors">FOTO</h2>
+            <ul
+              className={`text-sm transition-opacity duration-300 leading-tight ${
+                hoveredColumn === "foto" ? "opacity-100" : "opacity-0"
+              }`}
+            >
+              {projects?.foto?.map((project) => (
+                <li key={project._id}>
+                  <TransitionLink
+                    href={`/foto/${project.slug}`}
+                    className="hover:text-[#E72B1C] transition-colors"
+                  >
+                    {project.title}
+                  </TransitionLink>
+                </li>
+              ))}
+            </ul>
+          </div>
           <div className="mt-auto pt-6">
             <span className="text-sm font-semibold tracking-wider">
               {settings?.footerLeftText || "TOMAS"}
             </span>
           </div>
         </div>
-        <div
-          className="relative p-2 flex flex-col items-center"
-          onMouseEnter={() => setHoveredColumn("movement")}
-          onMouseLeave={() => setHoveredColumn(null)}
-        >
+        <div className="relative p-2 flex flex-col items-center">
           {movementDirectionImageUrl && (
             <div className="absolute inset-0 -z-10">
               <Image
@@ -294,34 +293,37 @@ export default function HomePageClient({
             </div>
           )}
 
-          <h2 className="text-sm font-semibold tracking-wider cursor-default hover:text-[#E72B1C] transition-colors">MOVEMENT DIRECTION</h2>
-          <ul
-            className={`text-sm text-center transition-opacity duration-300 leading-tight ${
-              hoveredColumn === "movement" ? "opacity-100" : "opacity-0 pointer-events-none"
-            }`}
+          {/* Hover area that covers header + dropdown space */}
+          <div
+            className="relative flex flex-col items-center"
+            onMouseEnter={() => setHoveredColumn("movement")}
+            onMouseLeave={() => setHoveredColumn(null)}
           >
-            {projects?.movementDirection?.map((project) => (
-              <li key={project._id}>
-                <TransitionLink
-                  href={`/movement-direction/${project.slug}`}
-                  className="hover:text-[#E72B1C] transition-colors"
-                >
-                  {project.title}
-                </TransitionLink>
-              </li>
-            ))}
-          </ul>
+            <h2 className="text-sm font-semibold tracking-wider cursor-default hover:text-[#E72B1C] transition-colors">MOVEMENT DIRECTION</h2>
+            <ul
+              className={`text-sm text-center transition-opacity duration-300 leading-tight ${
+                hoveredColumn === "movement" ? "opacity-100" : "opacity-0"
+              }`}
+            >
+              {projects?.movementDirection?.map((project) => (
+                <li key={project._id}>
+                  <TransitionLink
+                    href={`/movement-direction/${project.slug}`}
+                    className="hover:text-[#E72B1C] transition-colors"
+                  >
+                    {project.title}
+                  </TransitionLink>
+                </li>
+              ))}
+            </ul>
+          </div>
           <div className="mt-auto pt-6">
             <TransitionLink href="/about" className="text-sm font-semibold hover:text-[#E72B1C] transition-colors">
               {settings?.footerCenterText || "(ABOUT)"}
             </TransitionLink>
           </div>
         </div>
-        <div
-          className="relative p-2 flex flex-col items-end text-right"
-          onMouseEnter={() => setHoveredColumn("performance")}
-          onMouseLeave={() => setHoveredColumn(null)}
-        >
+        <div className="relative p-2 flex flex-col items-end text-right">
           {performanceImageUrl && (
             <div className="absolute inset-0 -z-10">
               <Image
@@ -335,23 +337,30 @@ export default function HomePageClient({
             </div>
           )}
 
-          <h2 className="text-sm font-semibold tracking-wider cursor-default hover:text-[#E72B1C] transition-colors">PERFORMANCE</h2>
-          <ul
-            className={`text-sm transition-opacity duration-300 leading-tight ${
-              hoveredColumn === "performance" ? "opacity-100" : "opacity-0 pointer-events-none"
-            }`}
+          {/* Hover area that covers header + dropdown space */}
+          <div
+            className="relative flex flex-col items-end"
+            onMouseEnter={() => setHoveredColumn("performance")}
+            onMouseLeave={() => setHoveredColumn(null)}
           >
-            {projects?.performance?.map((project) => (
-              <li key={project._id}>
-                <TransitionLink
-                  href={`/performance/${project.slug}`}
-                  className="hover:text-[#E72B1C] transition-colors"
-                >
-                  {project.title}
-                </TransitionLink>
-              </li>
-            ))}
-          </ul>
+            <h2 className="text-sm font-semibold tracking-wider cursor-default hover:text-[#E72B1C] transition-colors">PERFORMANCE</h2>
+            <ul
+              className={`text-sm transition-opacity duration-300 leading-tight ${
+                hoveredColumn === "performance" ? "opacity-100" : "opacity-0"
+              }`}
+            >
+              {projects?.performance?.map((project) => (
+                <li key={project._id}>
+                  <TransitionLink
+                    href={`/performance/${project.slug}`}
+                    className="hover:text-[#E72B1C] transition-colors"
+                  >
+                    {project.title}
+                  </TransitionLink>
+                </li>
+              ))}
+            </ul>
+          </div>
           <div className="mt-auto pt-6">
             <span className="text-sm font-semibold tracking-wider">
               {settings?.footerRightText || "PINTOS"}

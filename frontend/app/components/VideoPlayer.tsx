@@ -7,7 +7,6 @@ type VideoPlayerProps = {
   previewVideoUrl: string;
   fullVideoUrl: string;
   alt?: string | null;
-  isFullscreen?: boolean;
   title?: string;
 };
 
@@ -454,7 +453,6 @@ export default function VideoPlayer({
   previewVideoUrl,
   fullVideoUrl,
   alt: _alt,
-  isFullscreen = false,
   title = "Video",
 }: VideoPlayerProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -483,9 +481,7 @@ export default function VideoPlayer({
   return (
     <>
       <div
-        className={`relative cursor-pointer touch-manipulation ${
-          isFullscreen ? "w-full h-screen" : "w-full"
-        }`}
+        className="relative cursor-pointer touch-manipulation w-full"
         onClick={handleClick}
         onTouchEnd={(e) => {
           e.preventDefault();
@@ -504,9 +500,7 @@ export default function VideoPlayer({
           muted
           playsInline
           aria-hidden="true"
-          className={`object-cover pointer-events-none ${
-            isFullscreen ? "w-full h-full" : "w-full h-auto"
-          }`}
+          className="object-cover pointer-events-none w-full h-auto"
         />
       </div>
       {mounted && isModalOpen && vimeoId && (
