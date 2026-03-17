@@ -33,7 +33,7 @@ export const aboutQuery = defineQuery(`
     mainText,
     selectedClients,
     selectedClientsDescription,
-    specialties,
+    press,
     contact[]{
       _key,
       label,

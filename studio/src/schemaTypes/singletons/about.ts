@@ -39,11 +39,11 @@ export const about = defineType({
       description: 'Description or list of selected clients',
     }),
     defineField({
-      name: 'specialties',
-      title: 'Specialties',
+      name: 'press',
+      title: 'Press',
       type: 'array',
       group: 'content',
-      description: 'List of specialties or skills',
+      description: 'List of press or skills',
       of: [
         defineArrayMember({
           type: 'string',

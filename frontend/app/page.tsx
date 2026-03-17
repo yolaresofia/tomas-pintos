@@ -30,15 +30,15 @@ export default async function HomePage() {
   // Get image URLs for each section
   // Use 1920px width for high-DPI displays, WebP format, and auto quality
   const fotoImageUrl = homepage?.fotoImage
-    ? urlForImage(homepage.fotoImage)?.width(1920).format("webp").quality(80).url() ?? null
+    ? urlForImage(homepage.fotoImage)?.url() ?? null
     : null;
 
   const movementDirectionImageUrl = homepage?.movementDirectionImage
-    ? urlForImage(homepage.movementDirectionImage)?.width(1920).format("webp").quality(80).url() ?? null
+    ? urlForImage(homepage.movementDirectionImage)?.url() ?? null
     : null;
 
   const performanceImageUrl = homepage?.performanceImage
-    ? urlForImage(homepage.performanceImage)?.width(1920).format("webp").quality(80).url() ?? null
+    ? urlForImage(homepage.performanceImage)?.url() ?? null
     : null;
 
   // Get preview video URL (already resolved in GROQ query)

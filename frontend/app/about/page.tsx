@@ -6,6 +6,7 @@ import { PortableText } from "@/app/components/PortableText";
 import { sanityFetch } from "@/sanity/lib/live";
 import { aboutQuery, settingsQuery } from "@/sanity/lib/queries";
 import { resolveExternalLink } from "@/sanity/lib/utils";
+import AnimatedStar from "@/app/components/AnimatedStar";
 
 // Revalidate every hour (ISR)
 export const revalidate = 3600;
@@ -41,24 +42,29 @@ export default async function AboutPage() {
 
   return (
     <div
-      className="min-h-screen flex flex-col lg:pt-24 pt-12"
+      className="h-screen flex flex-col overflow-hidden"
       style={backgroundColor ? { backgroundColor } : undefined}
     >
       <HomeButton />
-      {/* Main Content */}
-      <div className="flex-1 p-2 mx-auto pb-12">
-        {/* Main Text */}
+
+      {/* Main Text - Top */}
+      <div className="relative z-10 p-2 pt-12">
         {about?.mainText && (
           <PortableText
             value={about.mainText}
-            className="text-[13px] min-[1100px]:text-sm text-justify leading-relaxed mb-12"
+            className="text-[13px] min-[1100px]:text-sm text-justify leading-relaxed"
           />
         )}
+      </div>
 
-        {/* Three Column Section: Selected Clients, Specialties, Contact */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 pt-24">
-          {/* Selected Clients */}
-          <div>
+      {/* Star + Clients + Press — absolutely centered in viewport */}
+      <div className="absolute inset-0 flex items-center justify-center z-0 px-2 pt-16">
+        <div className="relative">
+          {/* Star */}
+          <AnimatedStar className="w-[250px] min-[1100px]:w-[450px] h-auto" />
+
+          {/* Selected Clients - Left, pinned to page left edge */}
+          <div className="hidden min-[1100px]:block fixed left-2 top-[55%] max-w-[calc((100vw-450px)/2-1.5rem)] text-left">
             {about?.selectedClients && (
               <h2 className="text-[13px] min-[1100px]:text-sm font-medium tracking-wider mb-2">
                 {about.selectedClients}
@@ -71,52 +77,51 @@ export default async function AboutPage() {
             )}
           </div>
 
-          {/* Specialties */}
-          <div>
-            {about?.specialties && about.specialties.length > 0 && (
-              <>
-                <h2 className="text-[13px] min-[1100px]:text-sm font-medium tracking-wider mb-2">
-                  Especialidades
-                </h2>
-                <ul className="space-y-1">
-                  {about.specialties.map((specialty: string, index: number) => (
-                    <li key={index} className="text-[13px] min-[1100px]:text-sm">
-                      {specialty}
+          {/* Press - Right, pinned to page right edge */}
+          <div className="hidden min-[1100px]:block fixed right-2 top-[55%] max-w-[calc((100vw-450px)/2-1.5rem)] text-left">
+            {(() => {
+              const press = about?.press as unknown as string[] | null;
+              return press?.length ? (
+                <>
+                  <h2 className="text-[13px] min-[1100px]:text-sm font-medium tracking-wider mb-2">
+                    Press
+                  </h2>
+                  <p className="text-[13px] min-[1100px]:text-sm leading-relaxed">
+                    {press.join(", ")}
+                  </p>
+                </>
+              ) : null;
+            })()}
+          </div>
+
+          {/* Contact - Below star */}
+          {about?.contact && about.contact.length > 0 && (
+            <div className="text-center mt-6">
+              <ul className="space-y-1">
+                {about.contact.map((link: ExternalLinkItem) => {
+                  const href = resolveExternalLink(link);
+                  if (!href) return null;
+
+                  return (
+                    <li key={link._key}>
+                      <a
+                        href={href}
+                        target={link.linkType === "external" ? "_blank" : undefined}
+                        rel={link.linkType === "external" ? "noopener noreferrer" : undefined}
+                        className="text-[13px] min-[1100px]:text-sm hover:opacity-60 transition-opacity">
+                        {link.label}
+                      </a>
                     </li>
-                  ))}
-                </ul>
-              </>
-            )}
-          </div>
-
-          {/* Contact */}
-          <div>
-            {about?.contact && about.contact.length > 0 && (
-              <>
-                <h2 className="text-[13px] min-[1100px]:text-sm font-medium tracking-wider mb-2">Contact</h2>
-                <ul className="space-y-1">
-                  {about.contact.map((link: ExternalLinkItem) => {
-                    const href = resolveExternalLink(link);
-                    if (!href) return null;
-
-                    return (
-                      <li key={link._key}>
-                        <a
-                          href={href}
-                          target={link.linkType === "external" ? "_blank" : undefined}
-                          rel={link.linkType === "external" ? "noopener noreferrer" : undefined}
-                          className="text-[13px] min-[1100px]:text-sm hover:opacity-60 transition-opacity">
-                          {link.label}
-                        </a>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </>
-            )}
-          </div>
+                  );
+                })}
+              </ul>
+            </div>
+          )}
         </div>
       </div>
+
+      {/* Spacer to push footer down */}
+      <div className="flex-1" />
 
       {/* Footer */}
       <Footer

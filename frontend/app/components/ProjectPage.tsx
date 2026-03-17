@@ -68,6 +68,7 @@ function GalleryThumbnail({
 
 type LightboxImage = {
   src: string;
+  thumbnailSrc: string;
   alt: string;
 };
 
@@ -86,6 +87,12 @@ function ImageLightbox({
 }) {
   const [isVisible, setIsVisible] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
+  const [loaded, setLoaded] = useState(false);
+
+  // Reset loaded state when image changes
+  useEffect(() => {
+    setLoaded(false);
+  }, [image.src]);
 
   // Trigger animation on mount
   useEffect(() => {
@@ -132,10 +139,19 @@ function ImageLightbox({
         onClick={(e) => e.stopPropagation()}
       >
         <img
-          src={image.src}
+          src={loaded ? image.src : image.thumbnailSrc}
           alt={image.alt}
           className="object-contain max-w-full max-h-[90vh] w-auto h-auto cursor-default"
         />
+        {/* Hidden img to trigger full-res load */}
+        {!loaded && (
+          <img
+            src={image.src}
+            alt=""
+            className="hidden"
+            onLoad={() => setLoaded(true)}
+          />
+        )}
       </div>
     </div>,
     document.body
@@ -204,18 +220,19 @@ function MediaColumnRenderer({
           );
         }
 
-        // Handle image items - same URL for grid and lightbox (already cached)
-        const imageUrl = urlForImage(item.image)?.width(800).quality(80).url();
-        if (!imageUrl) return null;
+        // Thumbnail uses a capped width, lightbox gets the full original
+        const thumbnailUrl = urlForImage(item.image)?.width(800).url();
+        const fullUrl = urlForImage(item.image)?.url();
+        if (!thumbnailUrl || !fullUrl) return null;
 
         return (
           <GalleryThumbnail
             key={item._key}
-            src={imageUrl}
+            src={thumbnailUrl}
             alt={item.alt || ""}
             onClick={
               onImageClick
-                ? () => onImageClick(imageUrl, item.alt || "")
+                ? () => onImageClick(fullUrl, item.alt || "")
                 : () => {}
             }
           />
@@ -236,10 +253,12 @@ function collectAllImages(
     if (!column?.photos) return;
     for (const item of column.photos) {
       if (item.isVideo) continue;
-      const imageUrl = urlForImage(item.image)?.width(800).quality(80).url();
-      if (imageUrl) {
+      const fullUrl = urlForImage(item.image)?.url();
+      const thumbnailUrl = urlForImage(item.image)?.width(800).url();
+      if (fullUrl && thumbnailUrl) {
         images.push({
-          src: imageUrl,
+          src: fullUrl,
+          thumbnailSrc: thumbnailUrl,
           alt: item.alt || "",
         });
       }
@@ -267,6 +286,17 @@ export default function ProjectPage({
     project.leftColumn as MediaColumn,
     project.rightColumn as MediaColumn
   );
+
+  // Preload full-res images so lightbox opens instantly
+  useEffect(() => {
+    allImages.forEach(({ src }) => {
+      const link = document.createElement("link");
+      link.rel = "preload";
+      link.as = "image";
+      link.href = src;
+      document.head.appendChild(link);
+    });
+  }, [allImages]);
 
   // Lightbox state (desktop only)
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
