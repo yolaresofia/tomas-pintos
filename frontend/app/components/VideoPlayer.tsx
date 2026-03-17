@@ -51,10 +51,10 @@ function VimeoModal({ vimeoId, title, onClose }: VimeoModalProps) {
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [progress, setProgress] = useState(0);
-  const [isFullscreen, setIsFullscreen] = useState(false);
   const [showControls, setShowControls] = useState(true);
   const [isVisible, setIsVisible] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
+  const [hideIframe, setHideIframe] = useState(false);
 
   // Fade in on mount and manage focus
   useEffect(() => {
@@ -74,21 +74,14 @@ function VimeoModal({ vimeoId, title, onClose }: VimeoModalProps) {
     };
   }, []);
 
-  // Handle closing with animation - fade out first, then exit fullscreen
+  // Handle closing with animation
   const handleAnimatedClose = useCallback(() => {
     if (isClosing) return;
     setIsClosing(true);
     setIsVisible(false);
     setTimeout(() => {
-      // Exit fullscreen after fade animation completes
-      if (document.fullscreenElement) {
-        document.exitFullscreen().finally(() => {
-          onClose();
-        });
-      } else {
-        onClose();
-      }
-    }, 500); // Match the transition duration
+      onClose();
+    }, 500);
   }, [isClosing, onClose]);
 
   useEffect(() => {
@@ -111,7 +104,14 @@ function VimeoModal({ vimeoId, title, onClose }: VimeoModalProps) {
 
         player.on("play", () => setIsPlaying(true));
         player.on("pause", () => setIsPlaying(false));
-        player.on("ended", () => setIsPlaying(false));
+        player.on("ended", () => {
+          // Close the modal when video ends (prevents Vimeo related videos from showing)
+          setIsClosing(true);
+          setIsVisible(false);
+          setTimeout(() => {
+            onClose();
+          }, 500);
+        });
       }
     };
 
@@ -124,44 +124,13 @@ function VimeoModal({ vimeoId, title, onClose }: VimeoModalProps) {
     };
   }, [vimeoId]);
 
-  // Auto-enter fullscreen on mount
+  // Lock body scroll while modal is open
   useEffect(() => {
-    const enterFullscreen = async () => {
-      if (containerRef.current && !document.fullscreenElement) {
-        try {
-          await containerRef.current.requestFullscreen();
-        } catch (err) {
-          // Fullscreen request failed, continue without fullscreen
-          console.warn("Could not enter fullscreen:", err);
-        }
-      }
-    };
-
-    // Small delay to ensure the container is rendered
-    const timer = setTimeout(enterFullscreen, 100);
-    return () => clearTimeout(timer);
-  }, []);
-
-  useEffect(() => {
-    const handleFullscreenChange = () => {
-      const isNowFullscreen = !!document.fullscreenElement;
-      setIsFullscreen(isNowFullscreen);
-
-      // Only handle close if user exited fullscreen externally (e.g., Escape key)
-      // and we're not already in the process of closing
-      if (!isNowFullscreen && !isClosing) {
-        handleAnimatedClose();
-      }
-    };
-
-    document.addEventListener("fullscreenchange", handleFullscreenChange);
     document.body.style.overflow = "hidden";
-
     return () => {
-      document.removeEventListener("fullscreenchange", handleFullscreenChange);
       document.body.style.overflow = "";
     };
-  }, [handleAnimatedClose, isClosing]);
+  }, []);
 
   // Auto-hide controls after 2 seconds of inactivity
   const resetHideTimer = useCallback(() => {
@@ -244,16 +213,6 @@ function VimeoModal({ vimeoId, title, onClose }: VimeoModalProps) {
     setIsMuted(newMuted);
   }, [isMuted]);
 
-  const toggleFullscreen = useCallback(() => {
-    if (!containerRef.current) return;
-
-    if (document.fullscreenElement) {
-      document.exitFullscreen();
-    } else {
-      containerRef.current.requestFullscreen();
-    }
-  }, []);
-
   const handleProgressClick = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
       if (!playerRef.current || !duration) return;
@@ -286,14 +245,9 @@ function VimeoModal({ vimeoId, title, onClose }: VimeoModalProps) {
           e.preventDefault();
           toggleMute();
           break;
-        case "f":
-        case "F":
-          e.preventDefault();
-          toggleFullscreen();
-          break;
       }
     },
-    [handleClose, togglePlay, toggleMute, toggleFullscreen]
+    [handleClose, togglePlay, toggleMute]
   );
 
   const remainingTime = duration - currentTime;
@@ -305,11 +259,26 @@ function VimeoModal({ vimeoId, title, onClose }: VimeoModalProps) {
       aria-modal="true"
       aria-label={`Video player: ${title}`}
       onKeyDown={handleKeyDown}
-      className={`fixed inset-0 z-50 flex flex-col bg-black transition-opacity duration-500 ease-in-out ${
+      className={`fixed inset-0 z-50 flex items-center justify-center bg-black transition-opacity duration-500 ease-in-out ${
         isVisible ? "opacity-100" : "opacity-0"
       }`}
+      onClick={(e) => {
+        // Close when clicking the backdrop
+        if (e.target === e.currentTarget) handleClose();
+      }}
     >
-      <div className="flex-1 relative">
+      {/* Close button - top right */}
+      <button
+        ref={closeButtonRef}
+        onClick={handleClose}
+        className="absolute top-4 right-4 min-[1100px]:top-6 min-[1100px]:right-6 text-white text-sm hover:opacity-60 transition-opacity z-10 focus:outline-none"
+        aria-label="Close video player"
+      >
+        Close
+      </button>
+
+      {/* Video container */}
+      <div className="relative w-full h-full">
         <iframe
           ref={iframeRef}
           src={`https://player.vimeo.com/video/${vimeoId}?autoplay=1&title=0&byline=0&portrait=0&controls=0&background=0`}
@@ -320,28 +289,57 @@ function VimeoModal({ vimeoId, title, onClose }: VimeoModalProps) {
         />
         {/* Clickable overlay for play/pause */}
         <button
-          className="absolute inset-0 cursor-pointer bg-transparent border-none w-full focus:outline-none focus:ring-2 focus:ring-white focus:ring-inset"
+          className="absolute inset-0 cursor-pointer bg-transparent border-none w-full focus:outline-none"
           onClick={togglePlay}
           aria-label={isPlaying ? "Pause video" : "Play video"}
         />
-      </div>
 
-      {/* Custom Controls */}
-      <div
-        className={`absolute bottom-0 left-0 right-0 px-4 min-[1100px]:px-6 py-4 bg-gradient-to-t from-black/60 to-transparent transition-opacity duration-300 ${
-          showControls ? "opacity-100" : "opacity-0 pointer-events-none"
-        }`}
-      >
-        {/* Mobile layout - justify-between, no progress bar */}
-        <div className="flex min-[1100px]:hidden items-center justify-between text-white text-sm">
-          {/* Left side - Title and Play/Pause */}
-          <div className="flex items-center gap-3">
-            <span className="font-medium min-w-0 truncate max-w-[120px]">
+        {/* Custom Controls */}
+        <div
+          className={`absolute bottom-0 left-0 right-0 px-4 min-[1100px]:px-6 py-4 bg-gradient-to-t from-black/60 to-transparent transition-opacity duration-300 ${
+            showControls ? "opacity-100" : "opacity-0 pointer-events-none"
+          }`}
+        >
+          {/* Mobile layout - justify-between, no progress bar */}
+          <div className="flex min-[1100px]:hidden items-center justify-between text-white text-sm">
+            <div className="flex items-center gap-3">
+              <span className="font-medium min-w-0 truncate max-w-[120px]">
+                {title}
+              </span>
+              <button
+                onClick={togglePlay}
+                className="hover:opacity-60 transition-opacity flex-shrink-0 focus:outline-none"
+                aria-label={isPlaying ? "Pause" : "Play"}
+              >
+                {isPlaying ? (
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
+                  </svg>
+                ) : (
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M8 5v14l11-7z" />
+                  </svg>
+                )}
+              </button>
+              <span className="tabular-nums flex-shrink-0">{formatTime(currentTime)}</span>
+            </div>
+            <button
+              onClick={toggleMute}
+              className="hover:opacity-60 transition-opacity flex-shrink-0 focus:outline-none"
+              aria-label={isMuted ? "Unmute video" : "Mute video"}
+            >
+              Sound {isMuted ? "OFF" : "ON"}
+            </button>
+          </div>
+
+          {/* Desktop layout - with progress bar */}
+          <div className="hidden min-[1100px]:flex items-center gap-6 text-white text-sm">
+            <span className="font-medium min-w-0 truncate max-w-[200px]">
               {title}
             </span>
             <button
               onClick={togglePlay}
-              className="hover:opacity-60 transition-opacity flex-shrink-0 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-black rounded"
+              className="hover:opacity-60 transition-opacity flex-shrink-0 focus:outline-none"
               aria-label={isPlaying ? "Pause" : "Play"}
             >
               {isPlaying ? (
@@ -355,93 +353,31 @@ function VimeoModal({ vimeoId, title, onClose }: VimeoModalProps) {
               )}
             </button>
             <span className="tabular-nums flex-shrink-0">{formatTime(currentTime)}</span>
-          </div>
-
-          {/* Right side - Sound and Close */}
-          <div className="flex items-center gap-3">
+            <div
+              className="flex-1 h-[2px] bg-white/30 cursor-pointer relative group focus:outline-none"
+              onClick={handleProgressClick}
+              role="slider"
+              aria-label="Video progress"
+              aria-valuenow={Math.round(progress)}
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuetext={`${formatTime(currentTime)} of ${formatTime(duration)}`}
+              tabIndex={0}
+            >
+              <div
+                className="absolute left-0 top-0 h-full bg-white transition-all"
+                style={{ width: `${progress}%` }}
+              />
+            </div>
+            <span className="tabular-nums flex-shrink-0" aria-hidden="true">{formatTime(remainingTime)}</span>
             <button
               onClick={toggleMute}
-              className="hover:opacity-60 transition-opacity flex-shrink-0 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-black rounded"
+              className="hover:opacity-60 transition-opacity flex-shrink-0 focus:outline-none"
               aria-label={isMuted ? "Unmute video" : "Mute video"}
             >
               Sound {isMuted ? "OFF" : "ON"}
             </button>
-            <button
-              ref={closeButtonRef}
-              onClick={handleClose}
-              className="hover:opacity-60 transition-opacity flex-shrink-0 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-black rounded"
-              aria-label="Close video player"
-            >
-              Close
-            </button>
           </div>
-        </div>
-
-        {/* Desktop layout - with progress bar */}
-        <div className="hidden min-[1100px]:flex items-center gap-6 text-white text-sm">
-          {/* Title */}
-          <span className="font-medium min-w-0 truncate max-w-[200px]">
-            {title}
-          </span>
-
-          {/* Play/Pause Button */}
-          <button
-            onClick={togglePlay}
-            className="hover:opacity-60 transition-opacity flex-shrink-0 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-black rounded"
-            aria-label={isPlaying ? "Pause" : "Play"}
-          >
-            {isPlaying ? (
-              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
-              </svg>
-            ) : (
-              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M8 5v14l11-7z" />
-              </svg>
-            )}
-          </button>
-
-          {/* Current Time */}
-          <span className="tabular-nums flex-shrink-0">{formatTime(currentTime)}</span>
-
-          {/* Progress Bar */}
-          <div
-            className="flex-1 h-[2px] bg-white/30 cursor-pointer relative group focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-4 focus:ring-offset-black rounded"
-            onClick={handleProgressClick}
-            role="slider"
-            aria-label="Video progress"
-            aria-valuenow={Math.round(progress)}
-            aria-valuemin={0}
-            aria-valuemax={100}
-            aria-valuetext={`${formatTime(currentTime)} of ${formatTime(duration)}`}
-            tabIndex={0}
-          >
-            <div
-              className="absolute left-0 top-0 h-full bg-white transition-all"
-              style={{ width: `${progress}%` }}
-            />
-          </div>
-
-          {/* Remaining Time */}
-          <span className="tabular-nums flex-shrink-0" aria-hidden="true">{formatTime(remainingTime)}</span>
-
-          {/* Sound Toggle */}
-          <button
-            onClick={toggleMute}
-            className="hover:opacity-60 transition-opacity flex-shrink-0 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-black rounded"
-            aria-label={isMuted ? "Unmute video" : "Mute video"}
-          >
-            Sound {isMuted ? "OFF" : "ON"}
-          </button>
-
-          {/* Fullscreen/Close Toggle */}
-          <button
-            onClick={isFullscreen ? handleClose : toggleFullscreen}
-            className="hover:opacity-60 transition-opacity flex-shrink-0 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-black rounded"
-            aria-label={isFullscreen ? "Close video player" : "Enter fullscreen"}
-          >
-            {isFullscreen ? "Close" : "Fullscreen"}
-          </button>
         </div>
       </div>
     </div>,

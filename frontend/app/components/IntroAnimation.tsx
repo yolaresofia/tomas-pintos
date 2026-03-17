@@ -40,6 +40,14 @@ export default function IntroAnimation({
     return () => clearTimeout(curtainTimer);
   }, []);
 
+  // Preload the video as soon as we have a URL
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video || !videoUrl) return;
+    // Ensure mobile browsers start buffering the video early
+    video.load();
+  }, [videoUrl]);
+
   // Transition from curtain to video phase (or complete if no video) after curtain opens
   useEffect(() => {
     if (!curtainOpen) return;
@@ -47,10 +55,20 @@ export default function IntroAnimation({
     const timer = setTimeout(() => {
       if (videoUrl) {
         setPhase("video");
-        // Start playing video
-        videoRef.current?.play().catch(() => {
-          // If autoplay fails, still allow click to proceed
-        });
+        const video = videoRef.current;
+        if (video) {
+          // Wait for enough data before playing
+          const attemptPlay = () => {
+            video.play().catch(() => {
+              // If autoplay fails, still allow click/tap to proceed
+            });
+          };
+          if (video.readyState >= 2) {
+            attemptPlay();
+          } else {
+            video.addEventListener("canplay", attemptPlay, { once: true });
+          }
+        }
       } else {
         // No video URL, skip to complete
         setPhase("complete");
@@ -136,11 +154,12 @@ export default function IntroAnimation({
           ref={videoRef}
           src={videoUrl}
           className={`absolute top-0 left-0 w-full h-full object-cover ${
-            phase === "video" ? "visible" : "invisible"
+            phase === "video" ? "opacity-100" : "opacity-0"
           }`}
           style={{ minHeight: "100vh" }}
           muted
           playsInline
+          preload="auto"
           onEnded={handleVideoEnd}
           aria-hidden="true"
         />

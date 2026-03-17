@@ -376,64 +376,70 @@ export default function ProjectPage({
       {/* Desktop Layout (1100px and larger) */}
       <div className="hidden min-[1100px]:grid h-full grid-cols-[1.2fr_0.6fr_1.2fr]">
         <div ref={leftColumnRef} className="relative overflow-y-auto" data-lenis-scroller>
-          {category && categoryProjects && categoryProjects.length > 0 && (
-            <div className="fixed top-0 left-0 p-2 z-10">
-              <ProjectNav
-                category={category}
-                projects={categoryProjects}
-                currentSlug={project.slug ?? undefined}
-              />
-            </div>
-          )}
-          <MediaColumnRenderer
-            column={project.leftColumn as MediaColumn}
-            side="left"
-            projectTitle={project.title ?? undefined}
-            onImageClick={handleImageClick}
-          />
-        </div>
-        <div ref={centerColumnRef} className="overflow-y-auto flex flex-col items-start text-left px-4 pt-1" data-lenis-scroller>
-          {project.title && (
-            <h1 className="text-sm font-medium mb-4">{project.title}</h1>
-          )}
-          {project.description && (
-            <PortableText
-              value={project.description}
-              className="text-xs mb-6"
+          <div>
+            {category && categoryProjects && categoryProjects.length > 0 && (
+              <div className="fixed top-0 left-0 p-2 z-10">
+                <ProjectNav
+                  category={category}
+                  projects={categoryProjects}
+                  currentSlug={project.slug ?? undefined}
+                />
+              </div>
+            )}
+            <MediaColumnRenderer
+              column={project.leftColumn as MediaColumn}
+              side="left"
+              projectTitle={project.title ?? undefined}
+              onImageClick={handleImageClick}
             />
-          )}
-          {project.relevantLinks && project.relevantLinks.length > 0 && (
-            <div className="space-y-2">
-              {project.relevantLinks.map((link) => {
-                const href = resolveExternalLink(link);
-                if (!href) return null;
-                return (
-                  <a
-                    key={link._key}
-                    href={href}
-                    target={link.linkType === "external" ? "_blank" : undefined}
-                    rel={
-                      link.linkType === "external"
-                        ? "noopener noreferrer"
-                        : undefined
-                    }
-                    className="block text-xs hover:opacity-60 transition-opacity uppercase"
-                  >
-                    <span className="mr-1">→</span>
-                    {link.label}
-                  </a>
-                );
-              })}
-            </div>
-          )}
+          </div>
+        </div>
+        <div ref={centerColumnRef} className="overflow-y-auto" data-lenis-scroller>
+          <div className="flex flex-col items-start text-left px-4 pt-1">
+            {project.title && (
+              <h1 className="text-sm font-medium mb-4">{project.title}</h1>
+            )}
+            {project.description && (
+              <PortableText
+                value={project.description}
+                className="text-xs mb-6"
+              />
+            )}
+            {project.relevantLinks && project.relevantLinks.length > 0 && (
+              <div className="space-y-2 pb-18">
+                {project.relevantLinks.map((link) => {
+                  const href = resolveExternalLink(link);
+                  if (!href) return null;
+                  return (
+                    <a
+                      key={link._key}
+                      href={href}
+                      target={link.linkType === "external" ? "_blank" : undefined}
+                      rel={
+                        link.linkType === "external"
+                          ? "noopener noreferrer"
+                          : undefined
+                      }
+                      className="block text-xs hover:opacity-60 transition-opacity uppercase"
+                    >
+                      <span className="mr-1">→</span>
+                      {link.label}
+                    </a>
+                  );
+                })}
+              </div>
+            )}
+          </div>
         </div>
         <div ref={rightColumnRef} className="overflow-y-auto" data-lenis-scroller>
-          <MediaColumnRenderer
-            column={project.rightColumn as MediaColumn}
-            side="right"
-            projectTitle={project.title ?? undefined}
-            onImageClick={handleImageClick}
-          />
+          <div>
+            <MediaColumnRenderer
+              column={project.rightColumn as MediaColumn}
+              side="right"
+              projectTitle={project.title ?? undefined}
+              onImageClick={handleImageClick}
+            />
+          </div>
         </div>
       </div>
 
