@@ -40,7 +40,7 @@ export default async function AboutPage() {
 
   return (
     <AboutBackground defaultColor="#E72B1C">
-      <HomeButton />
+      <HomeButton color="white" />
 
       {/* Main Text - Top */}
       <div className="relative z-10 p-2 pt-12 font-normal" style={{ fontFamily: "var(--font-outfit)" }}>
@@ -92,7 +92,7 @@ export default async function AboutPage() {
           {/* Contact - Below star */}
           {about?.contact && about.contact.length > 0 && (
             <div className="text-center mt-6">
-              <ul className="space-y-1">
+              <ul>
                 {about.contact.map((link: ExternalLinkItem) => {
                   const href = resolveExternalLink(link);
                   if (!href) return null;

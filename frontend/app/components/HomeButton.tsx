@@ -2,7 +2,7 @@
 
 import TransitionLink from "@/app/components/TransitionLink";
 
-export default function HomeButton() {
+export default function HomeButton({ color = "#E72B1C" }: { color?: string }) {
   return (
     <TransitionLink
       href="/"
@@ -17,8 +17,8 @@ export default function HomeButton() {
         xmlns="http://www.w3.org/2000/svg"
         aria-hidden="true"
       >
-        <circle cx="8" cy="8" r="4" fill="#E72B1C" />
-        <circle cx="8" cy="8" r="7.35" stroke="#E72B1C" strokeWidth="1.3" />
+        <circle cx="8" cy="8" r="4" fill={color} />
+        <circle cx="8" cy="8" r="7.35" stroke={color} strokeWidth="1.3" />
       </svg>
     </TransitionLink>
   );
