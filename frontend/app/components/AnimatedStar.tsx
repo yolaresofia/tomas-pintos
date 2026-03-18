@@ -18,7 +18,7 @@ export default function AnimatedStar({ className }: { className?: string }) {
       intervalRef.current = setInterval(() => {
         indexRef.current = (indexRef.current + 1) % COLORS.length;
         onBackgroundChange(COLORS[indexRef.current]);
-      }, 300);
+      }, 200);
     } else {
       if (intervalRef.current) clearInterval(intervalRef.current);
       onBackgroundChange(null);

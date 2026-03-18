@@ -27,7 +27,7 @@ export default function AboutBackground({
         className="h-screen flex flex-col overflow-hidden"
         style={{
           backgroundColor: bgColor || defaultColor || "#E72B1C",
-          transition: "background-color 0.4s ease-in-out",
+          transition: "background-color 0.3s ease-in-out",
         }}
       >
         {children}
