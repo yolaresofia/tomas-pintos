@@ -7,6 +7,7 @@ import { sanityFetch } from "@/sanity/lib/live";
 import { aboutQuery, settingsQuery } from "@/sanity/lib/queries";
 import { resolveExternalLink } from "@/sanity/lib/utils";
 import AnimatedStar from "@/app/components/AnimatedStar";
+import AboutBackground from "./AboutBackground";
 
 // Revalidate every hour (ISR)
 export const revalidate = 3600;
@@ -37,18 +38,12 @@ export default async function AboutPage() {
     sanityFetch({ query: settingsQuery }),
   ]);
 
-  // Get background color from Sanity (color plugin returns { hex, rgb, hsl, etc. })
-  const backgroundColor = about?.backgroundColor?.hex || undefined;
-
   return (
-    <div
-      className="h-screen flex flex-col overflow-hidden"
-      style={backgroundColor ? { backgroundColor } : undefined}
-    >
+    <AboutBackground defaultColor="#E72B1C">
       <HomeButton />
 
       {/* Main Text - Top */}
-      <div className="relative z-10 p-2 pt-12">
+      <div className="relative z-10 p-2 pt-12 font-normal" style={{ fontFamily: "var(--font-outfit)" }}>
         {about?.mainText && (
           <PortableText
             value={about.mainText}
@@ -66,7 +61,7 @@ export default async function AboutPage() {
           {/* Selected Clients - Left, pinned to page left edge */}
           <div className="hidden min-[1100px]:block fixed left-2 top-[55%] max-w-[calc((100vw-450px)/2-1.5rem)] text-left">
             {about?.selectedClients && (
-              <h2 className="text-[13px] min-[1100px]:text-sm font-medium tracking-wider mb-2">
+              <h2 className="text-[13px] min-[1100px]:text-sm font-medium tracking-wider">
                 {about.selectedClients}
               </h2>
             )}
@@ -83,7 +78,7 @@ export default async function AboutPage() {
               const press = about?.press as unknown as string[] | null;
               return press?.length ? (
                 <>
-                  <h2 className="text-[13px] min-[1100px]:text-sm font-medium tracking-wider mb-2">
+                  <h2 className="text-[13px] min-[1100px]:text-sm font-medium tracking-wider">
                     Press
                   </h2>
                   <p className="text-[13px] min-[1100px]:text-sm leading-relaxed">
@@ -129,6 +124,6 @@ export default async function AboutPage() {
         centerText={settings?.footerCenterText}
         rightText={settings?.footerRightText}
       />
-    </div>
+    </AboutBackground>
   );
 }
