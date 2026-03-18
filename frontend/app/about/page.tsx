@@ -47,7 +47,7 @@ export default async function AboutPage() {
         {about?.mainText && (
           <PortableText
             value={about.mainText}
-            className="text-[13px] min-[1100px]:text-sm text-justify leading-relaxed"
+            className="text-[13px] min-[1100px]:text-sm text-justify"
           />
         )}
       </div>

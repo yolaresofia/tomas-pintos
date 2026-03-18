@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useBackgroundChange } from "@/app/about/AboutBackground";
 
-const COLORS = [ "#ACC6DD","#59020B", "#0047AB","#E72B1C", "#E4007C"];
+const COLORS = [ "#ACC6DD", "#E4007C", "#59020B", "#0047AB","#E72B1C"];
 
 export default function AnimatedStar({ className }: { className?: string }) {
   const [isHovering, setIsHovering] = useState(false);
@@ -18,7 +18,7 @@ export default function AnimatedStar({ className }: { className?: string }) {
       intervalRef.current = setInterval(() => {
         indexRef.current = (indexRef.current + 1) % COLORS.length;
         onBackgroundChange(COLORS[indexRef.current]);
-      }, 500);
+      }, 300);
     } else {
       if (intervalRef.current) clearInterval(intervalRef.current);
       onBackgroundChange(null);
