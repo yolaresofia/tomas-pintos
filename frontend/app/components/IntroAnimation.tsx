@@ -25,7 +25,6 @@ export default function IntroAnimation({
   const videoRef = useRef<HTMLVideoElement>(null);
   const touchStartYRef = useRef(0);
 
-  // Memoized dismiss handler - stable reference
   const dismissVideo = useCallback(() => {
     setPhase("complete");
     onComplete();
@@ -34,24 +33,19 @@ export default function IntroAnimation({
   const handleVideoEnd = dismissVideo;
   const handleVideoClick = dismissVideo;
 
-  // Start curtain animation after mount
   useEffect(() => {
     const curtainTimer = setTimeout(() => {
       setCurtainOpen(true);
     }, 500);
-
     return () => clearTimeout(curtainTimer);
   }, []);
 
-  // Preload the video as soon as we have a URL
   useEffect(() => {
     const video = videoRef.current;
     if (!video || !videoUrl) return;
-    // Ensure mobile browsers start buffering the video early
     video.load();
   }, [videoUrl]);
 
-  // Transition from curtain to video phase (or complete if no video) after curtain opens
   useEffect(() => {
     if (!curtainOpen) return;
 
@@ -60,10 +54,8 @@ export default function IntroAnimation({
         setPhase("video");
         const video = videoRef.current;
         if (video) {
-          // Wait for enough data before playing
           const attemptPlay = () => {
             video.play().catch(() => {
-              // Autoplay blocked (e.g. iOS Low Power Mode) — show poster fallback
               setAutoplayFailed(true);
             });
           };
@@ -74,16 +66,14 @@ export default function IntroAnimation({
           }
         }
       } else {
-        // No video URL, skip to complete
         setPhase("complete");
         onComplete();
       }
-    }, 700); // Wait for curtain animation to complete
+    }, 700);
 
     return () => clearTimeout(timer);
   }, [curtainOpen, videoUrl, onComplete]);
 
-  // Handle scroll/touch/keyboard to dismiss video
   useEffect(() => {
     if (phase !== "video") return;
 
@@ -94,7 +84,6 @@ export default function IntroAnimation({
     const handleTouchMove = (e: TouchEvent) => {
       const touchCurrentY = e.touches[0].clientY;
       const diff = Math.abs(touchCurrentY - touchStartYRef.current);
-      // If user scrolls more than 30px, dismiss the video
       if (diff > 30) {
         dismissVideo();
       }
@@ -104,7 +93,6 @@ export default function IntroAnimation({
       dismissVideo();
     };
 
-    // Allow keyboard users to skip intro
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Enter" || e.key === " " || e.key === "Escape") {
         e.preventDefault();
@@ -131,8 +119,13 @@ export default function IntroAnimation({
 
   return (
     <div
-      className={`fixed inset-0 z-50 overflow-hidden bg-[#E72B1C] ${phase === "video" ? "cursor-pointer" : ""}`}
-      style={{ width: "100vw", height: "100dvh" }}
+      className={`fixed top-0 left-0 z-50 overflow-hidden bg-[#E72B1C] ${phase === "video" ? "cursor-pointer" : ""}`}
+      style={{
+        width: "100vw",
+        height: "100%",
+        /* Triple fallback for mobile Safari viewport height */
+        minHeight: "-webkit-fill-available",
+      }}
       onClick={phase === "video" ? handleVideoClick : undefined}
       role="region"
       aria-label="Intro animation"
@@ -145,15 +138,23 @@ export default function IntroAnimation({
         </span>
       )}
 
-      {/* Video layer - always in DOM, visible behind curtain so it's painted when curtain opens */}
+      {/* Video layer - always in DOM so it's painted when curtain opens */}
       {videoUrl && (
         <video
           ref={videoRef}
           src={videoUrl}
-          className={`absolute inset-0 ${
-            autoplayFailed ? "opacity-0" : "opacity-100"
-          }`}
-          style={{ objectFit: "cover", width: "100%", height: "100%", minHeight: "100%" }}
+          className={autoplayFailed ? "opacity-0" : "opacity-100"}
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            minWidth: "100%",
+            minHeight: "100%",
+            width: "auto",
+            height: "auto",
+            objectFit: "cover",
+          }}
           muted
           playsInline
           preload="auto"
@@ -168,14 +169,28 @@ export default function IntroAnimation({
         <img
           src={posterUrl}
           alt=""
-          className="absolute inset-0"
-          style={{ objectFit: "cover", width: "100%", height: "100%" }}
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            minWidth: "100%",
+            minHeight: "100%",
+            width: "auto",
+            height: "auto",
+            objectFit: "cover",
+          }}
           aria-hidden="true"
         />
       )}
 
-      {/* Labels layer - uses justify-between for final position, animates from center */}
-      <div className="absolute bottom-0 left-0 right-0 p-2 flex justify-between items-end pointer-events-none z-10">
+      {/* Red curtain overlay */}
+      {phase === "curtain" && (
+        <div className="absolute inset-0 bg-[#E72B1C] z-[1]" />
+      )}
+
+      {/* Labels */}
+      <div className="absolute bottom-0 left-0 right-0 p-2 flex justify-between items-end pointer-events-none z-20">
         <span
           className={`text-[11px] md:text-sm font-extrabold min-[1100px]:font-semibold tracking-wider transition-transform duration-700 ease-in-out ${
             curtainOpen ? "" : "translate-x-[calc(50vw-100%-8px)]"
