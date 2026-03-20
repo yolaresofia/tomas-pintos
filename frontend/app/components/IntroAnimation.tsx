@@ -119,12 +119,10 @@ export default function IntroAnimation({
 
   return (
     <div
-      className={`fixed top-0 left-0 z-50 overflow-hidden bg-[#E72B1C] ${phase === "video" ? "cursor-pointer" : ""}`}
+      className={`fixed inset-0 z-50 overflow-hidden bg-[#E72B1C] ${phase === "video" ? "cursor-pointer" : ""}`}
       style={{
         width: "100vw",
-        height: "100%",
-        /* Triple fallback for mobile Safari viewport height */
-        minHeight: "-webkit-fill-available",
+        height: "100dvh",
       }}
       onClick={phase === "video" ? handleVideoClick : undefined}
       role="region"
