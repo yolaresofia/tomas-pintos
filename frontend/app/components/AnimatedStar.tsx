@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useBackgroundChange } from "@/app/about/AboutBackground";
 
-const COLORS = [ "#ACC6DD", "#E4007C", "#59020B", "#0047AB","#E72B1C"];
+const COLORS = ["#F6E301", "#011588", "#E72B1C"];
 
 export default function AnimatedStar({ className }: { className?: string }) {
   const [isHovering, setIsHovering] = useState(false);
