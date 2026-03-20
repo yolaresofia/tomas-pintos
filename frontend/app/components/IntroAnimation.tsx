@@ -119,11 +119,7 @@ export default function IntroAnimation({
 
   return (
     <div
-      className={`fixed inset-0 z-50 overflow-hidden bg-[#E72B1C] ${phase === "video" ? "cursor-pointer" : ""}`}
-      style={{
-        width: "100vw",
-        height: "100dvh",
-      }}
+      className={`fixed inset-0 z-50 overflow-hidden ${phase === "video" ? "cursor-pointer" : ""} bg-[#E72B1C]`}
       onClick={phase === "video" ? handleVideoClick : undefined}
       role="region"
       aria-label="Intro animation"
