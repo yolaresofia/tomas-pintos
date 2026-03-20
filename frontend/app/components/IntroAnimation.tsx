@@ -131,7 +131,8 @@ export default function IntroAnimation({
 
   return (
     <div
-      className={`fixed inset-0 z-50 overflow-hidden ${phase === "video" ? "cursor-pointer bg-black" : "bg-[#E72B1C]"}`}
+      className={`fixed inset-0 z-50 overflow-hidden bg-[#E72B1C] ${phase === "video" ? "cursor-pointer" : ""}`}
+      style={{ width: "100vw", height: "100dvh" }}
       onClick={phase === "video" ? handleVideoClick : undefined}
       role="region"
       aria-label="Intro animation"
@@ -144,14 +145,15 @@ export default function IntroAnimation({
         </span>
       )}
 
-      {/* Video layer - always in DOM but only visible during video phase */}
+      {/* Video layer - always in DOM, visible behind curtain so it's painted when curtain opens */}
       {videoUrl && (
         <video
           ref={videoRef}
           src={videoUrl}
-          className={`absolute inset-0 w-full h-full object-cover ${
-            phase === "video" && !autoplayFailed ? "opacity-100" : "opacity-0"
+          className={`absolute inset-0 ${
+            autoplayFailed ? "opacity-0" : "opacity-100"
           }`}
+          style={{ objectFit: "cover", width: "100%", height: "100%", minHeight: "100%" }}
           muted
           playsInline
           preload="auto"
@@ -166,7 +168,8 @@ export default function IntroAnimation({
         <img
           src={posterUrl}
           alt=""
-          className="absolute inset-0 w-full h-full object-cover"
+          className="absolute inset-0"
+          style={{ objectFit: "cover", width: "100%", height: "100%" }}
           aria-hidden="true"
         />
       )}
