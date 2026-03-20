@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 
 type IntroAnimationProps = {
   videoUrl: string | null | undefined;
+  posterUrl: string | null | undefined;
   onComplete: () => void;
   leftText?: string;
   rightText?: string;
@@ -13,12 +14,14 @@ type AnimationPhase = "curtain" | "video" | "complete";
 
 export default function IntroAnimation({
   videoUrl,
+  posterUrl,
   onComplete,
   leftText = "TOMAS",
   rightText = "PINTOS",
 }: IntroAnimationProps) {
   const [phase, setPhase] = useState<AnimationPhase>("curtain");
   const [curtainOpen, setCurtainOpen] = useState(false);
+  const [autoplayFailed, setAutoplayFailed] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const touchStartYRef = useRef(0);
 
@@ -60,7 +63,8 @@ export default function IntroAnimation({
           // Wait for enough data before playing
           const attemptPlay = () => {
             video.play().catch(() => {
-              // If autoplay fails, still allow click/tap to proceed
+              // Autoplay blocked (e.g. iOS Low Power Mode) — show poster fallback
+              setAutoplayFailed(true);
             });
           };
           if (video.readyState >= 2) {
@@ -153,14 +157,24 @@ export default function IntroAnimation({
         <video
           ref={videoRef}
           src={videoUrl}
-          className={`absolute top-0 left-0 w-full h-full object-cover ${
-            phase === "video" ? "opacity-100" : "opacity-0"
+          className={`absolute inset-0 w-full h-full object-cover ${
+            phase === "video" && !autoplayFailed ? "opacity-100" : "opacity-0"
           }`}
-          style={{ minHeight: "100vh" }}
           muted
           playsInline
           preload="auto"
           onEnded={handleVideoEnd}
+          aria-hidden="true"
+        />
+      )}
+
+      {/* Poster fallback - shown when autoplay fails (e.g. iOS Low Power Mode) */}
+      {autoplayFailed && posterUrl && phase === "video" && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={posterUrl}
+          alt=""
+          className="absolute inset-0 w-full h-full object-cover"
           aria-hidden="true"
         />
       )}

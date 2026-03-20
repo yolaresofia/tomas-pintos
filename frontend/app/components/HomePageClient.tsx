@@ -15,6 +15,7 @@ type HomePageClientProps = {
   movementDirectionImageUrl: string | null;
   performanceImageUrl: string | null;
   previewVideoUrl: string | null;
+  fallbackImageUrl: string | null;
   projects: AllProjectsForNavQueryResult | null;
   settings: SettingsQueryResult;
 };
@@ -24,6 +25,7 @@ export default function HomePageClient({
   movementDirectionImageUrl,
   performanceImageUrl,
   previewVideoUrl,
+  fallbackImageUrl,
   projects,
   settings,
 }: HomePageClientProps) {
@@ -68,6 +70,7 @@ export default function HomePageClient({
       {showIntro === true && (
         <IntroAnimation
           videoUrl={previewVideoUrl}
+          posterUrl={fallbackImageUrl}
           onComplete={handleIntroComplete}
           leftText={settings?.footerLeftText || "TOMAS"}
           rightText={settings?.footerRightText || "PINTOS"}

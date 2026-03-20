@@ -21,6 +21,7 @@ export const homepageQuery = defineQuery(`
     movementDirectionImage,
     performanceImage,
     "previewVideoUrl": previewVideo.asset->url,
+    fallbackImage,
     seoTitle,
     seoDescription
   }

@@ -44,12 +44,17 @@ export default async function HomePage() {
   // Get preview video URL (already resolved in GROQ query)
   const previewVideoUrl = homepage?.previewVideoUrl || null;
 
+  const fallbackImageUrl = homepage?.fallbackImage
+    ? urlForImage(homepage.fallbackImage)?.url() ?? null
+    : null;
+
   return (
     <HomePageClient
       fotoImageUrl={fotoImageUrl}
       movementDirectionImageUrl={movementDirectionImageUrl}
       performanceImageUrl={performanceImageUrl}
       previewVideoUrl={previewVideoUrl}
+      fallbackImageUrl={fallbackImageUrl}
       projects={projects}
       settings={settings}
     />

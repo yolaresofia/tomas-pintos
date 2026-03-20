@@ -68,6 +68,16 @@ export const homepage = defineType({
         accept: 'video/*',
       },
     }),
+    defineField({
+      name: 'fallbackImage',
+      title: 'Imagen Fallback',
+      type: 'image',
+      group: 'images',
+      description: 'Fallback image shown when video autoplay is blocked (e.g. iOS Low Power Mode)',
+      options: {
+        hotspot: true,
+      },
+    }),
 
     // ============ SEO GROUP ============
     defineField({
