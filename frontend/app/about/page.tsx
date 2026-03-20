@@ -47,7 +47,7 @@ export default async function AboutPage() {
         {about?.mainText && (
           <PortableText
             value={about.mainText}
-            className="text-[13px] min-[1100px]:text-sm text-justify"
+            className="text-[15px] text-justify"
           />
         )}
       </div>
@@ -59,14 +59,14 @@ export default async function AboutPage() {
           <AnimatedStar className="w-[250px] min-[1100px]:w-[450px] h-auto" />
 
           {/* Selected Clients - Left, pinned to page left edge */}
-          <div className="hidden min-[1100px]:block fixed left-2 top-[55%] max-w-[calc((100vw-450px)/2-1.5rem)] text-left">
+          <div className="hidden min-[1100px]:block fixed left-2 top-[55%] max-w-[calc((100vw-450px)/2-4rem)] text-left">
             {about?.selectedClients && (
-              <h2 className="text-[13px] min-[1100px]:text-sm font-medium tracking-wider">
+              <h2 className="text-[15px] font-medium tracking-wider">
                 {about.selectedClients}
               </h2>
             )}
             {about?.selectedClientsDescription && (
-              <p className="text-[13px] min-[1100px]:text-sm leading-relaxed">
+              <p className="text-[15px] leading-relaxed">
                 {about.selectedClientsDescription}
               </p>
             )}
@@ -78,10 +78,10 @@ export default async function AboutPage() {
               const press = about?.press as unknown as string[] | null;
               return press?.length ? (
                 <>
-                  <h2 className="text-[13px] min-[1100px]:text-sm font-medium tracking-wider">
+                  <h2 className="text-[15px] font-medium tracking-wider">
                     Press
                   </h2>
-                  <p className="text-[13px] min-[1100px]:text-sm leading-relaxed">
+                  <p className="text-[15px] leading-relaxed">
                     {press.join(", ")}
                   </p>
                 </>
@@ -103,7 +103,7 @@ export default async function AboutPage() {
                         href={href}
                         target={link.linkType === "external" ? "_blank" : undefined}
                         rel={link.linkType === "external" ? "noopener noreferrer" : undefined}
-                        className="text-[13px] min-[1100px]:text-sm hover:opacity-60 transition-opacity">
+                        className="text-[15px] hover:opacity-60 transition-opacity">
                         {link.label}
                       </a>
                     </li>

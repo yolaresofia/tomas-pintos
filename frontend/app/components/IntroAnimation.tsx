@@ -137,49 +137,33 @@ export default function IntroAnimation({
       )}
 
       {/* Video layer - always in DOM so it's painted when curtain opens */}
+      {/* Video layer */}
       {videoUrl && (
-        <video
-          ref={videoRef}
-          src={videoUrl}
-          className={autoplayFailed ? "opacity-0" : "opacity-100"}
-          style={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            minWidth: "100%",
-            minHeight: "100%",
-            width: "auto",
-            height: "auto",
-            objectFit: "cover",
-          }}
-          muted
-          playsInline
-          preload="auto"
-          onEnded={handleVideoEnd}
-          aria-hidden="true"
-        />
+        <div className={`absolute inset-0 ${autoplayFailed ? "opacity-0" : "opacity-100"}`}>
+          <video
+            ref={videoRef}
+            src={videoUrl}
+            className="absolute inset-0 w-full h-full object-cover"
+            muted
+            playsInline
+            preload="auto"
+            onEnded={handleVideoEnd}
+            aria-hidden="true"
+          />
+        </div>
       )}
 
       {/* Poster fallback - shown when autoplay fails (e.g. iOS Low Power Mode) */}
       {autoplayFailed && posterUrl && phase === "video" && (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={posterUrl}
-          alt=""
-          style={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            minWidth: "100%",
-            minHeight: "100%",
-            width: "auto",
-            height: "auto",
-            objectFit: "cover",
-          }}
-          aria-hidden="true"
-        />
+        <div className="absolute inset-0">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={posterUrl}
+            alt=""
+            className="absolute inset-0 w-full h-full object-cover"
+            aria-hidden="true"
+          />
+        </div>
       )}
 
       {/* Red curtain overlay */}
