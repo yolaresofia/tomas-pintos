@@ -136,34 +136,44 @@ export default function IntroAnimation({
         </span>
       )}
 
-      {/* Video layer - always in DOM so it's painted when curtain opens */}
       {/* Video layer */}
       {videoUrl && (
-        <div className={`absolute inset-0 ${autoplayFailed ? "opacity-0" : "opacity-100"}`}>
-          <video
-            ref={videoRef}
-            src={videoUrl}
-            className="absolute inset-0 w-full h-full object-cover"
-            muted
-            playsInline
-            preload="auto"
-            onEnded={handleVideoEnd}
-            aria-hidden="true"
-          />
-        </div>
+        <video
+          ref={videoRef}
+          src={videoUrl}
+          className={autoplayFailed ? "hidden" : ""}
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+          }}
+          muted
+          playsInline
+          preload="auto"
+          onEnded={handleVideoEnd}
+          aria-hidden="true"
+        />
       )}
 
       {/* Poster fallback - shown when autoplay fails (e.g. iOS Low Power Mode) */}
       {autoplayFailed && posterUrl && phase === "video" && (
-        <div className="absolute inset-0">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={posterUrl}
-            alt=""
-            className="absolute inset-0 w-full h-full object-cover"
-            aria-hidden="true"
-          />
-        </div>
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={posterUrl}
+          alt=""
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+          }}
+          aria-hidden="true"
+        />
       )}
 
       {/* Red curtain overlay */}
