@@ -74,6 +74,13 @@ export default function IntroAnimation({
     return () => clearTimeout(timer);
   }, [curtainOpen, videoUrl, onComplete]);
 
+  // Auto-dismiss after 2s when showing fallback poster
+  useEffect(() => {
+    if (!autoplayFailed || phase !== "video") return;
+    const timer = setTimeout(dismissVideo, 2000);
+    return () => clearTimeout(timer);
+  }, [autoplayFailed, phase, dismissVideo]);
+
   useEffect(() => {
     if (phase !== "video") return;
 
@@ -119,7 +126,8 @@ export default function IntroAnimation({
 
   return (
     <div
-      className={`fixed inset-0 z-50 overflow-hidden ${phase === "video" ? "cursor-pointer bg-white" : "bg-[#E72B1C]"}`}
+      className={`fixed inset-0 z-50 overflow-hidden ${phase === "video" ? "cursor-pointer" : ""}`}
+      style={{ backgroundColor: phase === "video" ? "#ffffff" : "#E72B1C" }}
       onClick={phase === "video" ? handleVideoClick : undefined}
       role="region"
       aria-label="Intro animation"
