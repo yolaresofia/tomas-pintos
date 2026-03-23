@@ -140,18 +140,6 @@ export default function IntroAnimation({
     return null;
   }
 
-  // Container: use svh with vh fallback, black bg during video to hide any gaps
-  const containerStyle: React.CSSProperties = {
-    position: "fixed",
-    top: 0,
-    left: 0,
-    width: "100vw",
-    height: "100vh",
-    zIndex: 50,
-    overflow: "hidden",
-    backgroundColor: phase === "video" ? "#000000" : "#E72B1C",
-  };
-
   // Video/image: centered + oversized to guarantee cover on all aspect ratios
   const mediaStyle: React.CSSProperties = {
     position: "absolute",
@@ -167,8 +155,8 @@ export default function IntroAnimation({
 
   return (
     <div
-      style={containerStyle}
-      className={phase === "video" ? "cursor-pointer" : ""}
+      className={`fixed inset-0 z-50 overflow-hidden ${phase === "video" ? "cursor-pointer" : ""}`}
+      style={{ backgroundColor: phase === "video" ? "#000000" : "#E72B1C" }}
       onClick={phase === "video" ? handleVideoClick : undefined}
       role="region"
       aria-label="Intro animation"
