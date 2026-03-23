@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import Image from "next/image";
 
 type IntroAnimationProps = {
   videoUrl: string | null | undefined;
@@ -141,17 +142,6 @@ export default function IntroAnimation({
     return null;
   }
 
-  const mediaStyle: React.CSSProperties = {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    width: "100%",
-    height: "100%",
-    objectFit: "cover",
-  };
-
   return (
     <div
       className={`fixed inset-0 z-50 overflow-hidden ${phase === "video" ? "cursor-pointer" : ""}`}
@@ -167,13 +157,12 @@ export default function IntroAnimation({
         </span>
       )}
 
-      {/* Video layer */}
+      {/* Desktop: video element */}
       {videoUrl && (
         <video
           ref={videoRef}
           src={videoUrl}
-          className={autoplayFailed ? "hidden" : ""}
-          style={mediaStyle}
+          className={`absolute inset-0 w-full h-full object-cover hidden min-[1100px]:block ${autoplayFailed ? "!hidden" : ""}`}
           muted
           playsInline
           preload="auto"
@@ -183,18 +172,35 @@ export default function IntroAnimation({
         />
       )}
 
-      {/* Poster fallback */}
-      {autoplayFailed && posterUrl && phase === "video" && (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={posterUrl}
-          alt=""
-          style={mediaStyle}
-          aria-hidden="true"
-        />
+      {/* Mobile: use Next.js Image which handles object-fit cover correctly on iOS */}
+      {posterUrl && (
+        <div className={`absolute inset-0 min-[1100px]:hidden ${phase !== "video" ? "opacity-0" : ""}`}>
+          <Image
+            src={posterUrl}
+            alt=""
+            fill
+            sizes="100vw"
+            className="object-cover"
+            priority
+          />
+        </div>
       )}
 
-      {/* Red curtain overlay — fades to reveal video */}
+      {/* Desktop poster fallback when autoplay fails */}
+      {autoplayFailed && posterUrl && phase === "video" && (
+        <div className="absolute inset-0 hidden min-[1100px]:block">
+          <Image
+            src={posterUrl}
+            alt=""
+            fill
+            sizes="100vw"
+            className="object-cover"
+            priority
+          />
+        </div>
+      )}
+
+      {/* Red curtain overlay — fades to reveal video/image */}
       <div
         className="absolute inset-0 bg-[#E72B1C] transition-opacity duration-500"
         style={{
