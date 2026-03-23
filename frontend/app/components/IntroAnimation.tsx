@@ -22,6 +22,7 @@ export default function IntroAnimation({
   const [phase, setPhase] = useState<AnimationPhase>("curtain");
   const [curtainOpen, setCurtainOpen] = useState(false);
   const [autoplayFailed, setAutoplayFailed] = useState(false);
+  const [videoPlaying, setVideoPlaying] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const touchStartYRef = useRef(0);
 
@@ -179,6 +180,7 @@ export default function IntroAnimation({
           playsInline
           preload="auto"
           onEnded={handleVideoEnd}
+          onPlaying={() => setVideoPlaying(true)}
           aria-hidden="true"
         />
       )}
@@ -194,11 +196,11 @@ export default function IntroAnimation({
         />
       )}
 
-      {/* Red curtain overlay — fades out instead of unmounting */}
+      {/* Red curtain overlay — fades to reveal video */}
       <div
         className="absolute inset-0 bg-[#E72B1C] transition-opacity duration-500"
         style={{
-          opacity: phase === "curtain" ? 1 : 0,
+          opacity: phase === "curtain" || (phase === "video" && !videoPlaying && !autoplayFailed) ? 1 : 0,
           pointerEvents: phase === "curtain" ? "auto" : "none",
           zIndex: 1,
         }}
