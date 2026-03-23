@@ -126,14 +126,8 @@ export default function IntroAnimation({
 
   return (
     <div
-      className={`fixed z-50 overflow-hidden ${phase === "video" ? "cursor-pointer" : ""}`}
-      style={{
-        backgroundColor: phase === "video" ? "#ffffff" : "#E72B1C",
-        top: "calc(-1 * env(safe-area-inset-top, 0px))",
-        left: "calc(-1 * env(safe-area-inset-left, 0px))",
-        right: "calc(-1 * env(safe-area-inset-right, 0px))",
-        bottom: "calc(-1 * env(safe-area-inset-bottom, 0px))",
-      }}
+      className={`fixed inset-0 z-50 overflow-hidden ${phase === "video" ? "cursor-pointer" : ""}`}
+      style={{ backgroundColor: phase === "video" ? "#ffffff" : "#E72B1C" }}
       onClick={phase === "video" ? handleVideoClick : undefined}
       role="region"
       aria-label="Intro animation"
@@ -146,22 +140,13 @@ export default function IntroAnimation({
         </span>
       )}
 
-      {/* Video layer — manually scaled to cover viewport on all devices */}
+      {/* Video layer */}
       {videoUrl && (
         <video
           ref={videoRef}
           src={videoUrl}
-          className={autoplayFailed ? "hidden" : ""}
-          style={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            minWidth: "100%",
-            minHeight: "100%",
-            width: "177.78vh", // 100 * 16/9
-            height: "56.25vw", // 100 * 9/16
-          }}
+          className={`absolute inset-0 w-full h-full ${autoplayFailed ? "hidden" : ""}`}
+          style={{ objectFit: "cover" }}
           muted
           playsInline
           preload="auto"
@@ -176,16 +161,8 @@ export default function IntroAnimation({
         <img
           src={posterUrl}
           alt=""
-          style={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            minWidth: "100%",
-            minHeight: "100%",
-            width: "177.78vh",
-            height: "56.25vw",
-          }}
+          className="absolute inset-0 w-full h-full"
+          style={{ objectFit: "cover" }}
           aria-hidden="true"
         />
       )}

@@ -53,6 +53,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export const viewport: Viewport = {
   viewportFit: "cover",
+  themeColor: "#ffffff",
 };
 
 const outfit = Outfit({
@@ -78,7 +79,7 @@ export default async function RootLayout({
         <link rel="preconnect" href="https://player.vimeo.com" />
         <link rel="dns-prefetch" href="https://player.vimeo.com" />
       </head>
-      <body>
+      <body className="bg-white">
         <section className="min-h-screen">
           {/* The <Toaster> component is responsible for rendering toast notifications used in /app/client-utils.ts and /app/components/DraftModeToast.tsx */}
           <Toaster />
