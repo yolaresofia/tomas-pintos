@@ -74,11 +74,13 @@ export default async function AboutPage() {
         </div>
 
         {/* Press */}
-        {about?.press && about.press.length > 0 && (
+        {(() => {
+          const press = about?.press as ExternalLinkItem[] | null;
+          return press && press.length > 0 ? (
           <div className="w-full mt-8">
             <h2 className="text-[15px] font-medium tracking-wider">Press</h2>
             <ul>
-              {(about.press as ExternalLinkItem[]).map((link) => {
+              {press.map((link) => {
                 const href = resolveExternalLink(link);
                 if (!href) return null;
                 return (
@@ -102,7 +104,8 @@ export default async function AboutPage() {
               })}
             </ul>
           </div>
-        )}
+          ) : null;
+        })()}
 
         {/* Contact */}
         {about?.contact && about.contact.length > 0 && (
@@ -160,13 +163,15 @@ export default async function AboutPage() {
 
           {/* Press - Right, pinned to page right edge */}
           <div className="fixed right-2 top-[55%] w-[calc((100vw-450px)/2-4rem)] text-left">
-            {about?.press && about.press.length > 0 && (
+            {(() => {
+              const press = about?.press as ExternalLinkItem[] | null;
+              return press && press.length > 0 ? (
               <>
                 <h2 className="text-[15px] font-medium tracking-wider">
                   Press
                 </h2>
                 <p className="text-[15px] leading-relaxed">
-                  {(about.press as ExternalLinkItem[]).map((link, i) => {
+                  {press.map((link, i) => {
                     const href = resolveExternalLink(link);
                     if (!href) return null;
                     return (
@@ -191,7 +196,8 @@ export default async function AboutPage() {
                   })}
                 </p>
               </>
-            )}
+              ) : null;
+            })()}
           </div>
 
           {/* Contact - Below star */}

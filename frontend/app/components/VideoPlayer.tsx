@@ -10,7 +10,13 @@ type VideoPlayerProps = {
   title?: string;
 };
 
-function extractVimeoId(url: string): string | null {
+function extractVimeoInfo(url: string): { id: string; hash?: string } | null {
+  // Private/unlisted videos: vimeo.com/123456789/abcdef1234
+  const privateMatch = url.match(/vimeo\.com\/(\d+)\/([a-zA-Z0-9]+)/);
+  if (privateMatch) {
+    return { id: privateMatch[1], hash: privateMatch[2] };
+  }
+
   const patterns = [
     /vimeo\.com\/(\d+)/,
     /player\.vimeo\.com\/video\/(\d+)/,
@@ -20,7 +26,7 @@ function extractVimeoId(url: string): string | null {
   for (const pattern of patterns) {
     const match = url.match(pattern);
     if (match) {
-      return match[1];
+      return { id: match[1] };
     }
   }
   return null;
@@ -34,11 +40,12 @@ function formatTime(seconds: number): string {
 
 type VimeoModalProps = {
   vimeoId: string;
+  vimeoHash?: string;
   title: string;
   onClose: () => void;
 };
 
-function VimeoModal({ vimeoId, title, onClose }: VimeoModalProps) {
+function VimeoModal({ vimeoId, vimeoHash, title, onClose }: VimeoModalProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const playerRef = useRef<any>(null);
@@ -281,7 +288,7 @@ function VimeoModal({ vimeoId, title, onClose }: VimeoModalProps) {
       <div className="relative w-full h-full">
         <iframe
           ref={iframeRef}
-          src={`https://player.vimeo.com/video/${vimeoId}?autoplay=1&title=0&byline=0&portrait=0&controls=0&background=0`}
+          src={`https://player.vimeo.com/video/${vimeoId}?autoplay=1&title=0&byline=0&portrait=0&controls=0&background=0${vimeoHash ? `&h=${vimeoHash}` : ""}`}
           className="absolute inset-0 w-full h-full pointer-events-none"
           allow="autoplay; fullscreen; picture-in-picture"
           allowFullScreen
@@ -399,10 +406,10 @@ export default function VideoPlayer({
     setMounted(true);
   }, []);
 
-  const vimeoId = extractVimeoId(fullVideoUrl);
+  const vimeoInfo = extractVimeoInfo(fullVideoUrl);
 
   const handleClick = () => {
-    if (vimeoId) {
+    if (vimeoInfo) {
       setIsModalOpen(true);
     }
   };
@@ -439,9 +446,10 @@ export default function VideoPlayer({
           className="object-cover pointer-events-none w-full h-auto"
         />
       </div>
-      {mounted && isModalOpen && vimeoId && (
+      {mounted && isModalOpen && vimeoInfo && (
         <VimeoModal
-          vimeoId={vimeoId}
+          vimeoId={vimeoInfo.id}
+          vimeoHash={vimeoInfo.hash}
           title={title}
           onClose={() => setIsModalOpen(false)}
         />
