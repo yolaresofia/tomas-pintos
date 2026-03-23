@@ -1,7 +1,7 @@
 import "./globals.css";
 
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Outfit } from "next/font/google";
 import { draftMode } from "next/headers";
 import { VisualEditing } from "next-sanity";
@@ -50,6 +50,10 @@ export async function generateMetadata(): Promise<Metadata> {
     },
   };
 }
+
+export const viewport: Viewport = {
+  viewportFit: "cover",
+};
 
 const outfit = Outfit({
   variable: "--font-outfit",

@@ -126,8 +126,14 @@ export default function IntroAnimation({
 
   return (
     <div
-      className={`fixed inset-0 z-50 overflow-hidden ${phase === "video" ? "cursor-pointer" : ""}`}
-      style={{ backgroundColor: phase === "video" ? "#ffffff" : "#E72B1C" }}
+      className={`fixed z-50 overflow-hidden ${phase === "video" ? "cursor-pointer" : ""}`}
+      style={{
+        backgroundColor: phase === "video" ? "#ffffff" : "#E72B1C",
+        top: "calc(-1 * env(safe-area-inset-top, 0px))",
+        left: "calc(-1 * env(safe-area-inset-left, 0px))",
+        right: "calc(-1 * env(safe-area-inset-right, 0px))",
+        bottom: "calc(-1 * env(safe-area-inset-bottom, 0px))",
+      }}
       onClick={phase === "video" ? handleVideoClick : undefined}
       role="region"
       aria-label="Intro animation"
@@ -140,7 +146,7 @@ export default function IntroAnimation({
         </span>
       )}
 
-      {/* Video layer */}
+      {/* Video layer — manually scaled to cover viewport on all devices */}
       {videoUrl && (
         <video
           ref={videoRef}
@@ -148,11 +154,13 @@ export default function IntroAnimation({
           className={autoplayFailed ? "hidden" : ""}
           style={{
             position: "absolute",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            minWidth: "100%",
+            minHeight: "100%",
+            width: "177.78vh", // 100 * 16/9
+            height: "56.25vw", // 100 * 9/16
           }}
           muted
           playsInline
@@ -170,11 +178,13 @@ export default function IntroAnimation({
           alt=""
           style={{
             position: "absolute",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            minWidth: "100%",
+            minHeight: "100%",
+            width: "177.78vh",
+            height: "56.25vw",
           }}
           aria-hidden="true"
         />
