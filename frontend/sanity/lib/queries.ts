@@ -34,7 +34,13 @@ export const aboutQuery = defineQuery(`
     mainText,
     selectedClients,
     selectedClientsDescription,
-    press,
+    press[]{
+      _key,
+      label,
+      linkType,
+      url,
+      email
+    },
     contact[]{
       _key,
       label,

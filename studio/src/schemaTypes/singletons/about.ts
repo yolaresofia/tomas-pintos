@@ -43,15 +43,8 @@ export const about = defineType({
       title: 'Press',
       type: 'array',
       group: 'content',
-      description: 'List of press or skills',
-      of: [
-        defineArrayMember({
-          type: 'string',
-        }),
-      ],
-      options: {
-        layout: 'tags',
-      },
+      description: 'List of press links',
+      of: [defineArrayMember({type: 'externalLink'})],
     }),
     defineField({
       name: 'contact',

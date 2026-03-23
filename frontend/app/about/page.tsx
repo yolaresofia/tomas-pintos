@@ -43,7 +43,10 @@ export default async function AboutPage() {
       <HomeButton color="white" />
 
       {/* Main Text - Top */}
-      <div className="relative z-10 p-2 pt-12 font-normal" style={{ fontFamily: "var(--font-outfit)" }}>
+      <div
+        className="relative z-10 p-2 pt-12 font-normal"
+        style={{ fontFamily: "var(--font-outfit)" }}
+      >
         {about?.mainText && (
           <PortableText
             value={about.mainText}
@@ -52,14 +55,97 @@ export default async function AboutPage() {
         )}
       </div>
 
-      {/* Star + Clients + Press — absolutely centered in viewport */}
-      <div className="absolute inset-0 flex items-center justify-center z-0 px-2 pt-16">
+      {/* Mobile: Star + content in flow below text */}
+      <div className="min-[1100px]:hidden flex flex-col items-start px-2 md:mt-8 pb-16">
+        <AnimatedStar className="w-[300px] h-auto self-center" />
+
+        {/* Selected Clients */}
+        <div className="w-full mt-8">
+          {about?.selectedClients && (
+            <h2 className="text-[15px] font-medium tracking-wider">
+              {about.selectedClients}
+            </h2>
+          )}
+          {about?.selectedClientsDescription && (
+            <p className="text-[15px] leading-relaxed">
+              {about.selectedClientsDescription}
+            </p>
+          )}
+        </div>
+
+        {/* Press */}
+        {about?.press && about.press.length > 0 && (
+          <div className="w-full mt-8">
+            <h2 className="text-[15px] font-medium tracking-wider">Press</h2>
+            <ul>
+              {(about.press as ExternalLinkItem[]).map((link) => {
+                const href = resolveExternalLink(link);
+                if (!href) return null;
+                return (
+                  <li key={link._key}>
+                    <a
+                      href={href}
+                      target={
+                        link.linkType === "external" ? "_blank" : undefined
+                      }
+                      rel={
+                        link.linkType === "external"
+                          ? "noopener noreferrer"
+                          : undefined
+                      }
+                      className="text-[15px] hover:opacity-60 transition-opacity"
+                    >
+                      {link.label}
+                    </a>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        )}
+
+        {/* Contact */}
+        {about?.contact && about.contact.length > 0 && (
+          <div className="lg:text-center mt-8">
+            <h2 className="text-[15px] lg:hidden block font-medium tracking-wider">
+              Contact
+            </h2>
+            <ul>
+              {about.contact.map((link: ExternalLinkItem) => {
+                const href = resolveExternalLink(link);
+                if (!href) return null;
+
+                return (
+                  <li key={link._key}>
+                    <a
+                      href={href}
+                      target={
+                        link.linkType === "external" ? "_blank" : undefined
+                      }
+                      rel={
+                        link.linkType === "external"
+                          ? "noopener noreferrer"
+                          : undefined
+                      }
+                      className="text-[15px] hover:opacity-60 transition-opacity"
+                    >
+                      {link.label}
+                    </a>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        )}
+      </div>
+
+      {/* Desktop: Star + Clients + Press — absolutely centered in viewport */}
+      <div className="hidden min-[1100px]:flex absolute inset-0 items-center justify-center z-0 px-2 pt-16">
         <div className="relative">
-          {/* Star */}
-          <AnimatedStar className="w-[250px] min-[1100px]:w-[450px] h-auto" />
+          <AnimatedStar className="w-[450px] h-auto" />
 
           {/* Selected Clients - Left, pinned to page left edge */}
-          <div className="hidden min-[1100px]:block fixed left-2 top-[55%] max-w-[calc((100vw-450px)/2-4rem)] text-left">
+          <div className="fixed left-2 top-[55%] w-[calc((100vw-450px)/2-4rem)] text-left">
             {about?.selectedClients && (
               <h2 className="text-[15px] font-medium tracking-wider">
                 {about.selectedClients}
@@ -73,20 +159,39 @@ export default async function AboutPage() {
           </div>
 
           {/* Press - Right, pinned to page right edge */}
-          <div className="hidden min-[1100px]:block fixed right-2 top-[55%] max-w-[calc((100vw-450px)/2-1.5rem)] text-left">
-            {(() => {
-              const press = about?.press as unknown as string[] | null;
-              return press?.length ? (
-                <>
-                  <h2 className="text-[15px] font-medium tracking-wider">
-                    Press
-                  </h2>
-                  <p className="text-[15px] leading-relaxed">
-                    {press.join(", ")}
-                  </p>
-                </>
-              ) : null;
-            })()}
+          <div className="fixed right-2 top-[55%] w-[calc((100vw-450px)/2-4rem)] text-left">
+            {about?.press && about.press.length > 0 && (
+              <>
+                <h2 className="text-[15px] font-medium tracking-wider">
+                  Press
+                </h2>
+                <p className="text-[15px] leading-relaxed">
+                  {(about.press as ExternalLinkItem[]).map((link, i) => {
+                    const href = resolveExternalLink(link);
+                    if (!href) return null;
+                    return (
+                      <span key={link._key}>
+                        {i > 0 && ", "}
+                        <a
+                          href={href}
+                          target={
+                            link.linkType === "external" ? "_blank" : undefined
+                          }
+                          rel={
+                            link.linkType === "external"
+                              ? "noopener noreferrer"
+                              : undefined
+                          }
+                          className="hover:opacity-60 transition-opacity"
+                        >
+                          {link.label}
+                        </a>
+                      </span>
+                    );
+                  })}
+                </p>
+              </>
+            )}
           </div>
 
           {/* Contact - Below star */}
@@ -101,9 +206,16 @@ export default async function AboutPage() {
                     <li key={link._key}>
                       <a
                         href={href}
-                        target={link.linkType === "external" ? "_blank" : undefined}
-                        rel={link.linkType === "external" ? "noopener noreferrer" : undefined}
-                        className="text-[15px] hover:opacity-60 transition-opacity">
+                        target={
+                          link.linkType === "external" ? "_blank" : undefined
+                        }
+                        rel={
+                          link.linkType === "external"
+                            ? "noopener noreferrer"
+                            : undefined
+                        }
+                        className="text-[15px] hover:opacity-60 transition-opacity"
+                      >
                         {link.label}
                       </a>
                     </li>

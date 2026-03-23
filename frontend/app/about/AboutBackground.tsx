@@ -24,7 +24,7 @@ export default function AboutBackground({
   return (
     <BgChangeContext.Provider value={onBackgroundChange}>
       <div
-        className="h-screen flex flex-col overflow-hidden"
+        className="min-h-screen min-[1100px]:h-screen flex flex-col min-[1100px]:overflow-hidden"
         style={{
           backgroundColor: bgColor || defaultColor || "#E72B1C",
           transition: "background-color 0.3s ease-in-out",
