@@ -1,10 +1,10 @@
 import { sanityFetch } from "@/sanity/lib/live";
 import { settingsQuery } from "@/sanity/lib/queries";
-import IntroClient from "./intro/IntroClient";
+import IntroClient from "./IntroClient";
 
 export const revalidate = 3600;
 
-export default async function RootPage() {
+export default async function IntroPage() {
   const { data: settings } = await sanityFetch({ query: settingsQuery });
 
   return (
