@@ -33,9 +33,9 @@ export default function IntroAnimation({
   const handleVideoEnd = dismissVideo;
   const handleVideoClick = dismissVideo;
 
-  // Sync iOS Safari status bar / bottom bar color with phase
+  // Sync iOS Safari theme-color with phase
   useEffect(() => {
-    const color = phase === "video" ? "#ffffff" : "#E72B1C";
+    const color = phase === "video" ? "#000000" : "#E72B1C";
     let meta = document.querySelector('meta[name="theme-color"]') as HTMLMetaElement | null;
     if (!meta) {
       meta = document.createElement("meta");
@@ -140,16 +140,40 @@ export default function IntroAnimation({
     return null;
   }
 
+  // Container: use svh with vh fallback, black bg during video to hide any gaps
+  const containerStyle: React.CSSProperties = {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    width: "100vw",
+    height: "100vh",
+    zIndex: 50,
+    overflow: "hidden",
+    backgroundColor: phase === "video" ? "#000000" : "#E72B1C",
+  };
+
+  // Video/image: centered + oversized to guarantee cover on all aspect ratios
+  const mediaStyle: React.CSSProperties = {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    minWidth: "100%",
+    minHeight: "100%",
+    width: "auto",
+    height: "auto",
+    objectFit: "cover",
+  };
+
   return (
     <div
-      className={`fixed inset-0 z-50 overflow-hidden ${phase === "video" ? "cursor-pointer" : ""}`}
-      style={{ backgroundColor: phase === "video" ? "#ffffff" : "#E72B1C" }}
+      style={containerStyle}
+      className={phase === "video" ? "cursor-pointer" : ""}
       onClick={phase === "video" ? handleVideoClick : undefined}
       role="region"
       aria-label="Intro animation"
       aria-live="polite"
     >
-      {/* Screen reader announcement */}
       {phase === "video" && (
         <span className="sr-only">
           Intro video playing. Press Enter, Space, or Escape to skip.
@@ -161,8 +185,8 @@ export default function IntroAnimation({
         <video
           ref={videoRef}
           src={videoUrl}
-          className={`absolute inset-0 w-full h-full ${autoplayFailed ? "hidden" : ""}`}
-          style={{ objectFit: "cover" }}
+          className={autoplayFailed ? "hidden" : ""}
+          style={mediaStyle}
           muted
           playsInline
           preload="auto"
@@ -171,22 +195,26 @@ export default function IntroAnimation({
         />
       )}
 
-      {/* Poster fallback - shown when autoplay fails (e.g. iOS Low Power Mode) */}
+      {/* Poster fallback */}
       {autoplayFailed && posterUrl && phase === "video" && (
         // eslint-disable-next-line @next/next/no-img-element
         <img
           src={posterUrl}
           alt=""
-          className="absolute inset-0 w-full h-full"
-          style={{ objectFit: "cover" }}
+          style={mediaStyle}
           aria-hidden="true"
         />
       )}
 
-      {/* Red curtain overlay */}
-      {phase === "curtain" && (
-        <div className="absolute inset-0 z-[1]" />
-      )}
+      {/* Red curtain overlay — fades out instead of unmounting */}
+      <div
+        className="absolute inset-0 bg-[#E72B1C] transition-opacity duration-500"
+        style={{
+          opacity: phase === "curtain" ? 1 : 0,
+          pointerEvents: phase === "curtain" ? "auto" : "none",
+          zIndex: 1,
+        }}
+      />
 
       {/* Labels */}
       <div className="absolute bottom-0 left-0 right-0 p-2 flex justify-between items-end pointer-events-none z-20">

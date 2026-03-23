@@ -1,12 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 
 import TransitionLink from "@/app/components/TransitionLink";
-import HomeVideoClient from "@/app/home/HomeVideoClient";
+import IntroAnimation from "./IntroAnimation";
 import Footer from "./Footer";
 import type { AllProjectsForNavQueryResult, SettingsQueryResult } from "@/sanity.types";
+
+const INTRO_SEEN_KEY = "tomas-pintos-intro-seen";
 
 type HomePageClientProps = {
   fotoImageUrl: string | null;
@@ -31,10 +33,18 @@ export default function HomePageClient({
   const [expandedSection, setExpandedSection] = useState<"foto" | "movement" | "performance" | null>("movement");
   const [activeBackground, setActiveBackground] = useState<"foto" | "movement" | "performance">("movement");
 
-  const [showVideo, setShowVideo] = useState(true);
+  // Start with null to indicate "not yet determined" - prevents hydration mismatch
+  const [showIntro, setShowIntro] = useState<boolean | null>(null);
 
-  const handleVideoComplete = () => {
-    setShowVideo(false);
+  // Check sessionStorage on mount (client-side only)
+  useEffect(() => {
+    const hasSeenIntro = sessionStorage.getItem(INTRO_SEEN_KEY);
+    setShowIntro(!hasSeenIntro);
+  }, []);
+
+  const handleIntroComplete = () => {
+    sessionStorage.setItem(INTRO_SEEN_KEY, "true");
+    setShowIntro(false);
   };
 
   const toggleSection = (section: "foto" | "movement" | "performance") => {
@@ -48,16 +58,22 @@ export default function HomePageClient({
     }
   };
 
-  const contentVisible = !showVideo;
+  // Content is visible when we've determined intro state and intro is not showing
+  // showIntro === null means we haven't checked sessionStorage yet (SSR/initial render)
+  const contentVisible = showIntro === false;
+
+  // Use CSS animation class for smooth fade-in
   const contentClasses = contentVisible ? "animate-fade-in" : "opacity-0";
 
   return (
     <div className="h-screen overflow-hidden">
-      {showVideo && (
-        <HomeVideoClient
+      {showIntro === true && (
+        <IntroAnimation
           videoUrl={previewVideoUrl}
           posterUrl={fallbackImageUrl}
-          onComplete={handleVideoComplete}
+          onComplete={handleIntroComplete}
+          leftText={settings?.footerLeftText || "TOMAS"}
+          rightText={settings?.footerRightText || "PINTOS"}
         />
       )}
 
