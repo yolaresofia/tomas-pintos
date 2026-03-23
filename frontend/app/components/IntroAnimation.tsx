@@ -33,6 +33,22 @@ export default function IntroAnimation({
   const handleVideoEnd = dismissVideo;
   const handleVideoClick = dismissVideo;
 
+  // Sync iOS Safari status bar / bottom bar color with phase
+  useEffect(() => {
+    const color = phase === "video" ? "#ffffff" : "#E72B1C";
+    let meta = document.querySelector('meta[name="theme-color"]') as HTMLMetaElement | null;
+    if (!meta) {
+      meta = document.createElement("meta");
+      meta.name = "theme-color";
+      document.head.appendChild(meta);
+    }
+    meta.content = color;
+
+    return () => {
+      if (meta) meta.content = "#ffffff";
+    };
+  }, [phase]);
+
   useEffect(() => {
     const curtainTimer = setTimeout(() => {
       setCurtainOpen(true);
