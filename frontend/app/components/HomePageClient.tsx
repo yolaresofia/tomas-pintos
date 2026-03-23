@@ -70,7 +70,6 @@ export default function HomePageClient({
       {showIntro === true && (
         <IntroAnimation
           videoUrl={previewVideoUrl}
-          posterUrl={fallbackImageUrl}
           onComplete={handleIntroComplete}
           leftText={settings?.footerLeftText || "TOMAS"}
           rightText={settings?.footerRightText || "PINTOS"}
