@@ -357,7 +357,7 @@ export default function ProjectPage({
         </div>
 
         {/* Project Info */}
-        <div className="h-screen flex flex-col items-start text-left px-2 py-6">
+        <div className="h-screen flex flex-col items-start text-left px-2 py-12">
           {project.title && (
             <h1 className="text-[13px] min-[1100px]:text-sm font-medium mb-4">{project.title}</h1>
           )}
