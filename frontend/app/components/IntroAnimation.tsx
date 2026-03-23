@@ -185,7 +185,7 @@ export default function IntroAnimation({
 
       {/* Red curtain overlay */}
       {phase === "curtain" && (
-        <div className="absolute inset-0 bg-[#E72B1C] z-[1]" />
+        <div className="absolute inset-0 z-[1]" />
       )}
 
       {/* Labels */}
