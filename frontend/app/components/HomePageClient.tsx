@@ -149,7 +149,7 @@ export default function HomePageClient({
                 FOTO
               </button>
               <ul
-                className={`text-[13px] space-y-3 min-[1100px]:space-y-0 md:text-sm leading-tight overflow-hidden transition-all duration-300 ${
+                className={`text-[13px] space-y-3 min-[1100px]:space-y-0 md:text-sm leading-tight overflow-hidden transition-all duration-300 max-w-[30vw] ${
                   expandedSection === "foto" ? "opacity-100 mt-1" : "max-h-0 opacity-0"
                 }`}
               >
@@ -177,7 +177,7 @@ export default function HomePageClient({
                 MOVEMENT DIRECTION
               </button>
               <ul
-                className={`text-[13px] space-y-3 min-[1100px]:space-y-0 md:text-sm leading-tight text-center overflow-hidden transition-all duration-300 ${
+                className={`text-[13px] space-y-3 min-[1100px]:space-y-0 md:text-sm leading-tight text-center overflow-hidden transition-all duration-300 max-w-[40vw] ${
                   expandedSection === "movement" ? "max-h-[80vh] opacity-100 mt-1" : "max-h-0 opacity-0"
                 }`}
               >
@@ -205,7 +205,7 @@ export default function HomePageClient({
                 PERFORMANCE
               </button>
               <ul
-                className={`text-[13px] space-y-3 min-[1100px]:space-y-0 md:text-sm leading-tight text-right overflow-hidden transition-all duration-300 ${
+                className={`text-[13px] space-y-3 min-[1100px]:space-y-0 md:text-sm leading-tight text-right overflow-hidden transition-all duration-300 max-w-[30vw] ${
                   expandedSection === "performance" ? "max-h-[80vh] opacity-100 mt-1" : "max-h-0 opacity-0"
                 }`}
               >

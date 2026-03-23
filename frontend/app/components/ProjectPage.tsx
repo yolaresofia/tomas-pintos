@@ -425,7 +425,7 @@ export default function ProjectPage({
           </div>
         </div>
         <div ref={centerColumnRef} className="overflow-y-auto" data-lenis-scroller>
-          <div className="flex flex-col items-start text-left px-4 pt-1">
+          <div className="flex flex-col items-start text-left px-4 pt-1 pb-12">
             {project.title && (
               <h1 className="text-sm font-medium mb-4">{project.title}</h1>
             )}

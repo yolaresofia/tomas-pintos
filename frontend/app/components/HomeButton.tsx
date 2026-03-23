@@ -6,7 +6,7 @@ export default function HomeButton({ color = "#E72B1C" }: { color?: string }) {
   return (
     <TransitionLink
       href="/"
-      className="fixed top-0 right-0 z-50 hover:opacity-60 transition-opacity p-3 min-w-[44px] min-h-[44px] flex items-center justify-center touch-manipulation"
+      className="fixed top-0 right-0 z-50 hover:opacity-60 transition-opacity p-2 min-w-[44px] min-h-[44px] flex items-start justify-end touch-manipulation"
       aria-label="Go to homepage"
     >
       <svg
