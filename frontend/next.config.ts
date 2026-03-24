@@ -20,8 +20,7 @@ const nextConfig: NextConfig = {
     imageSizes: [64, 128, 256],
     // Cache images for 31 days to reduce cache reads/writes
     minimumCacheTTL: 2678400,
-    // Limit quality options to reduce variations
-    qualities: [75],
+    qualities: [75, 100],
   },
 };
 

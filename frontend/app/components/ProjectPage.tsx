@@ -50,8 +50,9 @@ function GalleryThumbnail({
       <Image
         src={src}
         alt={alt}
-        width={800}
-        height={600}
+        width={1920}
+        height={1440}
+        quality={100}
         className={`object-cover w-full h-auto cursor-pointer transition-opacity duration-500 ease-in-out ${
           isLoaded ? "opacity-100" : "opacity-0"
         }`}
@@ -220,8 +221,7 @@ function MediaColumnRenderer({
           );
         }
 
-        // Thumbnail uses a capped width, lightbox gets the full original
-        const thumbnailUrl = urlForImage(item.image)?.width(800).url();
+        const thumbnailUrl = urlForImage(item.image)?.url();
         const fullUrl = urlForImage(item.image)?.url();
         if (!thumbnailUrl || !fullUrl) return null;
 
@@ -254,7 +254,7 @@ function collectAllImages(
     for (const item of column.photos) {
       if (item.isVideo) continue;
       const fullUrl = urlForImage(item.image)?.url();
-      const thumbnailUrl = urlForImage(item.image)?.width(800).url();
+      const thumbnailUrl = urlForImage(item.image)?.url();
       if (fullUrl && thumbnailUrl) {
         images.push({
           src: fullUrl,
