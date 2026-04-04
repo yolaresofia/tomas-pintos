@@ -7,7 +7,7 @@ import { sanityFetch } from "@/sanity/lib/live";
 import { aboutQuery, settingsQuery } from "@/sanity/lib/queries";
 import { resolveExternalLink } from "@/sanity/lib/utils";
 import AnimatedStar from "@/app/components/AnimatedStar";
-import AboutBackground from "./AboutBackground";
+import AboutBackground from "../components/AboutBackground";
 
 // Revalidate every hour (ISR)
 export const revalidate = 3600;

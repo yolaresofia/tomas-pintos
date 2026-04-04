@@ -16,6 +16,21 @@ type Props = {
   params: Promise<{ slug: string }>;
 };
 
+// The user at second 3601 sees the stale page (the cached one from build time). But Next.js triggers a background re-fetch. The next user gets the fresh page.
+// So the sequence is: serve stale → revalidate in background → next request gets fresh.
+// That's ISR. The user is never waiting for a fetch — they always get a cached page. It just might be up to an hour old.
+
+// Here's the sequence:
+
+// You run npm run build
+// - Next.js finds your [slug] folder and sees generateStaticParams
+// - It calls that function — which fetches all slugs from Sanity
+// - It gets back [{ slug: "project-one" }, { slug: "project-two" }]
+// - Next.js then builds a static HTML page for each one: /foto/project-one, /foto/project-two
+
+// It's Next.js calling your function during the build process to know what pages to generate. 
+// Not a browser request, not a user request — just the build pipeline saying "hey, what URLs should I pre-render?"
+
 export async function generateStaticParams() {
   const { data } = await sanityFetch({
     query: allProjectSlugsQuery,

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { useBackgroundChange } from "@/app/about/AboutBackground";
+import { useBackgroundChange } from "@/app/components/AboutBackground";
 
 const COLORS = ["#F6E301", "#011588", "#E72B1C"];
 
