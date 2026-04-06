@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import dynamic from "next/dynamic";
-import Image from "next/image";
 import { createPortal } from "react-dom";
 
 import { urlForImage, resolveExternalLink } from "@/sanity/lib/utils";
@@ -38,26 +37,31 @@ function ColumnImage({
   src,
   alt,
   onClick,
+  canLoad,
+  onLoaded,
 }: {
   src: string;
   alt: string;
   onClick: () => void;
+  canLoad: boolean;
+  onLoaded: () => void;
 }) {
   const [isLoaded, setIsLoaded] = useState(false);
 
   return (
     <div className="w-full">
-      <Image
-        src={src}
+      <img
+        src={canLoad ? src : undefined}
         alt={alt}
-        width={1920}
-        height={1440}
-        quality={100}
         className={`object-cover w-full h-auto cursor-pointer transition-opacity duration-500 ease-in-out ${
           isLoaded ? "opacity-100" : "opacity-0"
         }`}
-        onLoad={() => setIsLoaded(true)}
+        onLoad={() => {
+          setIsLoaded(true);
+          onLoaded();
+        }}
         onClick={onClick}
+        decoding="async"
       />
     </div>
   );
@@ -201,7 +205,11 @@ function MediaColumnRenderer({
   projectTitle?: string;
   onImageClick?: (src: string, alt: string) => void;
 }) {
+  const [loadedCount, setLoadedCount] = useState(0);
+
   if (!column?.photos || column.photos.length === 0) return null;
+
+  let imageIndex = 0;
 
   return (
     <div
@@ -221,15 +229,22 @@ function MediaColumnRenderer({
           );
         }
 
-        const thumbnailUrl = urlForImage(item.image)?.url();
+        const thumbnailUrl = urlForImage(item.image)
+          ?.width(1200)
+          .quality(75)
+          .url();
         const fullUrl = urlForImage(item.image)?.url();
         if (!thumbnailUrl || !fullUrl) return null;
+
+        const currentIndex = imageIndex++;
 
         return (
           <ColumnImage
             key={item._key}
             src={thumbnailUrl}
             alt={item.alt || ""}
+            canLoad={currentIndex <= loadedCount}
+            onLoaded={() => setLoadedCount((c) => c + 1)}
             onClick={
               onImageClick
                 ? () => onImageClick(fullUrl, item.alt || "")
@@ -254,7 +269,10 @@ function collectAllImages(
     for (const item of column.photos) {
       if (item.isVideo) continue;
       const fullUrl = urlForImage(item.image)?.url();
-      const thumbnailUrl = urlForImage(item.image)?.url();
+      const thumbnailUrl = urlForImage(item.image)
+        ?.width(1200)
+        .quality(75)
+        .url();
       if (fullUrl && thumbnailUrl) {
         images.push({
           src: fullUrl,
@@ -286,17 +304,6 @@ export default function ProjectPage({
     project.leftColumn as MediaColumn,
     project.rightColumn as MediaColumn
   );
-
-  // Preload full-res images so lightbox opens instantly
-  useEffect(() => {
-    allImages.forEach(({ src }) => {
-      const link = document.createElement("link");
-      link.rel = "preload";
-      link.as = "image";
-      link.href = src;
-      document.head.appendChild(link);
-    });
-  }, [allImages]);
 
   // Lightbox state (desktop only)
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
