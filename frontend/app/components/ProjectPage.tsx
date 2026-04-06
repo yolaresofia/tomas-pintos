@@ -34,7 +34,7 @@ const PortableText = dynamic(
 // THUMBNAIL COMPONENT - Simple gallery thumbnail with fade-in on load
 // =============================================================================
 
-function GalleryThumbnail({
+function ColumnImage({
   src,
   alt,
   onClick,
@@ -226,7 +226,7 @@ function MediaColumnRenderer({
         if (!thumbnailUrl || !fullUrl) return null;
 
         return (
-          <GalleryThumbnail
+          <ColumnImage
             key={item._key}
             src={thumbnailUrl}
             alt={item.alt || ""}
