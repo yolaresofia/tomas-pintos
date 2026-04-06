@@ -1,4 +1,4 @@
-# Tomas Pintos — Portfolio Website
+# 🔴 Tomas Pintos — Portfolio Website 🔴
 
 Portfolio website for Tomas Pintos, a multidisciplinary artist based between Barcelona and Paris working across photography, movement direction, and performance.
 
