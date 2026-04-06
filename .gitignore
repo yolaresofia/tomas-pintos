@@ -29,3 +29,8 @@ next-env.d.ts
 
 # VS Code
 .vscode
+
+# AI agent config
+.agents
+.claude
+.codex
