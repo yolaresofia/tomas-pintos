@@ -17,7 +17,7 @@ type ProjectNavProps = {
 };
 
 const categoryLabels: Record<string, string> = {
-  foto: "FOTO",
+  foto: "PHOTOGRAPHY",
   "movement-direction": "MOVEMENT DIRECTION",
   performance: "PERFORMANCE",
 };

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import dynamic from "next/dynamic";
-import { createPortal } from "react-dom";
+import Image from "next/image";
 
 import { urlForImage, resolveExternalLink } from "@/sanity/lib/utils";
 import ProjectNav from "@/app/components/ProjectNav";
@@ -35,33 +35,27 @@ const PortableText = dynamic(
 
 function ColumnImage({
   src,
+  lqip,
   alt,
   onClick,
-  canLoad,
-  onLoaded,
 }: {
   src: string;
+  lqip?: string | null;
   alt: string;
   onClick: () => void;
-  canLoad: boolean;
-  onLoaded: () => void;
 }) {
-  const [isLoaded, setIsLoaded] = useState(false);
-
   return (
     <div className="w-full">
-      <img
-        src={canLoad ? src : undefined}
+      <Image
+        src={src}
         alt={alt}
-        className={`object-cover w-full h-auto cursor-pointer transition-opacity duration-500 ease-in-out ${
-          isLoaded ? "opacity-100" : "opacity-0"
-        }`}
-        onLoad={() => {
-          setIsLoaded(true);
-          onLoaded();
-        }}
+        width={1200}
+        height={900}
+        quality={75}
+        sizes="(min-width: 1100px) 40vw, 100vw"
+        {...(lqip ? { placeholder: "blur" as const, blurDataURL: lqip } : {})}
+        className="object-cover w-full h-auto cursor-pointer"
         onClick={onClick}
-        decoding="async"
       />
     </div>
   );
@@ -73,7 +67,7 @@ function ColumnImage({
 
 type LightboxImage = {
   src: string;
-  thumbnailSrc: string;
+  lqip?: string | null;
   alt: string;
 };
 
@@ -92,12 +86,6 @@ function ImageLightbox({
 }) {
   const [isVisible, setIsVisible] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
-  const [loaded, setLoaded] = useState(false);
-
-  // Reset loaded state when image changes
-  useEffect(() => {
-    setLoaded(false);
-  }, [image.src]);
 
   // Trigger animation on mount
   useEffect(() => {
@@ -129,37 +117,31 @@ function ImageLightbox({
     setTimeout(onClose, 300);
   }, [onClose, isClosing]);
 
-  return createPortal(
+  return (
     <div
       className={`fixed inset-0 z-50 flex items-center justify-center cursor-pointer transition-all duration-300 ease-out ${
         isVisible ? "opacity-100" : "opacity-0"
       }`}
       onClick={handleClose}
     >
-      {/* Image container - uses the same URL as the thumbnail so it's already cached */}
       <div
-        className={`max-w-[90vw] max-h-[90vh] transition-transform duration-300 ease-out ${
+        className={`relative max-w-[90vw] max-h-[90vh] transition-transform duration-300 ease-out ${
           isVisible ? "scale-100" : "scale-95"
         }`}
         onClick={(e) => e.stopPropagation()}
       >
-        <img
-          src={loaded ? image.src : image.thumbnailSrc}
+        <Image
+          src={image.src}
           alt={image.alt}
+          width={1920}
+          height={1440}
+          quality={100}
+          {...(image.lqip ? { placeholder: "blur" as const, blurDataURL: image.lqip } : {})}
           className="object-contain max-w-full max-h-[90vh] w-auto h-auto cursor-default"
+          priority
         />
-        {/* Hidden img to trigger full-res load */}
-        {!loaded && (
-          <img
-            src={image.src}
-            alt=""
-            className="hidden"
-            onLoad={() => setLoaded(true)}
-          />
-        )}
       </div>
-    </div>,
-    document.body
+    </div>
   );
 }
 
@@ -173,6 +155,7 @@ type MediaItem = {
       _type: "reference";
     };
   } | null;
+  lqip?: string | null;
   previewVideoUrl?: string | null;
   fullVideoUrl?: string | null;
   alt?: string | null;
@@ -205,11 +188,7 @@ function MediaColumnRenderer({
   projectTitle?: string;
   onImageClick?: (src: string, alt: string) => void;
 }) {
-  const [loadedCount, setLoadedCount] = useState(0);
-
   if (!column?.photos || column.photos.length === 0) return null;
-
-  let imageIndex = 0;
 
   return (
     <div
@@ -229,25 +208,18 @@ function MediaColumnRenderer({
           );
         }
 
-        const thumbnailUrl = urlForImage(item.image)
-          ?.width(1200)
-          .quality(75)
-          .url();
-        const fullUrl = urlForImage(item.image)?.url();
-        if (!thumbnailUrl || !fullUrl) return null;
-
-        const currentIndex = imageIndex++;
+        const imageUrl = urlForImage(item.image)?.url();
+        if (!imageUrl) return null;
 
         return (
           <ColumnImage
             key={item._key}
-            src={thumbnailUrl}
+            src={imageUrl}
+            lqip={item.lqip}
             alt={item.alt || ""}
-            canLoad={currentIndex <= loadedCount}
-            onLoaded={() => setLoadedCount((c) => c + 1)}
             onClick={
               onImageClick
-                ? () => onImageClick(fullUrl, item.alt || "")
+                ? () => onImageClick(imageUrl, item.alt || "")
                 : () => {}
             }
           />
@@ -268,15 +240,11 @@ function collectAllImages(
     if (!column?.photos) return;
     for (const item of column.photos) {
       if (item.isVideo) continue;
-      const fullUrl = urlForImage(item.image)?.url();
-      const thumbnailUrl = urlForImage(item.image)
-        ?.width(1200)
-        .quality(75)
-        .url();
-      if (fullUrl && thumbnailUrl) {
+      const imageUrl = urlForImage(item.image)?.url();
+      if (imageUrl) {
         images.push({
-          src: fullUrl,
-          thumbnailSrc: thumbnailUrl,
+          src: imageUrl,
+          lqip: item.lqip,
           alt: item.alt || "",
         });
       }
@@ -364,7 +332,7 @@ export default function ProjectPage({
         </div>
 
         {/* Project Info */}
-        <div className="h-screen flex flex-col items-start text-left px-2 py-12">
+        <div className="min-h-screen flex flex-col items-start text-left px-2 py-12">
           {project.title && (
             <h1 className="text-[13px] min-[1100px]:text-sm font-medium mb-4">{project.title}</h1>
           )}

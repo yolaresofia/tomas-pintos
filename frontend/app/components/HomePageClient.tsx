@@ -30,7 +30,7 @@ export default function HomePageClient({
   settings,
 }: HomePageClientProps) {
   const [hoveredColumn, setHoveredColumn] = useState<"foto" | "movement" | "performance" | null>(null);
-  const [expandedSection, setExpandedSection] = useState<"foto" | "movement" | "performance" | null>("movement");
+  const [expandedSection, setExpandedSection] = useState<"foto" | "movement" | "performance" | null>(null);
   const [activeBackground, setActiveBackground] = useState<"foto" | "movement" | "performance">("movement");
 
   // Start with null to indicate "not yet determined" - prevents hydration mismatch
@@ -146,7 +146,7 @@ export default function HomePageClient({
                   expandedSection === "foto" ? "text-[#E72B1C]" : ""
                 }`}
               >
-                FOTO
+                PHOTOGRAPHY
               </button>
               <ul
                 className={`text-[13px] space-y-3 min-[1100px]:space-y-0 md:text-sm leading-tight overflow-hidden transition-all duration-300 max-w-[30vw] ${
