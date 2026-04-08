@@ -257,7 +257,7 @@ export default function HomePageClient({
             onMouseEnter={() => setHoveredColumn("foto")}
             onMouseLeave={() => setHoveredColumn(null)}
           >
-            <h2 className="text-sm font-semibold tracking-wider cursor-default hover:text-[#E72B1C] transition-colors">FOTO</h2>
+            <h2 className="text-sm font-semibold tracking-wider cursor-default hover:text-[#E72B1C] transition-colors">PHOTOGRAPHY</h2>
             <ul
               className={`text-sm transition-opacity duration-300 leading-tight ${
                 hoveredColumn === "foto" ? "opacity-100" : "opacity-0"
